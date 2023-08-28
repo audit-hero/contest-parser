@@ -74,7 +74,7 @@ export const parseC4Contest = async (contest) => {
     return result;
 };
 // sorted desc
-export const parseMd = (url, readme, repo, contest) => {
+const parseMd = (url, readme, repo, contest) => {
     // find lines that start with "|[src"
     let tags = [];
     let start_date = getTimestamp(contest.start_time), end_date = getTimestamp(contest.end_time);
@@ -116,7 +116,7 @@ export const parseMd = (url, readme, repo, contest) => {
         }
     };
 };
-export const getHmAwards = (contest, lines) => {
+const getHmAwards = (contest, lines) => {
     if (contest.hm_award_pool)
         return contest.hm_award_pool.toString();
     let hmAwards = contest.amount;
@@ -139,7 +139,7 @@ export const getHmAwards = (contest, lines) => {
     }
     return hmAwards;
 };
-export const findModules = (repo, lines, moduleFindWay) => {
+const findModules = (repo, lines, moduleFindWay) => {
     let inScopeHeading = false;
     let heading = "";
     let docUrls = [];
@@ -188,7 +188,7 @@ export const findModules = (repo, lines, moduleFindWay) => {
         docUrls: docUrls
     };
 };
-export const findModuleSloc = (line, repo) => {
+const findModuleSloc = (line, repo) => {
     let module = undefined;
     try {
         // let inculdesContracts = it.includes("contracts/")
@@ -215,7 +215,7 @@ export const findModuleSloc = (line, repo) => {
     }
     return module;
 };
-export const findModuleFromTable = (line, repo, referenceLinks) => {
+const findModuleFromTable = (line, repo, referenceLinks) => {
     let module = undefined;
     try {
         let includesSolInTable = line.includes("|") && line.includes(".sol");
@@ -287,7 +287,7 @@ const getModulePathAndUrlBySplit = (pathAndUrl) => {
         return undefined;
     }
 };
-export const getLinkReferences = (content) => {
+const getLinkReferences = (content) => {
     // find [`LSP0ERC725AccountCore.sol`]: https://githu...tCore.sol
     // style links
     let regex = /^\[(.*)\]:\s*(.*)/g;
@@ -308,7 +308,7 @@ export const getLinkReferences = (content) => {
     }
     return links;
 };
-export const matchReferenceLink = (line, links) => {
+const matchReferenceLink = (line, links) => {
     let regex = /\[(.*)\]/g;
     let match = line.match(regex);
     if (match) {
@@ -318,7 +318,7 @@ export const matchReferenceLink = (line, links) => {
             return link.url;
     }
 };
-export const getTimestamp = (date) => {
+const getTimestamp = (date) => {
     var someDate = new Date(date);
     return Math.floor(someDate.getTime() / 1000);
 };

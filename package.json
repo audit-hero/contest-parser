@@ -24,7 +24,8 @@
           "useESM": true
         }
       ]
-    }
+    },
+    "modulePathIgnorePatterns": ["<rootDir>/dist/"]
   },
   "engines": {
     "node": ">=10.12"

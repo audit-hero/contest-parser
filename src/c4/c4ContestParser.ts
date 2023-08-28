@@ -93,7 +93,7 @@ export const parseC4Contest = async (contest: C4Contest): Promise<Result<Contest
 }
 
 // sorted desc
-export const parseMd = (url: string, readme: string | undefined, repo: string, contest: C4Contest): Result<ContestWithModules> => {
+const parseMd = (url: string, readme: string | undefined, repo: string, contest: C4Contest): Result<ContestWithModules> => {
   // find lines that start with "|[src"
   let tags = [] as Tag[]
   let start_date = getTimestamp(contest.start_time),
@@ -143,7 +143,7 @@ export const parseMd = (url: string, readme: string | undefined, repo: string, c
 }
 
 
-export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
+const getHmAwards = (contest: C4Contest, lines: string[]): string => {
   if (contest.hm_award_pool) return contest.hm_award_pool.toString()
   let hmAwards = contest.amount
 
@@ -169,7 +169,7 @@ export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
   return hmAwards
 }
 
-export const findModules = (repo: string, lines: string[], moduleFindWay: number): {
+const findModules = (repo: string, lines: string[], moduleFindWay: number): {
   modules: ContestModule[], docUrls: string[]
 } => {
   let inScopeHeading = false
@@ -224,7 +224,7 @@ export const findModules = (repo: string, lines: string[], moduleFindWay: number
   }
 }
 
-export const findModuleSloc = (line: string, repo: string) => {
+const findModuleSloc = (line: string, repo: string) => {
   let module: ContestModule | undefined = undefined
   try {
     // let inculdesContracts = it.includes("contracts/")
@@ -254,7 +254,7 @@ export const findModuleSloc = (line: string, repo: string) => {
   return module
 }
 
-export const findModuleFromTable = (line: string, repo: string, referenceLinks: ReferenceLink[]) => {
+const findModuleFromTable = (line: string, repo: string, referenceLinks: ReferenceLink[]) => {
   let module: ContestModule | undefined = undefined
   try {
     let includesSolInTable = line.includes("|") && line.includes(".sol")
@@ -342,7 +342,7 @@ type ReferenceLink = {
   name: string,
   url: string
 }
-export const getLinkReferences = (content: string[]) => {
+const getLinkReferences = (content: string[]) => {
   // find [`LSP0ERC725AccountCore.sol`]: https://githu...tCore.sol
   // style links
   let regex = /^\[(.*)\]:\s*(.*)/g
@@ -365,7 +365,7 @@ export const getLinkReferences = (content: string[]) => {
   return links
 }
 
-export const matchReferenceLink = (line: string, links: ReferenceLink[]) => {
+const matchReferenceLink = (line: string, links: ReferenceLink[]) => {
   let regex = /\[(.*)\]/g
   let match = line.match(regex)
   if (match) {
@@ -375,7 +375,7 @@ export const matchReferenceLink = (line: string, links: ReferenceLink[]) => {
   }
 }
 
-export const getTimestamp = (date: string) => {
+const getTimestamp = (date: string) => {
   var someDate = new Date(date);
   return Math.floor(someDate.getTime() / 1000);
 }

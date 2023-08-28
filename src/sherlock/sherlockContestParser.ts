@@ -58,7 +58,7 @@ export const getActiveSherlockContests = async (): Promise<SherlockContest[]> =>
   return contests.filter(it => it.status !== "FINISHED")
 }
 
-export const getReadmeFromGithub = async (contest: string) => {
+const getReadmeFromGithub = async (contest: string) => {
   let baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/main`
 
   let readme = await axios.get(`${baseUrl}/README.md`).catch((e) => {
@@ -196,14 +196,14 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
   }
 }
 
-export const getRepoName = (contest: SherlockContest) => {
+const getRepoName = (contest: SherlockContest) => {
   let split = contest.template_repo_name.split("/")
   if (split[split.length - 1] === "") split.pop()
   let name = split.pop()!!
   return name
 }
 
-export const sherlockStatusToStatus = (status: SherlockContest["status"]): Status => {
+const sherlockStatusToStatus = (status: SherlockContest["status"]): Status => {
   switch (status) {
     case "CREATED": return "created"
     case "FINISHED": return "finished"
@@ -267,7 +267,7 @@ const findModuleSloc = (line: string, contest: SherlockContest, contestName: str
 }
 
 
-export const getTimestamp = (date: string) => {
+const getTimestamp = (date: string) => {
   var someDate = new Date(date);
   return someDate.getTime() / 1000;
 }

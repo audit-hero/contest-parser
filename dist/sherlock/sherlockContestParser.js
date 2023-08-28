@@ -47,7 +47,7 @@ export const getActiveSherlockContests = async () => {
         return [];
     return contests.filter(it => it.status !== "FINISHED");
 };
-export const getReadmeFromGithub = async (contest) => {
+const getReadmeFromGithub = async (contest) => {
     let baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/main`;
     let readme = await axios.get(`${baseUrl}/README.md`).catch((e) => {
         return undefined;
@@ -168,14 +168,14 @@ export const parseSherlockContest = async (contest) => {
         }
     };
 };
-export const getRepoName = (contest) => {
+const getRepoName = (contest) => {
     let split = contest.template_repo_name.split("/");
     if (split[split.length - 1] === "")
         split.pop();
     let name = split.pop();
     return name;
 };
-export const sherlockStatusToStatus = (status) => {
+const sherlockStatusToStatus = (status) => {
     switch (status) {
         case "CREATED": return "created";
         case "FINISHED": return "finished";
@@ -228,7 +228,7 @@ const findModuleSloc = (line, contest, contestName, repos, baseUrl) => {
     }
     return {};
 };
-export const getTimestamp = (date) => {
+const getTimestamp = (date) => {
     var someDate = new Date(date);
     return someDate.getTime() / 1000;
 };

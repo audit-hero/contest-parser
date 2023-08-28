@@ -102,7 +102,7 @@ export const parseContest = async (name: string, url: string, readme: string): P
   return { ok: true, value: result }
 }
 
-export const getHmAwards = (readme: string[], name: string) => {
+const getHmAwards = (readme: string[], name: string) => {
   /**
    * - Total Prize Pool: $15,000
   - HM Awards: $14,000
@@ -125,7 +125,7 @@ export const getHmAwards = (readme: string[], name: string) => {
   return hmAwards
 }
 
-export const getDatesError = (startDate: number, endDate: number, name: string) => {
+const getDatesError = (startDate: number, endDate: number, name: string) => {
   if (endDate < Date.now() / 1000) {
     return {
       error: `contest ${name} has already ended`
@@ -139,7 +139,7 @@ export const getDatesError = (startDate: number, endDate: number, name: string) 
   }
 }
 
-export const getModules = (inScopeParagraph: string[], contest: string) => {
+const getModules = (inScopeParagraph: string[], contest: string) => {
   /**
    -   src/
     -   ProxyFactory.sol
@@ -171,7 +171,7 @@ export const getModules = (inScopeParagraph: string[], contest: string) => {
   return modules
 }
 
-export const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string) => {
+const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string) => {
   let module: ContestModule | undefined = undefined
 
   try {
@@ -200,7 +200,7 @@ export const findModuleFromUl = (line: string, lines: string[], currentDir: stri
   return { module, currentDir }
 }
 
-export const getBeforeScopeAndInScopeParagraph = (readme: string[]) => {
+const getBeforeScopeAndInScopeParagraph = (readme: string[]) => {
   let inScopeParagraph = [] as string[]
   let beforeScopeParagraph = [] as string[]
 
@@ -226,7 +226,7 @@ export const getBeforeScopeAndInScopeParagraph = (readme: string[]) => {
   return { inScopeParagraph, beforeScopeParagraph }
 }
 
-export const findDocUrls = (beforeScopeLines: string[]) => {
+const findDocUrls = (beforeScopeLines: string[]) => {
   let docUrls = [] as string[]
   let heading = ""
 
@@ -241,7 +241,7 @@ export const findDocUrls = (beforeScopeLines: string[]) => {
   return docUrls
 }
 
-export const getReadmeFromGithub = async (contest: string) => {
+const getReadmeFromGithub = async (contest: string) => {
   let baseUrl = `https://raw.githubusercontent.com/Cyfrin/${contest}/main`
 
   let readme = await fetch(`${baseUrl}/README.md`).catch((e) => {
@@ -282,7 +282,7 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
   return { startDate, endDate }
 }
 
-export const getTimestamp = (date: string) => {
+const getTimestamp = (date: string) => {
   // August 21, 2023   
   var someDate = new Date(date);
   return someDate.getTime() / 1000;

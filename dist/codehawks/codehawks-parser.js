@@ -81,7 +81,7 @@ export const parseContest = async (name, url, readme) => {
     };
     return { ok: true, value: result };
 };
-export const getHmAwards = (readme, name) => {
+const getHmAwards = (readme, name) => {
     /**
      * - Total Prize Pool: $15,000
     - HM Awards: $14,000
@@ -102,7 +102,7 @@ export const getHmAwards = (readme, name) => {
         sentryError(`no hm awards found for ${name}`);
     return hmAwards;
 };
-export const getDatesError = (startDate, endDate, name) => {
+const getDatesError = (startDate, endDate, name) => {
     if (endDate < Date.now() / 1000) {
         return {
             error: `contest ${name} has already ended`
@@ -114,7 +114,7 @@ export const getDatesError = (startDate, endDate, name) => {
         };
     }
 };
-export const getModules = (inScopeParagraph, contest) => {
+const getModules = (inScopeParagraph, contest) => {
     /**
      -   src/
       -   ProxyFactory.sol
@@ -140,7 +140,7 @@ export const getModules = (inScopeParagraph, contest) => {
         sentryError(`no modules found for ${contest}`);
     return modules;
 };
-export const findModuleFromUl = (line, lines, currentDir, repo) => {
+const findModuleFromUl = (line, lines, currentDir, repo) => {
     let module = undefined;
     try {
         let isRootDir = line.startsWith("- ");
@@ -164,7 +164,7 @@ export const findModuleFromUl = (line, lines, currentDir, repo) => {
     }
     return { module, currentDir };
 };
-export const getBeforeScopeAndInScopeParagraph = (readme) => {
+const getBeforeScopeAndInScopeParagraph = (readme) => {
     let inScopeParagraph = [];
     let beforeScopeParagraph = [];
     let afterInScope = false;
@@ -185,7 +185,7 @@ export const getBeforeScopeAndInScopeParagraph = (readme) => {
     }
     return { inScopeParagraph, beforeScopeParagraph };
 };
-export const findDocUrls = (beforeScopeLines) => {
+const findDocUrls = (beforeScopeLines) => {
     let docUrls = [];
     let heading = "";
     for (let line of beforeScopeLines) {
@@ -198,7 +198,7 @@ export const findDocUrls = (beforeScopeLines) => {
     }
     return docUrls;
 };
-export const getReadmeFromGithub = async (contest) => {
+const getReadmeFromGithub = async (contest) => {
     let baseUrl = `https://raw.githubusercontent.com/Cyfrin/${contest}/main`;
     let readme = await fetch(`${baseUrl}/README.md`).catch((e) => {
         return undefined;
@@ -235,7 +235,7 @@ function getStartEndDate(readme) {
         sentryError(`no start or end date found for ${readme}`);
     return { startDate, endDate };
 }
-export const getTimestamp = (date) => {
+const getTimestamp = (date) => {
     // August 21, 2023   
     var someDate = new Date(date);
     return someDate.getTime() / 1000;
