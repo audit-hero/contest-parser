@@ -25,7 +25,9 @@
         }
       ]
     },
-    "modulePathIgnorePatterns": ["<rootDir>/dist/"]
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ]
   },
   "engines": {
     "node": ">=10.12"

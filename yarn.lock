@@ -977,8 +977,8 @@ __metadata:
 
 ah-shared@audit-hero/ah-shared:
   version: 0.0.0
-  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=6b279a11bc9fcc8bbe444b2c2bfd8f3626801618"
-  checksum: 7091fe1e37c692201ba9a1ac1a0bdb9f9204c66c635a6c1ba3af7f096337045011d6fcd87c82ea39fa96b6af19bbe0c3c7d0c09e22ac6853f0b32c24f37bd8e7
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=4690ea5eddcc0f683cd31c08534985b86cd3ec9d"
+  checksum: add7e4b7975fdb7edbed2cf80de1b42db2003713e6c263133e5dde268ca04e2612e5c4ae9d71e48e7247f3f837eea315dc0bb674aba5eacd7dcd42a90aa89ba9
   languageName: node
   linkType: hard
 

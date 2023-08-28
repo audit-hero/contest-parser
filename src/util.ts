@@ -86,6 +86,6 @@ import { githubParams } from "./config.js"
 import { Tag, ALL_TAGS } from "ah-shared"
 import { Repo } from "ah-shared"
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(import.meta.url ?? "");
 const __dirname = path.dirname(__filename);
 export let workingDir = path.join(__dirname, "..")
