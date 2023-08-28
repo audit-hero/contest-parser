@@ -34,7 +34,6 @@ export type ContestWithModules = Contest & {
   loc?: number
 }
 
-// could be different contracts or combination of contracts. Also frontend/backend
 export type ContestModule = {
   name: string
   contest: string
