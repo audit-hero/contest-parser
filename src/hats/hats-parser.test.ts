@@ -14,15 +14,11 @@ afterEach(() => {
   jest.clearAllMocks()
 })
 
-it("gets active contests", async () => {
-  let contests = await getActiveContests()
-  expect(contests.length).toBe(1)
-})
-
 it("parser contest", async () => {
   let contests = await getActiveContests()
   let parsed = await parseContests(contests, [])
   let contest = parsed[0] as ContestWithModules
+  expect(parsed.length).toBe(1)
 
   expect(contest.pk).toBe("2023-08-stakewise")
 
