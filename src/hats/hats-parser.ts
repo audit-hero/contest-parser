@@ -1,9 +1,7 @@
 import { findTags } from "../util"
 import Logger from "js-logger"
 import { Project, Projects } from "./types"
-import { sentryError } from "../config.js"
-import { Result2 } from "../types-utils.js"
-import { ContestWithModules } from "../types.js"
+import { Result, sentryError, ContestWithModules } from "ah-shared"
 
 export const parseActiveHatsContests = async (existingContests: ContestWithModules[]) => {
   let active = await getActiveContests()
@@ -98,7 +96,7 @@ export const parseContests = async (contests: Project[], existingContests: Conte
   return jobs
 }
 
-const parseContest = async (contest: Project, name: string): Promise<Result2<ContestWithModules>> => {
+const parseContest = async (contest: Project, name: string): Promise<Result<ContestWithModules>> => {
   let { startDate, endDate } = getStartEndDate(contest)
   let dateError = getDatesError(startDate, endDate, name)
   if (dateError) return { ok: false, error: dateError.error }

@@ -39,6 +39,7 @@
     "typescript": "^5.1.3"
   },
   "dependencies": {
+    "ah-shared": "audit-hero/ah-shared",
     "axios": "^1.4.0",
     "breakdance": "^3.0.1",
     "js-beautify": "^1.14.8",

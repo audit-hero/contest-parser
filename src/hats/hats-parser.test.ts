@@ -2,7 +2,7 @@ import { jest } from "@jest/globals"
 import fs from "fs"
 import { getActiveContests, parseContests } from "./hats-parser"
 import { workingDir } from "../util"
-import { ContestWithModules } from "../types.js"
+import { ContestWithModules } from "ah-shared"
 
 beforeEach(() => {
   // Date.now() return August 23 2023

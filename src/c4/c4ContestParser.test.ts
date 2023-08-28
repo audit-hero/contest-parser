@@ -8,7 +8,7 @@ let contestObj = { start_time: "September 26, 2022 20:00 UTC", end_time: "Septem
 test("parses correct contracts", () => {
   var md = fs.readFileSync(`${workingDir}/src/c4/test/correct-contracts.md`).toString() as string;
 
-  let contest = parseMd("url", md, "repo", contestObj).result!!
+  let contest = (parseMd("url", md, "repo", contestObj) as any).value
 
   expect(contest.start_date).toBe(getTimestamp(contestObj.start_time))
   expect(contest.end_date).toBe(getTimestamp(contestObj.end_time))
@@ -18,11 +18,10 @@ test("parses correct contracts", () => {
 test("handles readme with invalid contracts ", () => {
   var md = fs.readFileSync(`${workingDir}/src/c4/test/invalid-contracts.md`).toString() as string;
 
-  let contest = parseMd("url", md, "repo", contestObj).result!!
+  let contest = (parseMd("url", md, "repo", contestObj) as any).value
 
   expect(contest.modules.length).toBe(4)
 })
-
 
 // https://code4rena.com/contests/2023-05-juicebox-buyback-delegate
 let contest: C4Contest = {
@@ -42,8 +41,11 @@ let contest: C4Contest = {
 
 it("parses urls", async () => {
   let parsed = await parseC4Contest(contest)
-  expect(parsed.result).toBeTruthy()
-  expect(parsed.result?.doc_urls).toHaveLength(8)
+  if (!parsed.ok) throw new Error("failed to parse contest")
+  else {
+    expect(parsed.value).toBeTruthy()
+    expect(parsed.value.doc_urls).toHaveLength(8)
+  }
 })
 
 it("parser relative urls", async () => {

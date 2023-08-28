@@ -1,13 +1,11 @@
 import axios from "axios"
 import log from "js-logger"
 import { findDocUrl, findTags, getMdHeading } from "../util"
-import { C4Contest, ContestModule, ContestWithModules, Status, Tag } from "../types"
-
-// @ts-ignore
-import breakdance from "breakdance"
-import { sentryError } from "../config.js"
-import { Result } from "../types-utils.js"
+import { C4Contest } from "../types"
 import Logger from "js-logger"
+import { sentryError } from "ah-shared"
+import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
+import { Result } from "ah-shared"
 
 // 50 loc = 4 hours
 // 1 loc = (3600*4)/50
@@ -26,8 +24,8 @@ export const parseC4Contests = (contests: C4Contest[], existingContests: Contest
 
     let contest = parseC4Contest(contests[i])
       .then(it => {
-        if (!it.result) sentryError(it.error, `failed to parse c4 contest ${contests[i].title}`)
-        return it.result
+        if (!it.ok) sentryError(it.error, `failed to parse c4 contest ${contests[i].title}`)
+        else return it.value
       })
       .catch(err => {
         sentryError(err, `error parsing c4 contest ${contests[i].title}`)
@@ -123,7 +121,8 @@ export const parseMd = (url: string, readme: string | undefined, repo: string, c
   if (start_date < Math.floor(Date.now() / 1000)) status = "created"
 
   return {
-    result: {
+    ok: true,
+    value: {
       pk: contest.trimmedSlug,
       sk: "0",
       url: url,
@@ -379,24 +378,6 @@ export const matchReferenceLink = (line: string, links: ReferenceLink[]) => {
 export const getTimestamp = (date: string) => {
   var someDate = new Date(date);
   return Math.floor(someDate.getTime() / 1000);
-}
-
-const getGithubLink = async (contestUrl: string): Promise<Result<string>> => {
-  let html = await axios.get(contestUrl).catch(e => {
-    console.log(`error ${e}`)
-    return undefined
-  }).then(it => it?.data)
-
-  if (!html) return { error: "Cannot parse HTML" }
-  let md: string = breakdance(html)
-
-  let afterViewRepo = md.split("[View Repo]")
-  if (afterViewRepo.length < 2) return { error: "Cannot find view repo link " }
-
-  let linkSplit = afterViewRepo[1].split(")")
-  if (afterViewRepo.length < 2) return { error: "Cannot find correct link" }
-  let link = linkSplit[0].split("(")[1]
-  return { result: link }
 }
 
 let truncateLongNames = (contests: C4Contest[]) => {

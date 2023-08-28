@@ -1,6 +1,4 @@
-import { sentryError } from "../config.js"
-import { ContestModule, ContestWithModules, Repo } from "../types"
-import { Result2 } from "../types-utils.js"
+import { sentryError, Result, ContestModule, ContestWithModules, Repo } from "ah-shared"
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
 
@@ -68,7 +66,7 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
   return jobs
 }
 
-export const parseContest = async (name: string, url: string, readme: string): Promise<Result2<ContestWithModules>> => {
+export const parseContest = async (name: string, url: string, readme: string): Promise<Result<ContestWithModules>> => {
   let split = readme.split("\n")
 
   let { startDate, endDate } = getStartEndDate(split)

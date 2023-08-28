@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals"
 import fs from "fs"
 import { getPossiblyActiveContests, parseReposJobs } from "./codehawks-parser"
-import { Repo } from "../types"
 import { workingDir } from "../util.js"
+import { Repo } from "ah-shared"
 
 beforeEach(() => {
   // Date.now() return August 23 2023

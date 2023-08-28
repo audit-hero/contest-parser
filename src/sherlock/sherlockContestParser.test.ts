@@ -1,5 +1,5 @@
+import { SherlockContest } from "../types.js"
 import { parseSherlockContest } from "./sherlockContestParser"
-import { SherlockContest } from "../types"
 
 // https://code4rena.com/contests/2023-05-juicebox-buyback-delegate
 let contest: SherlockContest = {
@@ -29,7 +29,9 @@ let contest: SherlockContest = {
 it("parses no docs contest", async () => {
   // sherlock contests seem to have no docs. only the repository
   let parsed = await parseSherlockContest(contest)
-  expect(parsed.result).toBeTruthy()
-  expect(parsed.result?.doc_urls).toHaveLength(0)
-  expect(parsed.result?.modules).toHaveLength(27)
+  expect(parsed.ok).toBeTruthy()
+  if (!parsed.ok) return
+  expect(parsed.value).toBeTruthy()
+  expect(parsed.value?.doc_urls).toHaveLength(0)
+  expect(parsed.value?.modules).toHaveLength(27)
 })

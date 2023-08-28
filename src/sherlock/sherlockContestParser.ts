@@ -1,10 +1,10 @@
 import axios from "axios"
 import Logger from "js-logger"
 import { secondsPerLoc } from "../c4/c4ContestParser.js"
-import { sentryError } from "../config.js"
-import { Result } from "../types-utils.js"
-import { SherlockContest, ContestWithModules, ContestModule, Tag, Status } from "../types.js"
-import { getRepoNameFromUrl, getMdHeading, findDocUrl, findTags } from "../util.js"
+import { sentryError, Result } from "ah-shared"
+import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
+import { getRepoNameFromUrl, getMdHeading, findDocUrl, findTags } from "../util"
+import { SherlockContest } from "../types.js"
 
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests"
 
@@ -28,10 +28,12 @@ export const parseSherlockContests = (contests: SherlockContest[], existingConte
 
     let contest = parseSherlockContest(contests[i])
       .then(it => {
-        if (!it.result) {
+        if (!it.ok) {
           sentryError(it.error, `failed to parse sherlock contest ${contests[i].title}`, "daily")
         }
-        return it.result
+        else {
+          return it.value
+        }
       }).catch(e => {
         sentryError(e, `failed to parse sherlock contest ${contests[i].title}`, "daily")
         return undefined
@@ -114,6 +116,7 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
     let now = Math.floor(Date.now() / 1000)
     if (contest.starts_at < now) {
       return {
+        ok: false,
         error: `no readme found for ${contest}`
       }
     }
@@ -180,7 +183,8 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
   if (modules.length === 0) sentryError(`no modules found for ${name}`)
 
   return {
-    result: {
+    ok: true,
+    value: {
       ...nonParsedDetails,
       auditTime: modules.map(it => it.auditTime).reduce((sum, it) => (sum ?? 0) + (it ?? 0), 0),
       loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),

@@ -1,4 +1,3 @@
-import { ALL_TAGS, Repo, Tag } from "./types"
 import Logger from "js-logger"
 
 let ignoreLinkWords = [
@@ -84,6 +83,8 @@ export const getRepoNameFromUrl = (url: string) => {
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { githubParams } from "./config.js"
+import { Tag, ALL_TAGS } from "ah-shared"
+import { Repo } from "ah-shared"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

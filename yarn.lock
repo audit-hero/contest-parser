@@ -1021,6 +1021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+ah-shared@audit-hero/ah-shared:
+  version: 0.0.0
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=6830f65cfb88ee0a244105d6e11135c7c48f52f9"
+  checksum: 6649f268b13df778bc810be36ec9d5e363e4deaa41a36436afe33869055e12762a9c6fd447666c447d0b73f2a85d526b3fecdef6ac657d9daf0f8dd4373e42e3
+  languageName: node
+  linkType: hard
+
 "ansi-escapes@npm:^4.2.1":
   version: 4.3.2
   resolution: "ansi-escapes@npm:4.3.2"
@@ -1612,6 +1619,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/js-beautify": ^1.13.3
     "@types/node": ^20.1.5
+    ah-shared: audit-hero/ah-shared
     axios: ^1.4.0
     breakdance: ^3.0.1
     esbuild: ^0.12.5
