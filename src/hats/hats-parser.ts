@@ -9,7 +9,7 @@ export const parseActiveHatsContests = async (existingContests: ContestWithModul
   return contests.filter(it => it !== undefined) as ContestWithModules[]
 }
 
-const getActiveContests = async (): Promise<Project[]> => {
+export const getActiveContests = async (): Promise<Project[]> => {
   let allProjects = await getAllProjects()
   let projectJobs = allProjects.data.vaults.map(it => {
     return getProject(it.descriptionHash, it.id)
