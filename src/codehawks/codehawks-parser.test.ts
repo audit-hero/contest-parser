@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals"
 import fs from "fs"
 import { getPossiblyActiveContests, parseReposJobs } from "./codehawks-parser"
-import { workingDir, workingDir } from "../util.js"
+import { workingDir } from "../util.js"
 import { Repo } from "ah-shared"
 
 beforeEach(() => {
