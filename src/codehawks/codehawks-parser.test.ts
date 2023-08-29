@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals"
 import fs from "fs"
 import { getPossiblyActiveContests, parseReposJobs } from "./codehawks-parser"
-import { workingDir } from "../util.js"
+import { workingDir, workingDir } from "../util.js"
 import { Repo } from "ah-shared"
 
 beforeEach(() => {
@@ -37,9 +37,10 @@ it("parses active contests", async () => {
   expect(contest.modules[2].path).toBe("src/Proxy.sol")
 })
 
-const loadRepos = () => {
-  let repos = fs.readFileSync(`${workingDir}/src/codehawks/test/codehawks-repos.json`).toString()
-  let readme = fs.readFileSync(`${workingDir}/src/codehawks/test/codehawks-2023-08-sparkn.md`).toString()
+const loadRepos = async () => {
+  let dir = await workingDir()
+  let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString()
+  let readme = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-2023-08-sparkn.md`).toString()
 
   global.fetch = jest.fn((url: any) => Promise.resolve({
     text: () => {
