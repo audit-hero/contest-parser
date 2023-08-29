@@ -69,7 +69,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { githubParams } from "./config.js";
 import { ALL_TAGS } from "ah-shared";
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(import.meta.url ?? "");
 const __dirname = path.dirname(__filename);
 export let workingDir = path.join(__dirname, "..");
 //# sourceMappingURL=util.js.map
