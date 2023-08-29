@@ -65,11 +65,13 @@ export const getRepoNameFromUrl = (url) => {
         split.pop();
     return split[split.length - 1];
 };
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { githubParams } from "./config.js";
 import { ALL_TAGS } from "ah-shared";
-const __filename = fileURLToPath(import.meta.url ?? "");
-const __dirname = path.dirname(__filename);
-export let workingDir = path.join(__dirname, "..");
+export let workingDir = async () => {
+    let path = await import("path");
+    let { fileURLToPath } = await import("url");
+    const __filename = fileURLToPath(import.meta.url ?? "");
+    const __dirname = path.dirname(__filename);
+    return path.join(__dirname, "..");
+};
 //# sourceMappingURL=util.js.map
