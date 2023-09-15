@@ -25,9 +25,10 @@ it("parser contest", async () => {
     expect(contest.repo_urls[0]).toBe("https://github.com/stakewise/v3-core");
     expect(contest.doc_urls[0]).toBe("https://docs-v3.stakewise.io");
 });
-const mockRequests = () => {
-    let repos = fs.readFileSync(`${workingDir}/src/hats/test/all-projects.json`).toString();
-    let readme = fs.readFileSync(`${workingDir}/src/hats/test/stakewise.json`).toString();
+const mockRequests = async () => {
+    let workDir = await workingDir();
+    let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString();
+    let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString();
     global.fetch = jest.fn((url) => Promise.resolve({
         ok: url.includes("QmdZ8eyN7QyTSnSQBTxbdBZsw3o3YoS9LgBAHoXeGDwLU3"),
         json: () => {

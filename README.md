@@ -1,4 +1,4 @@
-## Add to your esm project
+## Add to your existing esm project
 
 `yarn add 'contest-parser@audit-hero/contest-parser'`
 
@@ -8,8 +8,9 @@ import { getActiveC4Contests } from "contest-parser"
 let c4Contests = await getActiveC4Contests()
 ```
 
-## Build and test
+## Build and test locally
 
+- `export NODE_OPTIONS=--experimental-vm-modules`
 - `yarn && yarn test`
 
 ## Add a new contest parser
