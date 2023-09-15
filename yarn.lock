@@ -975,10 +975,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-ah-shared@audit-hero/ah-shared:
+"ah-shared@audit-hero/ah-shared#e90b1e6ca40e59c237a80f8f94bef56770285842":
   version: 0.0.0
-  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=4690ea5eddcc0f683cd31c08534985b86cd3ec9d"
-  checksum: add7e4b7975fdb7edbed2cf80de1b42db2003713e6c263133e5dde268ca04e2612e5c4ae9d71e48e7247f3f837eea315dc0bb674aba5eacd7dcd42a90aa89ba9
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=e90b1e6ca40e59c237a80f8f94bef56770285842"
+  checksum: 0d02164ccfee1e3ba3f86821d357b71fed5dac8cf27e78bc86feda54dbe75207dfdbf45224d07b7f24a42977d75ce5ceafce425b9a2809e49f93974588f66485
   languageName: node
   linkType: hard
 
@@ -1447,7 +1447,7 @@ ah-shared@audit-hero/ah-shared:
   dependencies:
     "@types/jest": ^29.5.1
     "@types/node": ^20.1.5
-    ah-shared: audit-hero/ah-shared
+    ah-shared: "audit-hero/ah-shared#e90b1e6ca40e59c237a80f8f94bef56770285842"
     axios: ^1.4.0
     esbuild: ^0.12.5
     jest: ^29.5.0
