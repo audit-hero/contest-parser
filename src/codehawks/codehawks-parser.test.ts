@@ -1,23 +1,23 @@
-import { jest } from "@jest/globals"
 import fs from "fs"
 import { getPossiblyActiveContests, parseReposJobs } from "./codehawks-parser"
 import { workingDir } from "../util.js"
 import { Repo } from "ah-shared"
+import { it, beforeEach, afterEach, expect, vi } from "vitest"
 
 beforeEach(() => {
   // Date.now() return August 23 2023
-  jest.spyOn(Date, "now").mockImplementation(() => 1692751034000)
+  vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
 })
 
 afterEach(() => {
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 })
 
 it("gets possibly active contests", () => {
   loadRepos()
 
   getPossiblyActiveContests().then(it => {
-    expect(it.length).toBe(3)
+    expect(it.length).toBe(4)
   })
 })
 
@@ -42,7 +42,7 @@ const loadRepos = async () => {
   let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString()
   let readme = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-2023-08-sparkn.md`).toString()
 
-  global.fetch = jest.fn((url: any) => Promise.resolve({
+  global.fetch = vi.fn((url: any) => Promise.resolve({
     text: () => {
       if (url.includes("/repos")) {
         return Promise.resolve(repos)

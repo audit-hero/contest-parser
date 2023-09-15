@@ -1,6 +1,8 @@
 import { C4Contest } from "../types.js";
 import { parseC4Contest } from "./c4ContestParser"
 
+import { it, expect } from "vitest"
+
 // commented tests should use the main method, not internal method
 
 /* 
