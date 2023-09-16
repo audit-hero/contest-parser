@@ -98,7 +98,7 @@ const convertUrlToRawUrl = async (repo) => async (modules) => {
         `${rawUrl}/main/contracts/`,
     ];
     const getPrefix = async (prefix) => {
-        let res = await fetch(`${prefix}${modules[0].url}`);
+        let res = await fetch(`${prefix}${modules[0].path}`);
         if (res && res.status !== 404)
             return prefix;
         return undefined;
@@ -106,7 +106,7 @@ const convertUrlToRawUrl = async (repo) => async (modules) => {
     let res = await Promise.all(prefixes.map(it => getPrefix(it)));
     let prefix = res.find(it => it !== undefined);
     if (!prefix) {
-        sentryError(`failed to find module ${modules[0].url} in ${repo}`);
+        sentryError(`failed to find module ${modules[0].path} in ${repo}`);
         E.left([]);
     }
     return E.right(modules.map(it => {

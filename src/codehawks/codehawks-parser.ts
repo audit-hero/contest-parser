@@ -3,9 +3,6 @@ import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
 import E, { Either } from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function.js"
-import TE, { TaskEither, right } from "fp-ts/lib/TaskEither.js"
-import { it } from "node:test"
-import IOE from "fp-ts/lib/IOEither.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]) => {
   let possibleActive = await getPossiblyActiveContests()
@@ -142,7 +139,7 @@ const convertUrlToRawUrl = async (repo: string) => async (modules: ContestModule
   ]
 
   const getPrefix = async (prefix: string): Promise<string | undefined> => {
-    let res = await fetch(`${prefix}${modules[0].url}`)
+    let res = await fetch(`${prefix}${modules[0].path}`)
     if (res && res.status !== 404) return prefix
     return undefined
   }
@@ -151,7 +148,7 @@ const convertUrlToRawUrl = async (repo: string) => async (modules: ContestModule
   let prefix = res.find(it => it !== undefined)
 
   if (!prefix) {
-    sentryError(`failed to find module ${modules[0].url} in ${repo}`)
+    sentryError(`failed to find module ${modules[0].path} in ${repo}`)
     E.left([] as ContestModule[])
   }
 
