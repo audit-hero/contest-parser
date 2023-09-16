@@ -1,5 +1,5 @@
 import { ContestModule, ContestWithModules, Repo } from "ah-shared";
-import { Either } from "fp-ts/Either";
+import { Either } from "fp-ts/lib/Either";
 export declare const parseActiveCodeHawksContests: (existingContests: ContestWithModules[]) => Promise<ContestWithModules[]>;
 export declare const getPossiblyActiveContests: () => Promise<Repo[]>;
 export declare const parseReposJobs: (contests: Repo[], existingContests: ContestWithModules[]) => Promise<(ContestWithModules | undefined)[]>;

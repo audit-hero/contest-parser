@@ -1,7 +1,7 @@
 import { sentryError, ContestModule, ContestWithModules, Repo } from "ah-shared"
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
-import E, { Either } from "fp-ts/Either"
+import E, { Either } from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function.js"
 import TE, { TaskEither, right } from "fp-ts/lib/TaskEither.js"
 import { it } from "node:test"

@@ -2,7 +2,7 @@ import fs from "fs";
 import { getPossiblyActiveContests, parseContest, parseReposJobs } from "./codehawks-parser";
 import { workingDir } from "../util.js";
 import { it, beforeEach, afterEach, expect, vi } from "vitest";
-import * as E from "fp-ts/Either";
+import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function.js";
 beforeEach(() => {
 });

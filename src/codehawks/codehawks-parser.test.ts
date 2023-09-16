@@ -3,7 +3,7 @@ import { getPossiblyActiveContests, parseContest, parseReposJobs } from "./codeh
 import { workingDir } from "../util.js"
 import { Repo } from "ah-shared"
 import { it, beforeEach, afterEach, expect, vi } from "vitest"
-import * as E from "fp-ts/Either"
+import * as E from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function.js"
 
 beforeEach(() => {

@@ -1,7 +1,7 @@
 import { sentryError } from "ah-shared";
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util";
 import Logger from "js-logger";
-import E from "fp-ts/Either";
+import E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function.js";
 export const parseActiveCodeHawksContests = async (existingContests) => {
     let possibleActive = await getPossiblyActiveContests();
