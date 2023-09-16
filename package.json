@@ -42,6 +42,7 @@
   "dependencies": {
     "ah-shared": "audit-hero/ah-shared#e90b1e6ca40e59c237a80f8f94bef56770285842",
     "axios": "^1.4.0",
+    "fp-ts": "^2.16.1",
     "js-logger": "^1.6.1"
   }
 }

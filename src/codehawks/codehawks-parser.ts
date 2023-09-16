@@ -1,6 +1,8 @@
-import { sentryError, Result, ContestModule, ContestWithModules, Repo } from "ah-shared"
+import { sentryError, ContestModule, ContestWithModules, Repo } from "ah-shared"
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
+import E, { Either } from "fp-ts/Either"
+import { pipe } from "fp-ts/lib/function.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]) => {
   let possibleActive = await getPossiblyActiveContests()
@@ -47,60 +49,70 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
         continue
       }
 
-      let contest = await parseContest(name, contests[i].html_url, readme)
-        .then(it => {
-          if (!it.ok) {
-            sentryError(it.error, `failed to parse sherlock contest ${contests[i].name}`, "daily")
+      let res = pipe(
+        await parseContest(name, contests[i].html_url, readme),
+        E.fold(
+          (e: string) => {
+            sentryError(e, `failed to parse sherlock contest ${contests[i].name}`, "daily")
             return undefined
-          }
-          return it.value
-        }).catch(e => {
-          sentryError(e, `failed to parse sherlock contest ${contests[i].name}`, "daily")
-          return undefined
-        })
+          },
+          (c: ContestWithModules) => c
+        )
+      )
 
-      jobs.push(contest)
+      jobs.push(res)
     }
   }
 
   return jobs
 }
 
-export const parseContest = async (name: string, url: string, readme: string): Promise<Result<ContestWithModules>> => {
-  let split = readme.split("\n")
+export const parseContest =
+  (name: string, url: string, readme: string): Promise<Either<string, ContestWithModules>> => {
+    let split = readme.split("\n")
 
-  let { startDate, endDate } = getStartEndDate(split)
+    let { startDate, endDate } = getStartEndDate(split)
 
-  let dateError = getDatesError(startDate, endDate, name)
-  if (dateError) return { ok: false, error: dateError.error }
+    let dateError = getDatesError(startDate, endDate, name)
+    if (dateError) return Promise.resolve(E.left(dateError.error))
 
-  let hmAwards = getHmAwards(split, name)
+    let hmAwards = getHmAwards(split, name)
 
-  let { inScopeParagraph, beforeScopeParagraph } = getBeforeScopeAndInScopeParagraph(split)
+    let { inScopeParagraph, beforeScopeParagraph } = getBeforeScopeAndInScopeParagraph(split)
 
-  let docUrls = findDocUrls(beforeScopeParagraph)
-  let modules = getModules(inScopeParagraph, name)
-  let tags = findTags(split)
+    let docUrls = findDocUrls(beforeScopeParagraph)
 
-  let result: ContestWithModules = {
-    pk: name,
-    sk: "0",
-    url: `https://www.codehawks.com/contests`,
-    start_date: startDate,
-    end_date: endDate,
-    platform: "codehawks",
-    active: 1, // end_date > now
-    status: "active",
-    prize: `${hmAwards}$`,
-    loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
-    modules: modules,
-    doc_urls: docUrls,
-    repo_urls: [url],
-    tags: tags
+    let modules = pipe(
+      getModulesV1(inScopeParagraph, name),
+      E.orElse(() => getModulesV2(inScopeParagraph, name, url)),
+      E.getOrElseW((e: string) => {
+        sentryError(`failed to parse modules for ${name}:\n${e}`)
+        return [] as ContestModule[]
+      })
+    )
+
+    let tags = findTags(split)
+
+    let result: ContestWithModules = {
+      pk: name,
+      sk: "0",
+      url: `https://www.codehawks.com/contests`,
+      start_date: startDate,
+      end_date: endDate,
+      platform: "codehawks",
+      active: 1, // end_date > now
+      status: "active",
+      prize: `${hmAwards}$`,
+      loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
+      modules: modules,
+      doc_urls: docUrls,
+      repo_urls: [url],
+      tags: tags
+    }
+
+    return Promise.resolve(E.right(result))
   }
 
-  return { ok: true, value: result }
-}
 
 const getHmAwards = (readme: string[], name: string) => {
   /**
@@ -139,7 +151,7 @@ const getDatesError = (startDate: number, endDate: number, name: string) => {
   }
 }
 
-const getModules = (inScopeParagraph: string[], contest: string) => {
+const getModulesV1 = (inScopeParagraph: string[], contest: string): Either<string, ContestModule[]> => {
   /**
    -   src/
     -   ProxyFactory.sol
@@ -155,8 +167,7 @@ const getModules = (inScopeParagraph: string[], contest: string) => {
 
   for (let line of inScopeParagraph) {
     if (line.toLowerCase().includes("all") && line.toLowerCase().includes("in") && line.toLowerCase().includes("src")) {
-      Logger.info("!! all sol files in src are in scope")
-      sentryError(`All modules in src are in scope for ${contest}`)
+      Logger.info("v1: !! all sol files in src are in scope")
       break
     }
 
@@ -166,9 +177,9 @@ const getModules = (inScopeParagraph: string[], contest: string) => {
     if (module) modules.push(module)
   }
 
-  if (modules.length === 0) sentryError(`no modules found for ${contest}`)
+  if (modules.length === 0) return E.left(`no modules found for ${contest}`)
 
-  return modules
+  return E.right(modules)
 }
 
 const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string) => {
@@ -198,6 +209,46 @@ const findModuleFromUl = (line: string, lines: string[], currentDir: string, rep
   }
 
   return { module, currentDir }
+}
+
+export const getModulesV2 = (inScopeParagraph: string[], contest: string, repo: string): Either<string, ContestModule[]> => {
+  /**
+    - [ ] libraries/AppStorage.sol
+    - [ ] libraries/DataTypes.sol (struct packing for storage types)
+    - [ ] facets/AskOrdersFacet.sol
+   */
+
+  let modules = [] as ContestModule[]
+
+  for (let i = 0; i < inScopeParagraph.length; ++i) {
+    let line = inScopeParagraph[i]
+
+    let module = getModuleFromFullPathLine(line, contest, repo)
+    if (module) modules.push(module)
+  }
+
+  if (modules.length === 0) return E.left(`no modules found for ${contest}`)
+
+  return E.right(modules)
+}
+
+export const getModuleFromFullPathLine = (line: string, contest: string, repo: string) => {
+  if (!line.includes(".sol")) return undefined
+
+  let words = line.split(" ")
+  let path = words.find(it => it.includes(".sol"))?.trim()
+
+  if (!path) return undefined
+
+  let module: ContestModule = {
+    name: path.split("/").pop()!!,
+    path: path,
+    url: `${repo}/${path}`,
+    contest: contest,
+    active: 1,
+  }
+
+  return module
 }
 
 const getBeforeScopeAndInScopeParagraph = (readme: string[]) => {
