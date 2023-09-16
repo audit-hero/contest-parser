@@ -3,6 +3,9 @@ import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
 import E, { Either } from "fp-ts/Either"
 import { pipe } from "fp-ts/lib/function.js"
+import TE, { TaskEither, right } from "fp-ts/lib/TaskEither.js"
+import { it } from "node:test"
+import IOE from "fp-ts/lib/IOEither.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]) => {
   let possibleActive = await getPossiblyActiveContests()
@@ -68,7 +71,7 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
 }
 
 export const parseContest =
-  (name: string, url: string, readme: string): Promise<Either<string, ContestWithModules>> => {
+  async (name: string, url: string, readme: string): Promise<Either<string, ContestWithModules>> => {
     let split = readme.split("\n")
 
     let { startDate, endDate } = getStartEndDate(split)
@@ -82,9 +85,18 @@ export const parseContest =
 
     let docUrls = findDocUrls(beforeScopeParagraph)
 
-    let modules = pipe(
+    let modulesRes = await pipe(
       getModulesV1(inScopeParagraph, name),
       E.orElse(() => getModulesV2(inScopeParagraph, name, url)),
+      E.getOrElseW((e: string) => {
+        sentryError(`failed to parse modules for ${name}:\n${e}`)
+        return [] as ContestModule[]
+      }),
+      await convertUrlToRawUrl(url),
+    )
+
+    let modules = pipe(
+      modulesRes,
       E.getOrElseW((e: string) => {
         sentryError(`failed to parse modules for ${name}:\n${e}`)
         return [] as ContestModule[]
@@ -113,6 +125,43 @@ export const parseContest =
     return Promise.resolve(E.right(result))
   }
 
+const convertUrlToRawUrl = async (repo: string) => async (modules: ContestModule[]): Promise<Either<string, ContestModule[]>> => {
+  // add src/contracts prefix to the url if it doesn't exist. if still can't find the module, then
+  if (modules.length === 0 || !modules[0].url) return E.right([] as ContestModule[])
+
+  let originalUrlVerify = await fetch(modules[0].url!)
+  if (originalUrlVerify && originalUrlVerify.status !== 404) return E.right(modules)
+
+  let rawUrl = repo.replace("github.com", "raw.githubusercontent.com")
+
+  let prefixes = [
+    `${rawUrl}/main/`,
+    `${rawUrl}/main/src/`,
+    `${rawUrl}/main/src/contracts/`,
+    `${rawUrl}/main/contracts/`,
+  ]
+
+  const getPrefix = async (prefix: string): Promise<string | undefined> => {
+    let res = await fetch(`${prefix}${modules[0].url}`)
+    if (res && res.status !== 404) return prefix
+    return undefined
+  }
+
+  let res = await Promise.all(prefixes.map(it => getPrefix(it)))
+  let prefix = res.find(it => it !== undefined)
+
+  if (!prefix) {
+    sentryError(`failed to find module ${modules[0].url} in ${repo}`)
+    E.left([] as ContestModule[])
+  }
+
+  return E.right(modules.map(it => {
+    return {
+      ...it,
+      url: `${prefix}${it.path}`
+    }
+  }))
+}
 
 const getHmAwards = (readme: string[], name: string) => {
   /**
