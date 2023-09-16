@@ -1,14 +1,14 @@
-import { jest } from "@jest/globals";
+import { it, beforeEach, afterEach, expect, vi } from "vitest";
 import fs from "fs";
 import { getActiveContests, parseContests } from "./hats-parser";
 import { workingDir } from "../util";
 beforeEach(() => {
     // Date.now() return August 23 2023
     mockRequests();
-    jest.spyOn(Date, "now").mockImplementation(() => 1692751034000);
+    vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
 });
 afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 });
 it("gets active contests", async () => {
     let contests = await getActiveContests();
@@ -29,7 +29,7 @@ const mockRequests = async () => {
     let workDir = await workingDir();
     let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString();
     let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString();
-    global.fetch = jest.fn((url) => Promise.resolve({
+    global.fetch = vi.fn((url) => Promise.resolve({
         ok: url.includes("QmdZ8eyN7QyTSnSQBTxbdBZsw3o3YoS9LgBAHoXeGDwLU3"),
         json: () => {
             if (url.includes("https://api.thegraph.com/subgraphs")) {

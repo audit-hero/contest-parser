@@ -1,6 +1,8 @@
 import { sentryError } from "ah-shared";
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util";
 import Logger from "js-logger";
+import E from "fp-ts/Either";
+import { pipe } from "fp-ts/lib/function.js";
 export const parseActiveCodeHawksContests = async (existingContests) => {
     let possibleActive = await getPossiblyActiveContests();
     let active = await parseReposJobs(possibleActive, existingContests);
@@ -36,18 +38,11 @@ export const parseReposJobs = async (contests, existingContests) => {
                 Logger.info(`no readme found for ${name}`);
                 continue;
             }
-            let contest = await parseContest(name, contests[i].html_url, readme)
-                .then(it => {
-                if (!it.ok) {
-                    sentryError(it.error, `failed to parse sherlock contest ${contests[i].name}`, "daily");
-                    return undefined;
-                }
-                return it.value;
-            }).catch(e => {
+            let res = pipe(await parseContest(name, contests[i].html_url, readme), E.fold((e) => {
                 sentryError(e, `failed to parse sherlock contest ${contests[i].name}`, "daily");
                 return undefined;
-            });
-            jobs.push(contest);
+            }, (c) => c));
+            jobs.push(res);
         }
     }
     return jobs;
@@ -57,11 +52,18 @@ export const parseContest = async (name, url, readme) => {
     let { startDate, endDate } = getStartEndDate(split);
     let dateError = getDatesError(startDate, endDate, name);
     if (dateError)
-        return { ok: false, error: dateError.error };
+        return Promise.resolve(E.left(dateError.error));
     let hmAwards = getHmAwards(split, name);
     let { inScopeParagraph, beforeScopeParagraph } = getBeforeScopeAndInScopeParagraph(split);
     let docUrls = findDocUrls(beforeScopeParagraph);
-    let modules = getModules(inScopeParagraph, name);
+    let modulesRes = await pipe(getModulesV1(inScopeParagraph, name), E.orElse(() => getModulesV2(inScopeParagraph, name, url)), E.getOrElseW((e) => {
+        sentryError(`failed to parse modules for ${name}:\n${e}`);
+        return [];
+    }), await convertUrlToRawUrl(url));
+    let modules = pipe(modulesRes, E.getOrElseW((e) => {
+        sentryError(`failed to parse modules for ${name}:\n${e}`);
+        return [];
+    }));
     let tags = findTags(split);
     let result = {
         pk: name,
@@ -79,7 +81,40 @@ export const parseContest = async (name, url, readme) => {
         repo_urls: [url],
         tags: tags
     };
-    return { ok: true, value: result };
+    return Promise.resolve(E.right(result));
+};
+const convertUrlToRawUrl = async (repo) => async (modules) => {
+    // add src/contracts prefix to the url if it doesn't exist. if still can't find the module, then
+    if (modules.length === 0 || !modules[0].url)
+        return E.right([]);
+    let originalUrlVerify = await fetch(modules[0].url);
+    if (originalUrlVerify && originalUrlVerify.status !== 404)
+        return E.right(modules);
+    let rawUrl = repo.replace("github.com", "raw.githubusercontent.com");
+    let prefixes = [
+        `${rawUrl}/main/`,
+        `${rawUrl}/main/src/`,
+        `${rawUrl}/main/src/contracts/`,
+        `${rawUrl}/main/contracts/`,
+    ];
+    const getPrefix = async (prefix) => {
+        let res = await fetch(`${prefix}${modules[0].url}`);
+        if (res && res.status !== 404)
+            return prefix;
+        return undefined;
+    };
+    let res = await Promise.all(prefixes.map(it => getPrefix(it)));
+    let prefix = res.find(it => it !== undefined);
+    if (!prefix) {
+        sentryError(`failed to find module ${modules[0].url} in ${repo}`);
+        E.left([]);
+    }
+    return E.right(modules.map(it => {
+        return {
+            ...it,
+            url: `${prefix}${it.path}`
+        };
+    }));
 };
 const getHmAwards = (readme, name) => {
     /**
@@ -114,7 +149,7 @@ const getDatesError = (startDate, endDate, name) => {
         };
     }
 };
-const getModules = (inScopeParagraph, contest) => {
+const getModulesV1 = (inScopeParagraph, contest) => {
     /**
      -   src/
       -   ProxyFactory.sol
@@ -127,8 +162,7 @@ const getModules = (inScopeParagraph, contest) => {
     let currentFolder = "";
     for (let line of inScopeParagraph) {
         if (line.toLowerCase().includes("all") && line.toLowerCase().includes("in") && line.toLowerCase().includes("src")) {
-            Logger.info("!! all sol files in src are in scope");
-            sentryError(`All modules in src are in scope for ${contest}`);
+            Logger.info("v1: !! all sol files in src are in scope");
             break;
         }
         let { module, currentDir } = findModuleFromUl(line, inScopeParagraph, currentFolder, contest);
@@ -137,8 +171,8 @@ const getModules = (inScopeParagraph, contest) => {
             modules.push(module);
     }
     if (modules.length === 0)
-        sentryError(`no modules found for ${contest}`);
-    return modules;
+        return E.left(`no modules found for ${contest}`);
+    return E.right(modules);
 };
 const findModuleFromUl = (line, lines, currentDir, repo) => {
     let module = undefined;
@@ -163,6 +197,39 @@ const findModuleFromUl = (line, lines, currentDir, repo) => {
         console.log(`failed to parse line ${line}`);
     }
     return { module, currentDir };
+};
+export const getModulesV2 = (inScopeParagraph, contest, repo) => {
+    /**
+      - [ ] libraries/AppStorage.sol
+      - [ ] libraries/DataTypes.sol (struct packing for storage types)
+      - [ ] facets/AskOrdersFacet.sol
+     */
+    let modules = [];
+    for (let i = 0; i < inScopeParagraph.length; ++i) {
+        let line = inScopeParagraph[i];
+        let module = getModuleFromFullPathLine(line, contest, repo);
+        if (module)
+            modules.push(module);
+    }
+    if (modules.length === 0)
+        return E.left(`no modules found for ${contest}`);
+    return E.right(modules);
+};
+export const getModuleFromFullPathLine = (line, contest, repo) => {
+    if (!line.includes(".sol"))
+        return undefined;
+    let words = line.split(" ");
+    let path = words.find(it => it.includes(".sol"))?.trim();
+    if (!path)
+        return undefined;
+    let module = {
+        name: path.split("/").pop(),
+        path: path,
+        url: `${repo}/${path}`,
+        contest: contest,
+        active: 1,
+    };
+    return module;
 };
 const getBeforeScopeAndInScopeParagraph = (readme) => {
     let inScopeParagraph = [];

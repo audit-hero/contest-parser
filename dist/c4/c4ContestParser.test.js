@@ -1,4 +1,5 @@
 import { parseC4Contest } from "./c4ContestParser";
+import { it, expect } from "vitest";
 // commented tests should use the main method, not internal method
 /*
 import fs from "fs"

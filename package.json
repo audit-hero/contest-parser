@@ -8,27 +8,6 @@
     "test": "vitest --watch false",
     "build": "tsc"
   },
-  "jest": {
-    "preset": "ts-jest/presets/default-esm",
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "moduleNameMapper": {
-      "^(\\.\\.?\\/.+)\\.jsx?$": "$1",
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    },
-    "transform": {
-      "^.+\\.[tj]sx?$": [
-        "ts-jest",
-        {
-          "useESM": true
-        }
-      ]
-    },
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist/"
-    ]
-  },
   "engines": {
     "node": ">=10.12"
   },

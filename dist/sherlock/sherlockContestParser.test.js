@@ -1,4 +1,5 @@
 import { parseSherlockContest } from "./sherlockContestParser";
+import { it, expect } from "vitest";
 // https://code4rena.com/contests/2023-05-juicebox-buyback-delegate
 let contest = {
     "calc_completed": false,
