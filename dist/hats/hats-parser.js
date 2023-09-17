@@ -51,7 +51,7 @@ let hatsNameToContestName = (project) => {
     if (parseInt(month) < 10)
         month = `0${month}`;
     let year = new Date(starttime * 1000).getFullYear();
-    let name = `${year}-${month}-${project.name.toLowerCase()}`;
+    let name = `${year}-${month}-${project.name.toLowerCase().replaceAll(" ", "-").replaceAll("--", "-").replaceAll("--", "-")}`;
     return name;
 };
 export const parseContests = async (contests, existingContests) => {
