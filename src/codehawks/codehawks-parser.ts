@@ -1,7 +1,9 @@
 import { sentryError, ContestModule, ContestWithModules, Repo } from "ah-shared"
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util"
 import Logger from "js-logger"
-import E, { Either } from "fp-ts/lib/Either"
+import E from "fp-ts/lib/Either"
+import T from "fp-ts/lib/Task"
+import TE from "fp-ts/lib/TaskEither"
 import { pipe } from "fp-ts/lib/function.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]) => {
@@ -68,7 +70,7 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
 }
 
 export const parseContest =
-  async (name: string, url: string, readme: string): Promise<Either<string, ContestWithModules>> => {
+  async (name: string, url: string, readme: string): Promise<E.Either<string, ContestWithModules>> => {
     let split = readme.split("\n")
 
     let { startDate, endDate } = getStartEndDate(split)
@@ -82,23 +84,25 @@ export const parseContest =
 
     let docUrls = findDocUrls(beforeScopeParagraph)
 
-    let modulesRes = await pipe(
+    let modules = await pipe(
       getModulesV1(inScopeParagraph, name),
+      // E.Either<string, ContestModule[]>
       E.orElse(() => getModulesV2(inScopeParagraph, name, url)),
-      E.getOrElseW((e: string) => {
-        sentryError(`failed to parse modules for ${name}:\n${e}`)
-        return [] as ContestModule[]
-      }),
-      await convertUrlToRawUrl(url),
-    )
-
-    let modules = pipe(
-      modulesRes,
-      E.getOrElseW((e: string) => {
-        sentryError(`failed to parse modules for ${name}:\n${e}`)
-        return [] as ContestModule[]
-      })
-    )
+      // TE.TaskEither<string, ContestModule[]>
+      TE.fromEither,
+      // verify module urls
+      TE.mapLeft(it => ({ modules: [], error: it })),
+      // now have Modules with possibly wrong urls. try and verify urls from readme
+      TE.chain(verifyUrls),
+      //if there is an error with verifying urls, then try to map the correct prefix
+      TE.orElse((e) => tryMapCorrectPrefix(url, e.modules)),
+      TE.getOrElse(
+        (e) => {
+          sentryError(e, `failed to parse ${name} modules`, "daily")
+          return T.of([] as ContestModule[])
+        },
+      )
+    )()
 
     let tags = findTags(split)
 
@@ -122,12 +126,38 @@ export const parseContest =
     return Promise.resolve(E.right(result))
   }
 
-const convertUrlToRawUrl = async (repo: string) => async (modules: ContestModule[]): Promise<Either<string, ContestModule[]>> => {
-  // add src/contracts prefix to the url if it doesn't exist. if still can't find the module, then
-  if (modules.length === 0 || !modules[0].url) return E.right([] as ContestModule[])
+let verifyUrls = (modules: ContestModule[]): TE.TaskEither<{ modules: ContestModule[], error: string }, ContestModule[]> => {
+  const left = (error: string) => TE.left({
+    modules: modules,
+    error: error
+  })
 
-  let originalUrlVerify = await fetch(modules[0].url!)
-  if (originalUrlVerify && originalUrlVerify.status !== 404) return E.right(modules)
+  if (modules.length === 0 || !modules[0].url) return left("no modules found")
+
+  return pipe(
+    () => fetch(modules[0].url!),
+    TE.fromTask,
+    TE.chain(
+      (it) => {
+        if (it.status === 404) return left("wrong url")
+        return TE.right(modules)
+      }
+    ),
+  )
+}
+
+const mapPrefix = (prefix: string) => (modules: ContestModule[]): ContestModule[] => {
+  return modules.map(it => {
+    return {
+      ...it,
+      url: `${prefix}${it.path}`
+    }
+  })
+}
+
+const tryMapCorrectPrefix = (repo: string, modules: ContestModule[]): TE.TaskEither<string, ContestModule[]> => {
+  // add src/contracts prefix to the url if it doesn't exist. if still can't find the module, then
+  if (modules.length === 0 || !modules[0].url) return TE.left(`no modules found for ${repo}`)
 
   let rawUrl = repo.replace("github.com", "raw.githubusercontent.com")
 
@@ -138,26 +168,26 @@ const convertUrlToRawUrl = async (repo: string) => async (modules: ContestModule
     `${rawUrl}/main/contracts/`,
   ]
 
-  const getPrefix = async (prefix: string): Promise<string | undefined> => {
+  const isPrefixValid = async (prefix: string): Promise<string | undefined> => {
     let res = await fetch(`${prefix}${modules[0].path}`)
     if (res && res.status !== 404) return prefix
     return undefined
   }
 
-  let res = await Promise.all(prefixes.map(it => getPrefix(it)))
-  let prefix = res.find(it => it !== undefined)
+  let jobs = () => Promise.all(prefixes.map(it => isPrefixValid(it)))
 
-  if (!prefix) {
-    sentryError(`failed to find module ${modules[0].path} in ${repo}`)
-    E.left([] as ContestModule[])
-  }
+  let res = pipe(
+    jobs,
+    T.map(it => it.find(it => it !== undefined)),
+    TE.fromTask,
+    TE.chain(it => {
+      if (it) return TE.right(it)
+      return TE.left("no valid prefix found")
+    }),
+    TE.map(it => mapPrefix(it)(modules))
+  )
 
-  return E.right(modules.map(it => {
-    return {
-      ...it,
-      url: `${prefix}${it.path}`
-    }
-  }))
+  return res
 }
 
 const getHmAwards = (readme: string[], name: string) => {
@@ -197,7 +227,7 @@ const getDatesError = (startDate: number, endDate: number, name: string) => {
   }
 }
 
-const getModulesV1 = (inScopeParagraph: string[], contest: string): Either<string, ContestModule[]> => {
+const getModulesV1 = (inScopeParagraph: string[], contest: string): E.Either<string, ContestModule[]> => {
   /**
    -   src/
     -   ProxyFactory.sol
@@ -257,7 +287,7 @@ const findModuleFromUl = (line: string, lines: string[], currentDir: string, rep
   return { module, currentDir }
 }
 
-export const getModulesV2 = (inScopeParagraph: string[], contest: string, repo: string): Either<string, ContestModule[]> => {
+export const getModulesV2 = (inScopeParagraph: string[], contest: string, repo: string): E.Either<string, ContestModule[]> => {
   /**
     - [ ] libraries/AppStorage.sol
     - [ ] libraries/DataTypes.sol (struct packing for storage types)

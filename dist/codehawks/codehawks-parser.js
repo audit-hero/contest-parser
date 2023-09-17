@@ -2,6 +2,8 @@ import { sentryError } from "ah-shared";
 import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util";
 import Logger from "js-logger";
 import E from "fp-ts/lib/Either";
+import T from "fp-ts/lib/Task";
+import TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function.js";
 export const parseActiveCodeHawksContests = async (existingContests) => {
     let possibleActive = await getPossiblyActiveContests();
@@ -56,14 +58,20 @@ export const parseContest = async (name, url, readme) => {
     let hmAwards = getHmAwards(split, name);
     let { inScopeParagraph, beforeScopeParagraph } = getBeforeScopeAndInScopeParagraph(split);
     let docUrls = findDocUrls(beforeScopeParagraph);
-    let modulesRes = await pipe(getModulesV1(inScopeParagraph, name), E.orElse(() => getModulesV2(inScopeParagraph, name, url)), E.getOrElseW((e) => {
-        sentryError(`failed to parse modules for ${name}:\n${e}`);
-        return [];
-    }), await convertUrlToRawUrl(url));
-    let modules = pipe(modulesRes, E.getOrElseW((e) => {
-        sentryError(`failed to parse modules for ${name}:\n${e}`);
-        return [];
-    }));
+    let modules = await pipe(getModulesV1(inScopeParagraph, name), 
+    // E.Either<string, ContestModule[]>
+    E.orElse(() => getModulesV2(inScopeParagraph, name, url)), 
+    // TE.TaskEither<string, ContestModule[]>
+    TE.fromEither, 
+    // verify module urls
+    TE.mapLeft(it => ({ modules: [], error: it })), 
+    // now have Modules with possibly wrong urls. try and verify urls from readme
+    TE.chain(verifyUrls), 
+    //if there is an error with verifying urls, then try to map the correct prefix
+    TE.orElse((e) => tryMapCorrectPrefix(url, e.modules)), TE.getOrElse((e) => {
+        sentryError(e, `failed to parse ${name} modules`, "daily");
+        return T.of([]);
+    }))();
     let tags = findTags(split);
     let result = {
         pk: name,
@@ -83,13 +91,31 @@ export const parseContest = async (name, url, readme) => {
     };
     return Promise.resolve(E.right(result));
 };
-const convertUrlToRawUrl = async (repo) => async (modules) => {
+let verifyUrls = (modules) => {
+    const left = (error) => TE.left({
+        modules: modules,
+        error: error
+    });
+    if (modules.length === 0 || !modules[0].url)
+        return left("no modules found");
+    return pipe(() => fetch(modules[0].url), TE.fromTask, TE.chain((it) => {
+        if (it.status === 404)
+            return left("wrong url");
+        return TE.right(modules);
+    }));
+};
+const mapPrefix = (prefix) => (modules) => {
+    return modules.map(it => {
+        return {
+            ...it,
+            url: `${prefix}${it.path}`
+        };
+    });
+};
+const tryMapCorrectPrefix = (repo, modules) => {
     // add src/contracts prefix to the url if it doesn't exist. if still can't find the module, then
     if (modules.length === 0 || !modules[0].url)
-        return E.right([]);
-    let originalUrlVerify = await fetch(modules[0].url);
-    if (originalUrlVerify && originalUrlVerify.status !== 404)
-        return E.right(modules);
+        return TE.left(`no modules found for ${repo}`);
     let rawUrl = repo.replace("github.com", "raw.githubusercontent.com");
     let prefixes = [
         `${rawUrl}/main/`,
@@ -97,24 +123,19 @@ const convertUrlToRawUrl = async (repo) => async (modules) => {
         `${rawUrl}/main/src/contracts/`,
         `${rawUrl}/main/contracts/`,
     ];
-    const getPrefix = async (prefix) => {
+    const isPrefixValid = async (prefix) => {
         let res = await fetch(`${prefix}${modules[0].path}`);
         if (res && res.status !== 404)
             return prefix;
         return undefined;
     };
-    let res = await Promise.all(prefixes.map(it => getPrefix(it)));
-    let prefix = res.find(it => it !== undefined);
-    if (!prefix) {
-        sentryError(`failed to find module ${modules[0].path} in ${repo}`);
-        E.left([]);
-    }
-    return E.right(modules.map(it => {
-        return {
-            ...it,
-            url: `${prefix}${it.path}`
-        };
-    }));
+    let jobs = () => Promise.all(prefixes.map(it => isPrefixValid(it)));
+    let res = pipe(jobs, T.map(it => it.find(it => it !== undefined)), TE.fromTask, TE.chain(it => {
+        if (it)
+            return TE.right(it);
+        return TE.left("no valid prefix found");
+    }), TE.map(it => mapPrefix(it)(modules)));
+    return res;
 };
 const getHmAwards = (readme, name) => {
     /**
