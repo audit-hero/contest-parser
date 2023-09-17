@@ -2,6 +2,7 @@ import { findTags } from "../util"
 import Logger from "js-logger"
 import { Project, Projects } from "./types"
 import { Result, sentryError, ContestWithModules } from "ah-shared"
+import { getModules } from "./hats-parser.modules.js"
 
 export const parseActiveHatsContests = async (existingContests: ContestWithModules[]) => {
   let active = await getActiveContests()
@@ -106,7 +107,7 @@ const parseContest = async (contest: Project, name: string): Promise<Result<Cont
   let docUrls = [] as string[]
   if (contest.scope.docsLink) docUrls.push(contest.scope.docsLink)
 
-  let modules = getModules(contest, name)
+  let modules = await getModules(contest, name)
   let tags = findTags(contest["project-metadata"].oneLiner.split("\n"))
 
   let url = `https://app.hats.finance/audit-competitions/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`
@@ -142,10 +143,6 @@ export const getDatesError = (startDate: number, endDate: number, name: string) 
       error: `contest ${name} hasn't started yet`
     }
   }
-}
-
-export const getModules = (contest: Project, name: string) => {
-  return []
 }
 
 function getStartEndDate(contest: Project): { startDate: any; endDate: any } {

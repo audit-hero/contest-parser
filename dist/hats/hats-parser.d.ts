@@ -6,4 +6,3 @@ export declare const parseContests: (contests: Project[], existingContests: Cont
 export declare const getDatesError: (startDate: number, endDate: number, name: string) => {
     error: string;
 } | undefined;
-export declare const getModules: (contest: Project, name: string) => never[];

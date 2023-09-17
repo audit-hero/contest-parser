@@ -84,12 +84,7 @@ import { githubParams } from "./config.js"
 import { Tag, ALL_TAGS } from "ah-shared"
 import { Repo } from "ah-shared"
 
-export let workingDir = async () => {
-  let path = await import("path");
-  let { fileURLToPath } = await import("url");
-
-  const __filename = fileURLToPath(import.meta.url ?? "");
-  const __dirname = path.dirname(__filename);
-
-  return path.join(__dirname, "..")
+export let workingDir = () => {
+  let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`
+  return workingDir
 }

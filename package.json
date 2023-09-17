@@ -19,9 +19,11 @@
     "vitest": "^0.34.4"
   },
   "dependencies": {
-    "ah-shared": "audit-hero/ah-shared#e90b1e6ca40e59c237a80f8f94bef56770285842",
+    "ah-shared": "audit-hero/ah-shared#e08b2d248fed4fbd3870dc1449e469c104b1e55c",
     "axios": "^1.4.0",
     "fp-ts": "^2.16.1",
-    "js-logger": "^1.6.1"
+    "glob": "^10.3.4",
+    "js-logger": "^1.6.1",
+    "simple-git": "^3.19.1"
   }
 }

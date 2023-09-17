@@ -4,4 +4,4 @@ export declare const findTags: (lines: string[]) => string[];
 export declare const getAllRepos: (org: string) => Promise<Repo[]>;
 export declare const getRepoNameFromUrl: (url: string) => string;
 import { Repo } from "ah-shared";
-export declare let workingDir: () => Promise<string>;
+export declare let workingDir: () => string;
