@@ -1,7 +1,9 @@
 import Logger from "js-logger"
 
 let ignoreLinkWords = [
-  "report"
+  "report",
+  "twitter",
+  "discord"
 ] as string[]
 
 let searchDocsInHeadings = [

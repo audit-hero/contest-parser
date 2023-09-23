@@ -47,6 +47,7 @@ it.only("parses ditto modules", async () => {
     });
     let dir = await workingDir();
     let dittoReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-09-ditto.md`).toString();
+    await parseContest("2023-09-ditto", "https://github.com/Cyfrin/2023-09-ditto", dittoReadme);
     let res = pipe(await parseContest("2023-09-ditto", "https://github.com/Cyfrin/2023-09-ditto", dittoReadme), E.getOrElseW((e) => {
         console.log(e);
         throw new Error(e);
