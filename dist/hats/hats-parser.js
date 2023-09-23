@@ -93,6 +93,7 @@ const parseContest = async (contest, name) => {
     let result = {
         pk: name,
         sk: "0",
+        readme: JSON.stringify(contest["project-metadata"]),
         url: url,
         start_date: startDate,
         end_date: endDate,

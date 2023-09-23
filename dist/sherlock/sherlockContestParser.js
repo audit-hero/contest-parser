@@ -159,6 +159,7 @@ export const parseSherlockContest = async (contest) => {
         ok: true,
         value: {
             ...nonParsedDetails,
+            readme: String(readme),
             auditTime: modules.map(it => it.auditTime).reduce((sum, it) => (sum ?? 0) + (it ?? 0), 0),
             loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
             modules: modules,

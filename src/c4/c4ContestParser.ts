@@ -126,6 +126,7 @@ const parseMd = (url: string, readme: string | undefined, repo: string, contest:
       pk: contest.trimmedSlug,
       sk: "0",
       url: url,
+      readme: readme ?? "",
       start_date: start_date,
       end_date: end_date,
       platform: "c4",

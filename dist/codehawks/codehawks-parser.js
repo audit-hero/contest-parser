@@ -76,6 +76,7 @@ export const parseContest = async (name, url, readme) => {
     let result = {
         pk: name,
         sk: "0",
+        readme: readme,
         url: `https://www.codehawks.com/contests`,
         start_date: startDate,
         end_date: endDate,

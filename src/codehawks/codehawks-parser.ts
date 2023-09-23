@@ -109,6 +109,7 @@ export const parseContest =
     let result: ContestWithModules = {
       pk: name,
       sk: "0",
+      readme: readme,
       url: `https://www.codehawks.com/contests`,
       start_date: startDate,
       end_date: endDate,

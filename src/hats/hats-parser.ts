@@ -115,6 +115,7 @@ const parseContest = async (contest: Project, name: string): Promise<Result<Cont
   let result: ContestWithModules = {
     pk: name,
     sk: "0",
+    readme: JSON.stringify(contest["project-metadata"]),
     url: url,
     start_date: startDate,
     end_date: endDate,
