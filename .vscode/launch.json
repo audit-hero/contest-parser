@@ -16,7 +16,7 @@
       ]
     },
     {
-      "name": "Jest",
+      "name": "vitest",
       "request": "launch",
       "type": "node",
       "console": "integratedTerminal",
@@ -25,10 +25,11 @@
       "runtimeArgs": [
         // yarn vitest  --no-threads --inspect-brk codehawks-parser
         "vitest",
-        "--watch",
-        "false",
+        "run",
+        // "--watch",
+        // "false",
         "--no-threads",
-        "codehawks-parser"
+        "c4ContestParser"
       ]
     }
   ]

@@ -6,20 +6,33 @@ let ignoreLinkWords = [
   "discord"
 ] as string[]
 
-let searchDocsInHeadings = [
+let docHeadings = [
   "about", "overview"
 ]
 
-export const getMdHeading = (line: string) => {
+export const getMdHeading = (line: string, headings: string[]) => {
   let pattern = /^(#{1,6})\s+(.+)$/g
   let match = pattern.exec(line)
+
   if (match?.length ?? 0 > 0) {
-    return match![0]
+    let newHeading = match![0]
+    let headingLevel = newHeading.match(/#/g)!.length
+    let existingHeading = headings.findIndex(it => it.match(/#/g)!.length === headingLevel)
+    if (existingHeading > -1) {
+      // replace the heading and all of headings below it
+      headings.splice(existingHeading)
+      headings.push(newHeading)
+    }
+    else headings.push(newHeading)
+
+    return newHeading
   }
 }
 
-export const findDocUrl = (line: string, readmeHeading: string) => {
-  if (!searchDocsInHeadings.some(it => readmeHeading.toLowerCase().includes(it))) return []
+export const findDocUrl = (line: string, headings: string[]) => {
+  if (!docHeadings.some(docHeadings =>
+    headings.some(heading => heading.toLowerCase().includes(docHeadings)))
+  ) return []
 
   const pattern = /\bhttps?:\/\/\S+\b/g
 

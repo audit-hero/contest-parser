@@ -1,7 +1,8 @@
+import { afterEach } from "node:test";
 import { C4Contest } from "../types.js";
 import { parseC4Contest } from "./c4ContestParser"
-
-import { it, expect } from "vitest"
+import { it, expect, vi, afterAll } from "vitest"
+import axios from "axios"
 
 // commented tests should use the main method, not internal method
 
@@ -44,6 +45,10 @@ let contest: C4Contest = {
   "slug": "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
 } as any
 
+afterEach(() => {
+  vi.clearAllMocks()
+})
+
 it("parses urls", async () => {
   let parsed = await parseC4Contest(contest)
   if (!parsed.ok) throw new Error("failed to parse contest")
@@ -51,6 +56,32 @@ it("parses urls", async () => {
     expect(parsed.value).toBeTruthy()
     expect(parsed.value.doc_urls).toHaveLength(8)
   }
+})
+
+it.only("parses docs", async () => {
+  let mocks = await vi.hoisted(async () => {
+    let fs = await import("fs")
+    let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`
+    return {
+      md: fs.readFileSync(`${workingDir}/c4/test/2023-09-maia.md`).toString()
+    }
+  })
+
+  vi.mock("axios", async (imp) => {
+    const actual = await imp() as any
+
+    return {
+      default: {
+        get: async (url: string) => {
+          return {
+            data: mocks.md
+          }
+        }
+      }
+    }
+  })
+
+  let parsed = await parseC4Contest(contest)
 })
 /* 
 it("parser relative urls", async () => {

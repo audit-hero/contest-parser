@@ -178,14 +178,15 @@ const findModules = (repo: string, lines: string[], moduleFindWay: number): {
   let docUrls = [] as string[]
   let modules = [] as ContestModule[]
   let referenceLinks = getLinkReferences(lines)
+  let headings = [] as string[]
 
   // modules
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i]
-    let newHeading = getMdHeading(line)
+    let newHeading = getMdHeading(line, headings)
     if (newHeading) heading = newHeading
 
-    let newDocs = findDocUrl(line, heading)
+    let newDocs = findDocUrl(line, headings)
     if (newDocs.length > 0) docUrls = docUrls.concat(newDocs)
 
     if (!inScopeHeading) {
