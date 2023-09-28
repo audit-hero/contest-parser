@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "vitest --watch false",
+    "test": "vitest run",
     "build": "tsc"
   },
   "engines": {
