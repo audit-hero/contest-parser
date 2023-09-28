@@ -276,12 +276,10 @@ const getBeforeScopeAndInScopeParagraph = (readme) => {
 };
 const findDocUrls = (beforeScopeLines) => {
     let docUrls = [];
-    let heading = "";
+    let headings = [];
     for (let line of beforeScopeLines) {
-        let newHeading = getMdHeading(line);
-        if (newHeading)
-            heading = newHeading;
-        let newDocs = findDocUrl(line, heading);
+        getMdHeading(line, headings);
+        let newDocs = findDocUrl(line, headings);
         if (newDocs.length > 0)
             docUrls = docUrls.concat(newDocs);
     }

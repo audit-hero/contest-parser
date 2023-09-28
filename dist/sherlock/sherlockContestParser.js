@@ -123,14 +123,12 @@ export const parseSherlockContest = async (contest) => {
         let lines = readme.split("\n");
         const findModules = () => {
             let afterInScope = false;
-            let heading = "";
+            let headings = [];
             // modules
             for (let line of lines) {
-                let newHeading = getMdHeading(line);
-                if (newHeading)
-                    heading = newHeading;
+                getMdHeading(line, headings);
                 if (!afterInScope) {
-                    let newDocs = findDocUrl(line, heading);
+                    let newDocs = findDocUrl(line, headings);
                     if (newDocs.length > 0)
                         docUrls = docUrls.concat(newDocs);
                     if (line.toLowerCase().includes("scope") &&

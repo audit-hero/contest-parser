@@ -142,7 +142,6 @@ const getHmAwards = (contest, lines) => {
 };
 const findModules = (repo, lines, moduleFindWay) => {
     let inScopeHeading = false;
-    let heading = "";
     let docUrls = [];
     let modules = [];
     let referenceLinks = getLinkReferences(lines);
@@ -150,9 +149,7 @@ const findModules = (repo, lines, moduleFindWay) => {
     // modules
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
-        let newHeading = getMdHeading(line, headings);
-        if (newHeading)
-            heading = newHeading;
+        getMdHeading(line, headings);
         let newDocs = findDocUrl(line, headings);
         if (newDocs.length > 0)
             docUrls = docUrls.concat(newDocs);
