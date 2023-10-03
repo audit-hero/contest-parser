@@ -423,10 +423,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ah-shared@audit-hero/ah-shared#11648a1c158d9aa8954ce73e1eab7bdbfd6da7f5":
+"ah-shared@audit-hero/ah-shared#d5c9d8558c6a276c64452fe29484373d661c2c0c":
   version: 0.0.0
-  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=11648a1c158d9aa8954ce73e1eab7bdbfd6da7f5"
-  checksum: 126f3ee92a62162d3cd8178b41ba27cb7e572f22d09d0584d7b60f5f0cc6e86fbc97295810e9f8d9675695365412aaa920ca1472a802e4ca9cb66e55c0855cdb
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=d5c9d8558c6a276c64452fe29484373d661c2c0c"
+  checksum: f00f4f4c8d69bd70744b4d92c0a68cb6accdb049b0345ae6a2cc0e9ae1074564db380f229bc05d6a011b18543d5cc6a7d56d786ab4dff9e16a3e92b51dffae23
   languageName: node
   linkType: hard
 
@@ -658,7 +658,7 @@ __metadata:
   resolution: "contest-parser@workspace:."
   dependencies:
     "@types/node": ^20.1.5
-    ah-shared: "audit-hero/ah-shared#11648a1c158d9aa8954ce73e1eab7bdbfd6da7f5"
+    ah-shared: "audit-hero/ah-shared#d5c9d8558c6a276c64452fe29484373d661c2c0c"
     axios: ^1.4.0
     esbuild: ^0.12.5
     fp-ts: ^2.16.1

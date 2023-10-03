@@ -19,7 +19,7 @@
     "vitest": "^0.34.4"
   },
   "dependencies": {
-    "ah-shared": "audit-hero/ah-shared#11648a1c158d9aa8954ce73e1eab7bdbfd6da7f5",
+    "ah-shared": "audit-hero/ah-shared#d5c9d8558c6a276c64452fe29484373d661c2c0c",
     "axios": "^1.4.0",
     "fp-ts": "^2.16.1",
     "glob": "^10.3.4",
