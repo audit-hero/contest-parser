@@ -13,10 +13,9 @@ export const getModules = async (contest: Project, name: string): Promise<Contes
   if (!repoInfo) return []
 
   // if in lambda
-
   let dir = process.env.LAMBDA_TASK_ROOT ? "/tmp" : `${workingDir()}/tmp/`
-
-  if (!fs.existsSync(dir)) {
+  
+  if (!fs.existsSync(dir) && true) {
     await git().clone(repoInfo.url, dir, ["--depth", "1"])
   } else {
     Logger.info(`repo already cloned in ${dir}`)
