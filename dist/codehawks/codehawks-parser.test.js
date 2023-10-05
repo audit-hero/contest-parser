@@ -62,7 +62,6 @@ const mockRepos = async () => {
     vi.stubGlobal("fetch", async (url, params) => Promise.resolve({
         text: () => {
             if (url.includes("/repos")) {
-                console.log(`resolve repos ${repos.length}`);
                 return Promise.resolve(repos);
             }
             else if (url.includes("/README.md")) {
