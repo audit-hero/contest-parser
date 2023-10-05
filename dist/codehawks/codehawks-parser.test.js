@@ -16,7 +16,7 @@ it("gets possibly active contests", () => {
         expect(it.length).toBe(4);
     });
 });
-it.only("parses active contests", async () => {
+it("parses active contests", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
     let repos = await getPossiblyActiveContests();
     let parseJob = parseReposJobs(repos, []);

@@ -24,7 +24,7 @@ it("gets possibly active contests", () => {
   })
 })
 
-it.only("parses active contests", async () => {
+it("parses active contests", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
 
   let repos = await getPossiblyActiveContests()
