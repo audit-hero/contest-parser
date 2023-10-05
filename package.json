@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "yarn vitest run",
+    "test": "yarn vitest run --single-thread",
     "build": "tsc"
   },
   "engines": {
