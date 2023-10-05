@@ -10,12 +10,11 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  vi.resetAllMocks()
+  vi.unstubAllGlobals()
 })
 
 it("gets possibly active contests", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
-
   mockRepos()
 
   await getPossiblyActiveContests().then(it => {
@@ -25,6 +24,7 @@ it("gets possibly active contests", async () => {
 
 it("parses active contests", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
+  mockRepos()
 
   let repos = await getPossiblyActiveContests()
 

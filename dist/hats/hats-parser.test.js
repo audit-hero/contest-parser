@@ -1,12 +1,9 @@
-import { it, beforeEach, afterEach, expect, vi } from "vitest";
+import { it, afterEach, expect, vi } from "vitest";
 import fs from "fs";
 import { getActiveContests, parseContests } from "./hats-parser";
 import { workingDir } from "../util";
-beforeEach(() => {
-    vi.resetAllMocks();
-});
 afterEach(() => {
-    vi.resetAllMocks();
+    vi.unstubAllGlobals();
 });
 it("gets active contests", async () => {
     mockRequests();

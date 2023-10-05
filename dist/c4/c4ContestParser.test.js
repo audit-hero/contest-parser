@@ -42,7 +42,7 @@ let contest = {
 afterEach(() => {
 });
 beforeEach(() => {
-    vi.resetAllMocks();
+    vi.unstubAllGlobals();
 });
 it("parses urls", async () => {
     let parsed = await parseC4Contest(contest);

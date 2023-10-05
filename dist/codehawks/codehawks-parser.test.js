@@ -7,7 +7,7 @@ import { pipe } from "fp-ts/lib/function.js";
 beforeEach(() => {
 });
 afterEach(() => {
-    vi.resetAllMocks();
+    vi.unstubAllGlobals();
 });
 it("gets possibly active contests", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
@@ -18,6 +18,7 @@ it("gets possibly active contests", async () => {
 });
 it("parses active contests", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
+    mockRepos();
     let repos = await getPossiblyActiveContests();
     let parseJob = parseReposJobs(repos, []);
     let contests = await parseJob;

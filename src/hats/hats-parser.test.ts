@@ -5,12 +5,8 @@ import { getActiveContests, parseContests } from "./hats-parser"
 import { workingDir } from "../util"
 import { ContestWithModules } from "ah-shared"
 
-beforeEach(() => {
-  vi.resetAllMocks()
-})
-
 afterEach(() => {
-  vi.resetAllMocks()
+  vi.unstubAllGlobals()
 })
 
 it("gets active contests", async () => {
