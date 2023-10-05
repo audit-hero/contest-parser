@@ -16,7 +16,7 @@ it("gets possibly active contests", () => {
         expect(it.length).toBe(4);
     });
 });
-it("parses active contests", async () => {
+it.only("parses active contests", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
     let repos = await getPossiblyActiveContests();
     let parseJob = parseReposJobs(repos, []);
@@ -30,7 +30,7 @@ it("parses active contests", async () => {
     expect(contest.modules[1].path).toBe("src/Distributor.sol");
     expect(contest.modules[2].path).toBe("src/Proxy.sol");
 });
-it.only("parses ditto modules", async () => {
+it("parses ditto modules", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1694827901000);
     global.fetch = vi.fn().mockImplementation((url) => {
         if (!url.includes("raw.githubusercontent.com") &&

@@ -24,7 +24,7 @@ it("gets possibly active contests", () => {
   })
 })
 
-it("parses active contests", async () => {
+it.only("parses active contests", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
 
   let repos = await getPossiblyActiveContests()
@@ -42,7 +42,7 @@ it("parses active contests", async () => {
   expect(contest.modules[2].path).toBe("src/Proxy.sol")
 })
 
-it.only("parses ditto modules", async () => {
+it("parses ditto modules", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1694827901000)
 
   global.fetch = vi.fn().mockImplementation((url: string) => {

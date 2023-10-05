@@ -58,7 +58,7 @@ export const parseContest = async (name, url, readme) => {
     let hmAwards = getHmAwards(split, name);
     let { inScopeParagraph, beforeScopeParagraph } = getBeforeScopeAndInScopeParagraph(split);
     let docUrls = findDocUrls(beforeScopeParagraph);
-    let modules = await pipe(getModulesV1(inScopeParagraph, name), 
+    let modules = await pipe(getModulesV1(inScopeParagraph, name, url), 
     // E.Either<string, ContestModule[]>
     E.orElse(() => getModulesV2(inScopeParagraph, name, url)), 
     // TE.TaskEither<string, ContestModule[]>
@@ -171,7 +171,7 @@ const getDatesError = (startDate, endDate, name) => {
         };
     }
 };
-const getModulesV1 = (inScopeParagraph, contest) => {
+const getModulesV1 = (inScopeParagraph, contest, repoUrl) => {
     /**
      -   src/
       -   ProxyFactory.sol
@@ -187,7 +187,7 @@ const getModulesV1 = (inScopeParagraph, contest) => {
             Logger.info("v1: !! all sol files in src are in scope");
             break;
         }
-        let { module, currentDir } = findModuleFromUl(line, inScopeParagraph, currentFolder, contest);
+        let { module, currentDir } = findModuleFromUl(line, inScopeParagraph, currentFolder, contest, repoUrl);
         currentFolder = currentDir;
         if (module)
             modules.push(module);
@@ -196,7 +196,7 @@ const getModulesV1 = (inScopeParagraph, contest) => {
         return E.left(`no modules found for ${contest}`);
     return E.right(modules);
 };
-const findModuleFromUl = (line, lines, currentDir, repo) => {
+const findModuleFromUl = (line, lines, currentDir, repo, repoUrl) => {
     let module = undefined;
     try {
         let isRootDir = line.startsWith("- ");
@@ -209,7 +209,7 @@ const findModuleFromUl = (line, lines, currentDir, repo) => {
             module = {
                 name: name,
                 path: path,
-                url: "",
+                url: `${repoUrl}/${path}`,
                 contest: repo,
                 active: 1,
             };

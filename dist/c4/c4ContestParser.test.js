@@ -51,7 +51,7 @@ it("parses urls", async () => {
         expect(parsed.value.doc_urls).toHaveLength(8);
     }
 });
-it.only("parses docs", async () => {
+it("parses docs", async () => {
     let mocks = await vi.hoisted(async () => {
         let fs = await import("fs");
         let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`;

@@ -85,7 +85,7 @@ export const parseContest =
     let docUrls = findDocUrls(beforeScopeParagraph)
 
     let modules = await pipe(
-      getModulesV1(inScopeParagraph, name),
+      getModulesV1(inScopeParagraph, name, url),
       // E.Either<string, ContestModule[]>
       E.orElse(() => getModulesV2(inScopeParagraph, name, url)),
       // TE.TaskEither<string, ContestModule[]>
@@ -228,7 +228,7 @@ const getDatesError = (startDate: number, endDate: number, name: string) => {
   }
 }
 
-const getModulesV1 = (inScopeParagraph: string[], contest: string): E.Either<string, ContestModule[]> => {
+const getModulesV1 = (inScopeParagraph: string[], contest: string, repoUrl:string): E.Either<string, ContestModule[]> => {
   /**
    -   src/
     -   ProxyFactory.sol
@@ -248,7 +248,7 @@ const getModulesV1 = (inScopeParagraph: string[], contest: string): E.Either<str
       break
     }
 
-    let { module, currentDir } = findModuleFromUl(line, inScopeParagraph, currentFolder, contest)
+    let { module, currentDir } = findModuleFromUl(line, inScopeParagraph, currentFolder, contest, repoUrl)
     currentFolder = currentDir
 
     if (module) modules.push(module)
@@ -259,7 +259,7 @@ const getModulesV1 = (inScopeParagraph: string[], contest: string): E.Either<str
   return E.right(modules)
 }
 
-const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string) => {
+const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string, repoUrl:string) => {
   let module: ContestModule | undefined = undefined
 
   try {
@@ -272,11 +272,12 @@ const findModuleFromUl = (line: string, lines: string[], currentDir: string, rep
     if (isModule) {
       let name = line.replace("- ", "").trim()
       let path = `${currentDir}/${name}`.replace("//", "/")
+       
 
       module = {
         name: name!!,
         path: path,
-        url: "",
+        url: `${repoUrl}/${path}`,
         contest: repo,
         active: 1,
       }
