@@ -7,6 +7,15 @@ let ignoreLinkWords = [
 let docHeadings = [
     "about", "overview"
 ];
+export const getContestStatus = (dates) => {
+    let now = Date.now() / 1000;
+    if (now < dates.startDate)
+        return "created";
+    else if (now > dates.endDate)
+        return "finished";
+    else
+        return "active";
+};
 export const getMdHeading = (line, headings) => {
     let pattern = /^(#{1,6})\s+(.+)$/g;
     let match = pattern.exec(line);

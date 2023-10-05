@@ -1,4 +1,4 @@
-import { findTags } from "../util";
+import { findTags, getContestStatus } from "../util";
 import Logger from "js-logger";
 import { sentryError } from "ah-shared";
 import { getModules } from "./hats-parser.modules.js";
@@ -13,19 +13,21 @@ export const getActiveContests = async () => {
         return getProject(it.descriptionHash, it.id);
     });
     let rawProjects = await Promise.all(projectJobs);
-    let activeProjects = filterProjectActive(rawProjects);
+    let activeProjects = filterProjectActiveOrInFuture(rawProjects);
     return activeProjects;
 };
-const filterProjectActive = (projets) => {
+const filterProjectActiveOrInFuture = (projets) => {
     return projets.filter(it => {
         if (it === undefined || it["project-metadata"] === undefined)
             return false;
         let startTime = it["project-metadata"].starttime;
         let endTime = it["project-metadata"].endtime;
         let type = it["project-metadata"].type;
+        let privateContest = (it["project-metadata"].whitelist ?? []).length > 0;
         let active = startTime < Date.now() / 1000 && endTime > Date.now() / 1000;
+        let inFuture = startTime > Date.now() / 1000;
         let isAudit = type === "audit";
-        return active && isAudit;
+        return (active || inFuture) && isAudit && !privateContest;
     });
 };
 const getProject = async (descriptionHash, id) => {
@@ -81,15 +83,22 @@ export const parseContests = async (contests, existingContests) => {
 const parseContest = async (contest, name) => {
     let { startDate, endDate } = getStartEndDate(contest);
     let dateError = getDatesError(startDate, endDate, name);
+    let inFuture = startDate > Date.now() / 1000;
     if (dateError)
         return { ok: false, error: dateError.error };
     let hmAwards = contest["project-metadata"].intendedCompetitionAmount.replace("$", "").replace(",", "").replace(".", "");
     let docUrls = [];
-    if (contest.scope.docsLink)
-        docUrls.push(contest.scope.docsLink);
-    let modules = await getModules(contest, name);
+    let modules = [];
+    if (!inFuture) {
+        if (contest.scope.docsLink)
+            docUrls.push(contest.scope.docsLink);
+        modules = await getModules(contest, name);
+    }
     let tags = findTags(contest["project-metadata"].oneLiner.split("\n"));
-    let url = `https://app.hats.finance/audit-competitions/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`;
+    let baseUrl = "https://app.hats.finance/audit-competitions";
+    let url = `${baseUrl}/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`;
+    if (url.includes(" "))
+        url = url = baseUrl;
     let result = {
         pk: name,
         sk: "0",
@@ -99,7 +108,7 @@ const parseContest = async (contest, name) => {
         end_date: endDate,
         platform: "hats",
         active: 1,
-        status: "active",
+        status: getContestStatus({ startDate, endDate }),
         prize: hmAwards,
         modules: modules,
         doc_urls: docUrls,
@@ -114,11 +123,11 @@ export const getDatesError = (startDate, endDate, name) => {
             error: `contest ${name} has already ended`
         };
     }
-    if (startDate > Date.now() / 1000) {
-        return {
-            error: `contest ${name} hasn't started yet`
-        };
-    }
+    /* if (startDate > Date.now() / 1000) {
+      return {
+        error: `contest ${name} hasn't started yet`
+      }
+    } */
 };
 function getStartEndDate(contest) {
     let startTime = contest["project-metadata"].starttime;

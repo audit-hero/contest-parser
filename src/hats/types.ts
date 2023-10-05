@@ -121,6 +121,7 @@ export interface ProjectMetadata {
   intendedCompetitionAmount: string;
   starttime:                 number;
   endtime:                   number;
+  whitelist?:                 { address:string }[];
 }
 
 export interface Scope {

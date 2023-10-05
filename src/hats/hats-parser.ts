@@ -1,7 +1,7 @@
-import { findTags } from "../util"
+import { findTags, getContestStatus } from "../util"
 import Logger from "js-logger"
 import { Project, Projects } from "./types"
-import { Result, sentryError, ContestWithModules } from "ah-shared"
+import { Result, sentryError, ContestWithModules, ContestModule } from "ah-shared"
 import { getModules } from "./hats-parser.modules.js"
 
 export const parseActiveHatsContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
@@ -17,11 +17,11 @@ export const getActiveContests = async (): Promise<Project[]> => {
   })
 
   let rawProjects = await Promise.all(projectJobs)
-  let activeProjects = filterProjectActive(rawProjects)
+  let activeProjects = filterProjectActiveOrInFuture(rawProjects)
   return activeProjects
 }
 
-const filterProjectActive = (projets: Project[]) => {
+const filterProjectActiveOrInFuture = (projets: Project[]) => {
   return projets.filter(it => {
     if (it === undefined || it["project-metadata"] === undefined) return false
 
@@ -29,10 +29,13 @@ const filterProjectActive = (projets: Project[]) => {
     let endTime = it["project-metadata"].endtime
     let type = it["project-metadata"].type
 
+    let privateContest = (it["project-metadata"].whitelist ?? []).length > 0
+
     let active = startTime < Date.now() / 1000 && endTime > Date.now() / 1000
+    let inFuture = startTime > Date.now() / 1000
     let isAudit = type === "audit"
 
-    return active && isAudit
+    return (active || inFuture) && isAudit && !privateContest
   })
 }
 
@@ -100,17 +103,23 @@ export const parseContests = async (contests: Project[], existingContests: Conte
 const parseContest = async (contest: Project, name: string): Promise<Result<ContestWithModules>> => {
   let { startDate, endDate } = getStartEndDate(contest)
   let dateError = getDatesError(startDate, endDate, name)
+  let inFuture = startDate > Date.now() / 1000
   if (dateError) return { ok: false, error: dateError.error }
 
   let hmAwards = contest["project-metadata"].intendedCompetitionAmount.replace("$", "").replace(",", "").replace(".", "")
 
   let docUrls = [] as string[]
-  if (contest.scope.docsLink) docUrls.push(contest.scope.docsLink)
+  let modules = [] as ContestModule[]
+  if (!inFuture) {
+    if (contest.scope.docsLink) docUrls.push(contest.scope.docsLink)
+    modules = await getModules(contest, name)
+  }
 
-  let modules = await getModules(contest, name)
   let tags = findTags(contest["project-metadata"].oneLiner.split("\n"))
 
-  let url = `https://app.hats.finance/audit-competitions/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`
+  let baseUrl = "https://app.hats.finance/audit-competitions"
+  let url = `${baseUrl}/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`
+  if (url.includes(" ")) url = url = baseUrl
 
   let result: ContestWithModules = {
     pk: name,
@@ -121,7 +130,7 @@ const parseContest = async (contest: Project, name: string): Promise<Result<Cont
     end_date: endDate,
     platform: "hats",
     active: 1, // end_date > now
-    status: "active",
+    status: getContestStatus({ startDate, endDate }),
     prize: hmAwards,
     modules: modules,
     doc_urls: docUrls,
@@ -139,14 +148,14 @@ export const getDatesError = (startDate: number, endDate: number, name: string) 
     }
   }
 
-  if (startDate > Date.now() / 1000) {
+  /* if (startDate > Date.now() / 1000) {
     return {
       error: `contest ${name} hasn't started yet`
     }
-  }
+  } */
 }
 
-function getStartEndDate(contest: Project): { startDate: any; endDate: any } {
+function getStartEndDate(contest: Project): { startDate: number; endDate: number } {
   let startTime = contest["project-metadata"].starttime
   let endTime = contest["project-metadata"].endtime
 

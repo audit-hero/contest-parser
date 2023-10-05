@@ -10,6 +10,14 @@ let docHeadings = [
   "about", "overview"
 ]
 
+
+export const getContestStatus = (dates: { startDate: number, endDate: number }): Status => {
+  let now = Date.now() / 1000
+  if (now < dates.startDate) return "created"
+  else if (now > dates.endDate) return "finished"
+  else return "active"
+}
+
 export const getMdHeading = (line: string, headings: string[]) => {
   let pattern = /^(#{1,6})\s+(.+)$/g
   let match = pattern.exec(line)
@@ -96,7 +104,7 @@ export const getRepoNameFromUrl = (url: string) => {
 }
 
 import { githubParams } from "./config.js"
-import { Tag, ALL_TAGS } from "ah-shared"
+import { Tag, ALL_TAGS, Status } from "ah-shared"
 import { Repo } from "ah-shared"
 
 export let workingDir = () => {
