@@ -21,7 +21,7 @@ it("gets active contests", async () => {
   expect(contests.length).toBe(1)
 })
 
-it.only("parser contest", async () => {
+it("parser contest", async () => {
   mockRequests()
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
   
