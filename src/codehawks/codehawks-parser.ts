@@ -6,7 +6,7 @@ import T from "fp-ts/lib/Task"
 import TE from "fp-ts/lib/TaskEither"
 import { pipe } from "fp-ts/lib/function.js"
 
-export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]) => {
+export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
   let active = await parseReposJobs(possibleActive, existingContests)
   return active.filter(it => it !== undefined) as ContestWithModules[]

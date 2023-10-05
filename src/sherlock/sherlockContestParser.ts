@@ -8,7 +8,7 @@ import { SherlockContest } from "../types.js"
 
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests"
 
-export const parseActiveSherlockContests = async (existingContests: ContestWithModules[]) => {
+export const parseActiveSherlockContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let active = await getActiveSherlockContests()
   let res = await Promise.all(parseSherlockContests(active, existingContests))
   return res.filter(it => it !== undefined) as ContestWithModules[]

@@ -4,7 +4,7 @@ import { Project, Projects } from "./types"
 import { Result, sentryError, ContestWithModules } from "ah-shared"
 import { getModules } from "./hats-parser.modules.js"
 
-export const parseActiveHatsContests = async (existingContests: ContestWithModules[]) => {
+export const parseActiveHatsContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let active = await getActiveContests()
   let contests = await parseContests(active, existingContests)
   return contests.filter(it => it !== undefined) as ContestWithModules[]
