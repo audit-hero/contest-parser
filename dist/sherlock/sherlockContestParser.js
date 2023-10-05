@@ -4,6 +4,11 @@ import { secondsPerLoc } from "../c4/c4ContestParser.js";
 import { sentryError } from "ah-shared";
 import { getRepoNameFromUrl, getMdHeading, findDocUrl, findTags } from "../util";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
+export const parseActiveSherlockContests = async (existingContests) => {
+    let active = await getActiveSherlockContests();
+    let res = await Promise.all(parseSherlockContests(active, existingContests));
+    return res.filter(it => it !== undefined);
+};
 export const parseSherlockContests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
@@ -36,16 +41,20 @@ export const parseSherlockContests = (contests, existingContests) => {
     return jobs;
 };
 export const getActiveSherlockContests = async () => {
-    let contests = await axios.get(sherlockContestsUrl).then(it => {
-        return it.data;
-    }).catch(e => {
-        console.log(`error ${e}`);
-        sentryError(e, "failed to fetch sherlock contests");
-        return [];
-    });
-    if (!contests)
-        return [];
-    return contests.filter(it => it.status !== "FINISHED");
+    // get 2 pages
+    let builder = [];
+    for (let i = 0; i < 2; ++i) {
+        let url = `${sherlockContestsUrl}?page=${i + 1}`;
+        let contests = await axios.get(url).then(it => {
+            return it.data.items;
+        }).catch(e => {
+            console.log(`error ${e}`);
+            sentryError(e, "failed to fetch sherlock contests");
+            return [];
+        });
+        builder = builder.concat(contests);
+    }
+    return builder.filter(it => it.status !== "FINISHED");
 };
 const getReadmeFromGithub = async (contest) => {
     let baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/main`;
@@ -102,7 +111,8 @@ export const parseSherlockContest = async (contest) => {
         }
         else {
             return {
-                result: {
+                ok: true,
+                value: {
                     ...nonParsedDetails,
                     modules: [],
                     tags: []

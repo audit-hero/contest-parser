@@ -8,6 +8,12 @@ import { SherlockContest } from "../types.js"
 
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests"
 
+export const parseActiveSherlockContests = async (existingContests: ContestWithModules[]) => {
+  let active = await getActiveSherlockContests()
+  let res = await Promise.all(parseSherlockContests(active, existingContests))
+  return res.filter(it => it !== undefined) as ContestWithModules[]
+}
+
 export const parseSherlockContests = (contests: SherlockContest[], existingContests: ContestWithModules[]) => {
   let jobs = [] as Promise<ContestWithModules | undefined>[]
 
@@ -46,16 +52,23 @@ export const parseSherlockContests = (contests: SherlockContest[], existingConte
 }
 
 export const getActiveSherlockContests = async (): Promise<SherlockContest[]> => {
-  let contests: SherlockContest[] = await axios.get(sherlockContestsUrl).then(it => {
-    return it.data as SherlockContest[]
-  }).catch(e => {
-    console.log(`error ${e}`)
-    sentryError(e, "failed to fetch sherlock contests")
-    return []
-  })
+  // get 2 pages
+  let builder: SherlockContest[] = []
 
-  if (!contests) return []
-  return contests.filter(it => it.status !== "FINISHED")
+  for (let i = 0; i < 2; ++i) {
+    let url = `${sherlockContestsUrl}?page=${i + 1}`
+    let contests: SherlockContest[] = await axios.get(url).then(it => {
+      return it.data.items as SherlockContest[]
+    }).catch(e => {
+      console.log(`error ${e}`)
+      sentryError(e, "failed to fetch sherlock contests")
+      return []
+    })
+
+    builder = builder.concat(contests)
+  }
+
+  return builder.filter(it => it.status !== "FINISHED")
 }
 
 const getReadmeFromGithub = async (contest: string) => {
@@ -122,7 +135,8 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
     }
     else {
       return {
-        result: {
+        ok: true,
+        value: {
           ...nonParsedDetails,
           modules: [],
           tags: []

@@ -11,6 +11,12 @@ import { Result } from "ah-shared"
 // 1 loc = (3600*4)/50
 export let secondsPerLoc = (3600 * 4) / 200
 
+export const parseActiveC4Contests = async (existingContests: ContestWithModules[]) => {
+  let active = await getActiveC4Contests()
+  let res = await Promise.all(parseC4Contests(active, existingContests))
+  return res.filter(it => it !== undefined)
+}
+
 export const parseC4Contests = (contests: C4Contest[], existingContests: ContestWithModules[]) => {
   let jobs = [] as Promise<ContestWithModules | undefined>[]
 

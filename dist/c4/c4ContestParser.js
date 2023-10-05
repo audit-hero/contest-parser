@@ -6,6 +6,11 @@ import { sentryError } from "ah-shared";
 // 50 loc = 4 hours
 // 1 loc = (3600*4)/50
 export let secondsPerLoc = (3600 * 4) / 200;
+export const parseActiveC4Contests = async (existingContests) => {
+    let active = await getActiveC4Contests();
+    let res = await Promise.all(parseC4Contests(active, existingContests));
+    return res.filter(it => it !== undefined);
+};
 export const parseC4Contests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
