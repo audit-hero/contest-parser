@@ -29,7 +29,7 @@ const mockRequests = async () => {
     let workDir = await workingDir();
     let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString();
     let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString();
-    global.fetch = vi.fn((url) => Promise.resolve({
+    vi.stubGlobal("fetch", async (url) => Promise.resolve({
         ok: url.includes("QmdZ8eyN7QyTSnSQBTxbdBZsw3o3YoS9LgBAHoXeGDwLU3"),
         json: () => {
             if (url.includes("https://api.thegraph.com/subgraphs")) {

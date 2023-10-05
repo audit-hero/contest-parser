@@ -1,4 +1,4 @@
-import { afterEach } from "node:test";
+import { afterEach, beforeEach } from "node:test";
 import { parseC4Contest } from "./c4ContestParser";
 import { it, expect, vi } from "vitest";
 // commented tests should use the main method, not internal method
@@ -40,6 +40,8 @@ let contest = {
     "slug": "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
 };
 afterEach(() => {
+});
+beforeEach(() => {
     vi.clearAllMocks();
 });
 it("parses urls", async () => {

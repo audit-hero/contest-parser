@@ -7,7 +7,7 @@ import * as E from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function.js"
 
 beforeEach(() => {
-
+  
 })
 
 afterEach(() => {
@@ -45,7 +45,8 @@ it("parses active contests", async () => {
 it("parses ditto modules", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1694827901000)
 
-  global.fetch = vi.fn().mockImplementation((url: string) => {
+
+  vi.stubGlobal("fetch", async (url: string) => {
     if (!url.includes("raw.githubusercontent.com") &&
       !url.includes("/main/contracts/")) {
       return Promise.resolve({
@@ -81,7 +82,7 @@ const loadRepos = async () => {
   let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString()
   let sparknReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-08-sparkn.md`).toString()
 
-  global.fetch = vi.fn((url: any) => Promise.resolve({
+  vi.stubGlobal("fetch", async (url: string) => Promise.resolve({
     text: () => {
       if (url.includes("/repos")) {
         return Promise.resolve(repos)
@@ -95,7 +96,7 @@ const loadRepos = async () => {
         return Promise.resolve("")
       }
     }
-  } as any))
+  }))
 
   return JSON.parse(repos) as Repo[]
 }

@@ -32,7 +32,7 @@ it("parses active contests", async () => {
 });
 it("parses ditto modules", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1694827901000);
-    global.fetch = vi.fn().mockImplementation((url) => {
+    vi.stubGlobal("fetch", async (url) => {
         if (!url.includes("raw.githubusercontent.com") &&
             !url.includes("/main/contracts/")) {
             return Promise.resolve({
@@ -59,7 +59,7 @@ const loadRepos = async () => {
     let dir = await workingDir();
     let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString();
     let sparknReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-08-sparkn.md`).toString();
-    global.fetch = vi.fn((url) => Promise.resolve({
+    vi.stubGlobal("fetch", async (url) => Promise.resolve({
         text: () => {
             if (url.includes("/repos")) {
                 return Promise.resolve(repos);

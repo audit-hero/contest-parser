@@ -1,4 +1,4 @@
-import { afterEach } from "node:test";
+import { afterEach, beforeEach } from "node:test";
 import { C4Contest } from "../types.js";
 import { parseC4Contest } from "./c4ContestParser"
 import { it, expect, vi, afterAll } from "vitest"
@@ -46,6 +46,10 @@ let contest: C4Contest = {
 } as any
 
 afterEach(() => {
+  
+})
+
+beforeEach(() => {
   vi.clearAllMocks()
 })
 
