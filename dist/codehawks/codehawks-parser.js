@@ -1,5 +1,5 @@
 import { sentryError } from "ah-shared";
-import { findDocUrl, findTags, getAllRepos, getMdHeading } from "../util";
+import { findDocUrl, findTags, getAllRepos, getContestStatus, getMdHeading } from "../util";
 import Logger from "js-logger";
 import E from "fp-ts/lib/Either";
 import T from "fp-ts/lib/Task";
@@ -13,7 +13,7 @@ export const parseActiveCodeHawksContests = async (existingContests) => {
 export const getPossiblyActiveContests = async () => {
     let repos = await getAllRepos("Cyfrin");
     let contestRepos = repos.filter((it) => {
-        return it.name.match(new RegExp("^\\d{4}-\\d{2}-\\w+$")) !== null;
+        return it.name.match(new RegExp("^\\d{4}-\\d{2}-.*$")) !== null;
     });
     let possiblyActiveContests = contestRepos.filter((it) => {
         let split = it.name.split("-");
@@ -82,7 +82,7 @@ export const parseContest = async (name, url, readme) => {
         end_date: endDate,
         platform: "codehawks",
         active: 1,
-        status: "active",
+        status: getContestStatus({ startDate, endDate }),
         prize: `${hmAwards}$`,
         loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
         modules: modules,
