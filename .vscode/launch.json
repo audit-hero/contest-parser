@@ -29,7 +29,7 @@
         // "--watch",
         // "false",
         "--no-threads",
-        "c4ContestParser"
+        "codehawks-parser"
       ]
     }
   ]

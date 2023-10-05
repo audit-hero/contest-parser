@@ -8,7 +8,7 @@ beforeEach(() => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
 });
 afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 });
 it("gets active contests", async () => {
     let contests = await getActiveContests();

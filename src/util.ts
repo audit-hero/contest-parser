@@ -80,7 +80,10 @@ export const getAllRepos = async (org: string): Promise<Repo[]> => {
   var page = 1
   while (reposLength == 100) {
     let repos = await fetch(`https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}`, githubParams)
-      .then(async it => (JSON.parse(await it.text()) as Repo[])
+      .then(async it => {
+        let text = await it.text()
+        return JSON.parse(text) as Repo[]
+      }
       ).catch(e => {
         Logger.error(`get repos error: ${e}`)
         throw e

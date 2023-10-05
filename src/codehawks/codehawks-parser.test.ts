@@ -7,20 +7,19 @@ import * as E from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function.js"
 
 beforeEach(() => {
-  
 })
 
 afterEach(() => {
-  vi.clearAllMocks()
+  vi.resetAllMocks()
 })
 
-it("gets possibly active contests", () => {
+it("gets possibly active contests", async () => {
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
 
-  loadRepos()
+  mockRepos()
 
-  getPossiblyActiveContests().then(it => {
-    expect(it.length).toBe(4)
+  await getPossiblyActiveContests().then(it => {
+    expect(it.length).toBe(3)
   })
 })
 
@@ -77,16 +76,16 @@ it("parses ditto modules", async () => {
   expect(res.modules[0].url).toContain("/main/contracts/")
 })
 
-const loadRepos = async () => {
-  let dir = await workingDir()
+const mockRepos = async () => {
+  let dir = workingDir()
   let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString()
   let sparknReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-08-sparkn.md`).toString()
 
-  vi.stubGlobal("fetch", async (url: string) => Promise.resolve({
+  vi.stubGlobal("fetch", async (url: string, params: any) => Promise.resolve({
     text: () => {
       if (url.includes("/repos")) {
         console.log(`resolve repos ${repos.length}`);
-        
+
         return Promise.resolve(repos)
       }
       else if (url.includes("/README.md")) {

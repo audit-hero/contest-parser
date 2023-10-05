@@ -50,7 +50,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
-  vi.clearAllMocks()
+  vi.resetAllMocks()
 })
 
 it("parses urls", async () => {

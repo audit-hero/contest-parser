@@ -12,7 +12,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  vi.clearAllMocks()
+  vi.resetAllMocks()
 })
 
 it("gets active contests", async () => {
@@ -38,7 +38,6 @@ const mockRequests = async () => {
   let workDir = await workingDir()
   let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString()
   let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString()
-
 
   vi.stubGlobal("fetch", async (url: string) => Promise.resolve({
     ok: url.includes("QmdZ8eyN7QyTSnSQBTxbdBZsw3o3YoS9LgBAHoXeGDwLU3"),

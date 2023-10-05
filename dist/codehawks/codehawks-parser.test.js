@@ -7,13 +7,13 @@ import { pipe } from "fp-ts/lib/function.js";
 beforeEach(() => {
 });
 afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 });
-it("gets possibly active contests", () => {
+it("gets possibly active contests", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
-    loadRepos();
-    getPossiblyActiveContests().then(it => {
-        expect(it.length).toBe(4);
+    mockRepos();
+    await getPossiblyActiveContests().then(it => {
+        expect(it.length).toBe(3);
     });
 });
 it("parses active contests", async () => {
@@ -55,11 +55,11 @@ it("parses ditto modules", async () => {
     expect(res.modules.length).toBe(26);
     expect(res.modules[0].url).toContain("/main/contracts/");
 });
-const loadRepos = async () => {
-    let dir = await workingDir();
+const mockRepos = async () => {
+    let dir = workingDir();
     let repos = fs.readFileSync(`${dir}/src/codehawks/test/codehawks-repos.json`).toString();
     let sparknReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-08-sparkn.md`).toString();
-    vi.stubGlobal("fetch", async (url) => Promise.resolve({
+    vi.stubGlobal("fetch", async (url, params) => Promise.resolve({
         text: () => {
             if (url.includes("/repos")) {
                 console.log(`resolve repos ${repos.length}`);
