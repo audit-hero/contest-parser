@@ -6,7 +6,7 @@ import { workingDir } from "../util"
 import { ContestWithModules } from "ah-shared"
 
 beforeEach(() => {
-  // Date.now() return August 23 2023
+  vi.resetAllMocks()
 })
 
 afterEach(() => {
@@ -24,7 +24,7 @@ it("gets active contests", async () => {
 it("parser contest", async () => {
   mockRequests()
   vi.spyOn(Date, "now").mockImplementation(() => 1692751034000)
-  
+
   let contests = await getActiveContests()
   let parsed = await parseContests(contests, [])
   let contest = parsed[0] as ContestWithModules
@@ -39,7 +39,7 @@ it("parser contest", async () => {
 })
 
 const mockRequests = async () => {
-  let workDir = await workingDir()
+  let workDir = workingDir()
   let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString()
   let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString()
 

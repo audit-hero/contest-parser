@@ -3,7 +3,7 @@ import fs from "fs";
 import { getActiveContests, parseContests } from "./hats-parser";
 import { workingDir } from "../util";
 beforeEach(() => {
-    // Date.now() return August 23 2023
+    vi.resetAllMocks();
 });
 afterEach(() => {
     vi.resetAllMocks();
@@ -28,7 +28,7 @@ it("parser contest", async () => {
     expect(contest.doc_urls[0]).toBe("https://docs-v3.stakewise.io");
 });
 const mockRequests = async () => {
-    let workDir = await workingDir();
+    let workDir = workingDir();
     let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString();
     let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString();
     vi.stubGlobal("fetch", async (url) => Promise.resolve({
