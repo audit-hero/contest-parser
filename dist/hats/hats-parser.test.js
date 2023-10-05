@@ -4,17 +4,19 @@ import { getActiveContests, parseContests } from "./hats-parser";
 import { workingDir } from "../util";
 beforeEach(() => {
     // Date.now() return August 23 2023
-    mockRequests();
-    vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
 });
 afterEach(() => {
     vi.resetAllMocks();
 });
 it("gets active contests", async () => {
+    mockRequests();
+    vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
     let contests = await getActiveContests();
     expect(contests.length).toBe(1);
 });
-it("parser contest", async () => {
+it.only("parser contest", async () => {
+    mockRequests();
+    vi.spyOn(Date, "now").mockImplementation(() => 1692751034000);
     let contests = await getActiveContests();
     let parsed = await parseContests(contests, []);
     let contest = parsed[0];
