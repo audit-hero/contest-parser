@@ -1,6 +1,13 @@
 ## Add to your existing esm project
 
-`yarn add 'contest-parser@audit-hero/contest-parser'`
+- `yarn add 'contest-parser@audit-hero/contest-parser'`
+    - specific commit: append `#commit={hash}'`
+
+- add Github API access token to env
+
+```
+export GITHUB_ACCESS_TOKEN="token"
+```
 
 ```typescript
 import { getActiveC4Contests } from "contest-parser"
