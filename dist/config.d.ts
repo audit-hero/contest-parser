@@ -1,9 +1,7 @@
 export declare const githubParams: {
+    method: string;
     headers: {
         Accept: string;
-    };
-    auth: {
-        username: string;
-        password: string;
+        Authorization: string;
     };
 };

@@ -1,9 +1,7 @@
 export const githubParams = {
+  method: "GET",
   headers: {
     "Accept": "application/vnd.github+json",
-  },
-  auth: {
-    username: "tonisives",
-    password: `${process.env.ghpKey}`
+    "Authorization": "token " + process.env.GITHUB_ACCESS_TOKEN!
   }
 }
