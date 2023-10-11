@@ -134,6 +134,7 @@ export interface Scope {
 }
 
 export interface ProtocolSetupInstructions {
+  instructions?: string;
 }
 
 export interface ReposInformation {

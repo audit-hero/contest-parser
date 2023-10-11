@@ -124,6 +124,7 @@ export interface Scope {
     protocolSetupInstructions: ProtocolSetupInstructions;
 }
 export interface ProtocolSetupInstructions {
+    instructions?: string;
 }
 export interface ReposInformation {
     isMain: boolean;

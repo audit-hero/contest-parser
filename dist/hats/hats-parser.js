@@ -102,7 +102,7 @@ const parseContest = async (contest, name) => {
     let result = {
         pk: name,
         sk: "0",
-        readme: JSON.stringify(contest["project-metadata"]),
+        readme: getReadme(contest),
         url: url,
         start_date: startDate,
         end_date: endDate,
@@ -116,6 +116,20 @@ const parseContest = async (contest, name) => {
         tags: tags
     };
     return { ok: true, value: result };
+};
+const getReadme = (contest) => {
+    let oneLiner = contest["project-metadata"].oneLiner;
+    let description = contest.scope.description;
+    let docsLink = contest.scope.docsLink;
+    let outOfScope = contest.scope.outOfScope;
+    let instructions = contest.scope.protocolSetupInstructions.instructions;
+    let oneLinerTitle = oneLiner ? `${oneLiner}` : ``;
+    let descriptionTitle = description ? `## Description\n\n${description}` : ``;
+    let docsLinkTitle = docsLink ? `## Docs\n\n${docsLink}` : ``;
+    let outOfScopeTitle = outOfScope ? `## Out of Scope\n\n${outOfScope}` : ``;
+    let instructionsTitle = instructions ? `## Instructions\n\n${instructions}` : ``;
+    let all = [oneLinerTitle, descriptionTitle, docsLinkTitle, outOfScopeTitle, instructionsTitle];
+    return all.filter(it => it !== "").join("\n\n");
 };
 export const getDatesError = (startDate, endDate, name) => {
     if (endDate < Date.now() / 1000) {
