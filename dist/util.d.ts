@@ -10,3 +10,4 @@ export declare const getRepoNameFromUrl: (url: string) => string;
 import { Status } from "ah-shared";
 import { Repo } from "ah-shared";
 export declare let workingDir: () => string;
+export declare const logTrace: (msg: () => string) => void;

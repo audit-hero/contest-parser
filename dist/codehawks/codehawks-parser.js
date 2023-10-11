@@ -1,5 +1,5 @@
 import { sentryError } from "ah-shared";
-import { findDocUrl, findTags, getAllRepos, getContestStatus, getMdHeading } from "../util";
+import { findDocUrl, findTags, getAllRepos, getContestStatus, getMdHeading, logTrace } from "../util";
 import Logger from "js-logger";
 import E from "fp-ts/lib/Either";
 import T from "fp-ts/lib/Task";
@@ -12,6 +12,7 @@ export const parseActiveCodeHawksContests = async (existingContests) => {
 };
 export const getPossiblyActiveContests = async () => {
     let repos = await getAllRepos("Cyfrin");
+    logTrace(() => `got ${repos.map(it => JSON.stringify(it)).join("\n")}`);
     let contestRepos = repos.filter((it) => {
         return it.name.match(new RegExp("^\\d{4}-\\d{2}-.*$")) !== null;
     });

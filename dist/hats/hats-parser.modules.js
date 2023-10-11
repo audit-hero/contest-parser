@@ -21,7 +21,11 @@ export const getModules = async (contest, name) => {
     let files = glob.sync(`${dir}/**/*.sol`).map(it => it.replace(dir, ""));
     // 2. filter out of scope files
     let split = contest.scope.outOfScope.split("\n");
-    let filteredPaths = getInScopeFromOutOfScope(split);
+    let filteredPaths;
+    try {
+        filteredPaths = getInScopeFromOutOfScope(split);
+    }
+    catch (e) { }
     if (!filteredPaths) {
         let outOfScopePaths = getOutOfScope(split);
         filteredPaths = files.filter(path => {

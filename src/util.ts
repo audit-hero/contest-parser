@@ -114,3 +114,7 @@ export let workingDir = () => {
   let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`
   return workingDir
 }
+
+export const logTrace = (msg: () => string) => {
+  Logger.getLevel() === Logger.TRACE && Logger.debug(msg())
+}

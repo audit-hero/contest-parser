@@ -26,7 +26,11 @@ export const getModules = async (contest: Project, name: string): Promise<Contes
 
   // 2. filter out of scope files
   let split = contest.scope.outOfScope.split("\n")
-  let filteredPaths = getInScopeFromOutOfScope(split)
+  let filteredPaths
+  try {
+    filteredPaths = getInScopeFromOutOfScope(split)
+  } catch (e) { }
+
   if (!filteredPaths) {
     let outOfScopePaths = getOutOfScope(split)
 
