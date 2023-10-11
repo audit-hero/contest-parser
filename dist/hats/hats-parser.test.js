@@ -26,6 +26,12 @@ describe("", () => {
         expect(contest.repo_urls[0]).toBe("https://github.com/stakewise/v3-core");
         expect(contest.doc_urls[0]).toBe("https://docs-v3.stakewise.io");
     });
+    it.only("parses hopr", async () => {
+        let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/hopr.json`).toString();
+        let parsed = await parseContests([JSON.parse(contestString)], []);
+        expect(parsed[0]?.modules.length).toBe(18);
+        expect(parsed[0]?.doc_urls?.at(0)).toBe("https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs");
+    });
     const mockRequests = async () => {
         let workDir = workingDir();
         let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString();

@@ -5,6 +5,7 @@ import { workingDir } from "../util.js"
 import { glob } from "glob"
 import fs from "fs"
 import Logger from "js-logger"
+import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js"
 
 export const getModules = async (contest: Project, name: string): Promise<ContestModule[]> => {
   // 1. git clone repo
@@ -14,7 +15,7 @@ export const getModules = async (contest: Project, name: string): Promise<Contes
 
   // if in lambda
   let dir = process.env.LAMBDA_TASK_ROOT ? "/tmp" : `${workingDir()}/tmp/`
-  
+
   if (!fs.existsSync(dir) && true) {
     await git().clone(repoInfo.url, dir, ["--depth", "1"])
   } else {
@@ -24,14 +25,18 @@ export const getModules = async (contest: Project, name: string): Promise<Contes
   let files = glob.sync(`${dir}/**/*.sol`).map(it => it.replace(dir, ""))
 
   // 2. filter out of scope files
-  let outOfScopePaths = getOutOfScope(contest.scope.outOfScope)
+  let split = contest.scope.outOfScope.split("\n")
+  let filteredPaths = getInScopeFromOutOfScope(split)
+  if (!filteredPaths) {
+    let outOfScopePaths = getOutOfScope(split)
 
-  const filteredPaths = files.filter(path => {
-    return !outOfScopePaths.some(excludePath => {
-      let trimmedPath = removeSuffix(excludePath, "**")
-      return path.startsWith(trimmedPath)
-    })
-  });
+    filteredPaths = files.filter(path => {
+      return !outOfScopePaths.some(excludePath => {
+        let trimmedPath = removeSuffix(excludePath, "**")
+        return path.startsWith(trimmedPath)
+      })
+    });
+  }
 
   let repoRawContentUrl = repoInfo.url.replace("github.com", "raw.githubusercontent.com")
   let commit = repoInfo.commitHash
@@ -52,23 +57,6 @@ export const getModules = async (contest: Project, name: string): Promise<Contes
 
     return res
   })
-}
-
-const getOutOfScope = (outOfScope: string) => {
-  // "Thoses contracts are considered OUT OF SCOPE :\n\n-
-  // contracts/PresaleVesting/SeedPresaleCvg.sol\n- contracts/PresaleVesting/WlPresaleCvg.sol\n-
-  // contracts/CloneFactory.sol\n- contracts/CvgControlTower.sol\n- contracts/mocks/**\n-
-  // contracts/Upgradeable/**\n- contracts/Oracles/CvgV3Aggregator.sol"
-  let split = outOfScope.split("\n")
-
-  let paths = split.reduce((acc, it) => {
-    let match = it.match(/\s.*(.sol|\*\*)$/)
-    if (match) acc.push(match[0].trim())
-    return acc
-  }, [] as string[])
-
-
-  return paths
 }
 
 function removeSuffix(excludePath: string, suffix: string): string {
