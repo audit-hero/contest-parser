@@ -162,7 +162,8 @@ const getHmAwards = (contest: C4Contest, lines: string[]): string => {
 
     let trimmed = line.replace(/\\|\//g, "").toLowerCase();
 
-    if (trimmed.includes("hm") || (trimmed.includes("high") && trimmed.includes("medium"))) {
+    if ((trimmed.includes("hm") || (trimmed.includes("high") && trimmed.includes("medium")))
+    && line.includes(":")) {
       let awards = line.split(":")[1].trim()
       // check if award includes a number(with commas)
       let match = awards.match(/(\d{1,3},)*\d{1,3}/)
