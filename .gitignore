@@ -3,3 +3,4 @@ node_modules
 .DS_Store
 tmp
 sherlockContests.json
+c4Contests.json

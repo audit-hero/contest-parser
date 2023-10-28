@@ -2,10 +2,11 @@ import Logger from "js-logger";
 let ignoreLinkWords = [
     "report",
     "twitter",
-    "discord"
+    "discord",
+    "security-review"
 ];
 let docHeadings = [
-    "about", "overview", "resources", "q&a"
+    "about", "overview", "resources", "q&a", "additional context"
 ];
 export const getContestStatus = (dates) => {
     let now = Date.now() / 1000;

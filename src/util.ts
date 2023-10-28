@@ -3,13 +3,13 @@ import Logger from "js-logger"
 let ignoreLinkWords = [
   "report",
   "twitter",
-  "discord"
+  "discord",
+  "security-review"
 ] as string[]
 
 let docHeadings = [
-  "about", "overview", "resources", "q&a"
+  "about", "overview", "resources", "q&a", "additional context"
 ]
-
 
 export const getContestStatus = (dates: { startDate: number, endDate: number }): Status => {
   let now = Date.now() / 1000

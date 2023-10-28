@@ -51,7 +51,7 @@ describe("", () => {
             throw new Error("failed to parse contest");
         else {
             expect(parsed.value).toBeTruthy();
-            expect(parsed.value.doc_urls).toHaveLength(8);
+            expect(parsed.value.doc_urls).toHaveLength(9);
         }
     });
     it("parses docs", async () => {
