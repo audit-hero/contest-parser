@@ -4,6 +4,7 @@ import fs from "fs-extra"
 import { getActiveContests, parseContests } from "./hats-parser"
 import { workingDir } from "../util"
 import { ContestWithModules } from "ah-shared"
+import Logger from "js-logger"
 
 describe("", () => {
   afterEach(() => {
@@ -36,7 +37,9 @@ describe("", () => {
     expect(contest.doc_urls![0]).toBe("https://docs-v3.stakewise.io")
   })
 
-  it.only("parses hopr", async () => {
+  it("parses hopr", async () => {
+    vi.spyOn(Date, "now").mockImplementation(() => 1696519000000)
+
     let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/hopr.json`).toString()
     let parsed = await parseContests([JSON.parse(contestString)], [])
 

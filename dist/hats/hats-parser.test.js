@@ -26,7 +26,8 @@ describe("", () => {
         expect(contest.repo_urls[0]).toBe("https://github.com/stakewise/v3-core");
         expect(contest.doc_urls[0]).toBe("https://docs-v3.stakewise.io");
     });
-    it.only("parses hopr", async () => {
+    it("parses hopr", async () => {
+        vi.spyOn(Date, "now").mockImplementation(() => 1696519000000);
         let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/hopr.json`).toString();
         let parsed = await parseContests([JSON.parse(contestString)], []);
         expect(parsed[0]?.modules.length).toBe(18);

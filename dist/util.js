@@ -5,7 +5,7 @@ let ignoreLinkWords = [
     "discord"
 ];
 let docHeadings = [
-    "about", "overview"
+    "about", "overview", "resources", "q&a"
 ];
 export const getContestStatus = (dates) => {
     let now = Date.now() / 1000;

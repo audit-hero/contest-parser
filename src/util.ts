@@ -7,7 +7,7 @@ let ignoreLinkWords = [
 ] as string[]
 
 let docHeadings = [
-  "about", "overview"
+  "about", "overview", "resources", "q&a"
 ]
 
 
