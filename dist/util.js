@@ -8,6 +8,9 @@ let ignoreLinkWords = [
 let docHeadings = [
     "about", "overview", "resources", "q&a", "additional context"
 ];
+export let ignoredScopeFiles = [
+    "test", "mock"
+];
 export const getContestStatus = (dates) => {
     let now = Date.now() / 1000;
     if (now < dates.startDate)

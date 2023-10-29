@@ -11,6 +11,10 @@ let docHeadings = [
   "about", "overview", "resources", "q&a", "additional context"
 ]
 
+export let ignoredScopeFiles = [
+  "test", "mock"
+]
+
 export const getContestStatus = (dates: { startDate: number, endDate: number }): Status => {
   let now = Date.now() / 1000
   if (now < dates.startDate) return "created"

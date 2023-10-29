@@ -1,24 +1,29 @@
 import git from "simple-git";
-import { workingDir } from "../util.js";
+import { ignoredScopeFiles, workingDir } from "../util.js";
 import { glob } from "glob";
 import fs from "fs";
 import Logger from "js-logger";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
 export const getModules = async (contest, name) => {
-    // 1. git clone repo
-    let repoInfo = contest.scope.reposInformation.find(it => it.isMain);
-    if (!repoInfo)
-        return [];
-    // if in lambda
-    let dir = process.env.LAMBDA_TASK_ROOT ? "/tmp" : `${workingDir()}/tmp/`;
+    let jobs = contest.scope.reposInformation.map(it => getModulesRepo(it, contest, name));
+    let res = await Promise.all(jobs);
+    return res.flat();
+};
+const getModulesRepo = async (repoInfo, contest, name) => {
+    let repoName = repoInfo.url.split("/").pop();
+    let dir = process.env.LAMBDA_TASK_ROOT ? `/tmp/${name}/${repoName}` : `${workingDir()}/tmp/${name}/${repoName}`;
+    if (fs.existsSync(dir))
+        fs.rmSync(dir, { recursive: true });
     if (!fs.existsSync(dir) && true) {
         await git().clone(repoInfo.url, dir, ["--depth", "1"]);
     }
     else {
         Logger.info(`repo already cloned in ${dir}`);
     }
-    // get all .sol files in the repo
+    // get all .sol/.go files in the repo
     let files = glob.sync(`${dir}/**/*.sol`).map(it => it.replace(dir, ""));
+    files.push(...glob.sync(`${dir}/**/*.go`).map(it => it.replace(dir, "")));
+    files = files.filter(path => !ignoredScopeFiles.some(excludePath => path.includes(excludePath)));
     // 2. filter out of scope files
     let split = contest.scope.outOfScope.split("\n");
     let filteredPaths;
