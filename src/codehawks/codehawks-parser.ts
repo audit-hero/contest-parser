@@ -6,7 +6,7 @@ import T from "fp-ts/lib/Task"
 import TE from "fp-ts/lib/TaskEither"
 import { pipe } from "fp-ts/lib/function.js"
 import anyDate from "any-date-parser"
-
+import { parseTreeModules } from "../parse-modules.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
@@ -76,7 +76,24 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
   return jobs
 }
 
+const getModulesFromTree = (inScopeParagraph: string[], name: string, url: string): E.Either<string, ContestModule[]> => {
+  let modules = parseTreeModules(inScopeParagraph)
+
+  if (modules.length === 0) return E.left(`no modules found for ${name}`)
+
+  return E.right(modules.map(it => {
+    return {
+      name: it.split("/").pop()!!,
+      path: it,
+      url: `${url}/${it}`,
+      contest: name,
+      active: 1,
+    } as ContestModule
+  }))
+}
+
 export const parseContest =
+
   async (name: string, url: string, readme: string): Promise<E.Either<string, ContestWithModules>> => {
     let split = readme.split("\n")
 
@@ -95,6 +112,7 @@ export const parseContest =
       getModulesV1(inScopeParagraph, name, url),
       // E.Either<string, ContestModule[]>
       E.orElse(() => getModulesV2(inScopeParagraph, name, url)),
+      E.orElse(() => getModulesFromTree(inScopeParagraph, name, url)),
       // TE.TaskEither<string, ContestModule[]>
       TE.fromEither,
       // verify module urls
@@ -186,7 +204,9 @@ const tryMapCorrectPrefix = (repo: string, modules: ContestModule[]): TE.TaskEit
 
   let res = pipe(
     jobs,
-    T.map(it => it.find(it => it !== undefined)),
+    T.map(it =>
+      it.find(it => it !== undefined)
+    ),
     TE.fromTask,
     TE.chain(it => {
       if (it) return TE.right(it)
@@ -236,6 +256,10 @@ const getDatesError = (startDate: number, endDate: number, name: string) => {
 }
 
 const getModulesV1 = (inScopeParagraph: string[], contest: string, repoUrl: string): E.Either<string, ContestModule[]> => {
+  if (inScopeParagraph.some(it => it.includes("├"))) {
+    return E.left("tree modules")
+  }
+
   /**
    -   src/
     -   ProxyFactory.sol
@@ -297,6 +321,9 @@ const findModuleFromUl = (line: string, lines: string[], currentDir: string, rep
 }
 
 export const getModulesV2 = (inScopeParagraph: string[], contest: string, repo: string): E.Either<string, ContestModule[]> => {
+  if (inScopeParagraph.some(it => it.includes("├"))) {
+    return E.left("tree modules")
+  }
   /**
     - [ ] libraries/AppStorage.sol
     - [ ] libraries/DataTypes.sol (struct packing for storage types)
@@ -351,10 +378,11 @@ const getBeforeScopeAndInScopeParagraph = (readme: string[]) => {
       continue
     }
 
-    if (line.toLowerCase().includes("not in scope") || line.toLowerCase().includes("out of scope") || line.startsWith("#")) {
+    if (line.toLowerCase().includes("not in scope") || line.toLowerCase().includes("out of scope") || (line.startsWith("#") && !line.includes("in scope"))) {
       break
     }
     else {
+      if (line.startsWith("#")) continue
       inScopeParagraph.push(line)
     }
   }

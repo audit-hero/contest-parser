@@ -28,7 +28,7 @@ export const getInScopeFromOutOfScope = (split) => {
     return modules;
     // if there is `in scope` `within the scope` part, then use that part
 };
-const getModules = (path, inScopeTree) => {
+export const getModules = (path, inScopeTree) => {
     /**
   ├── Announcements.sol
   ├── MultiSig.sol

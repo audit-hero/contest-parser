@@ -6,6 +6,7 @@ import T from "fp-ts/lib/Task";
 import TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function.js";
 import anyDate from "any-date-parser";
+import { parseTreeModules } from "../parse-modules.js";
 export const parseActiveCodeHawksContests = async (existingContests) => {
     let possibleActive = await getPossiblyActiveContests();
     possibleActive = possibleActive.filter(it => it.name.toLowerCase().includes("steadefi"));
@@ -52,6 +53,20 @@ export const parseReposJobs = async (contests, existingContests) => {
     }
     return jobs;
 };
+const getModulesFromTree = (inScopeParagraph, name, url) => {
+    let modules = parseTreeModules(inScopeParagraph);
+    if (modules.length === 0)
+        return E.left(`no modules found for ${name}`);
+    return E.right(modules.map(it => {
+        return {
+            name: it.split("/").pop(),
+            path: it,
+            url: `${url}/${it}`,
+            contest: name,
+            active: 1,
+        };
+    }));
+};
 export const parseContest = async (name, url, readme) => {
     let split = readme.split("\n");
     let { startDate, endDate } = getStartEndDate(split);
@@ -63,7 +78,7 @@ export const parseContest = async (name, url, readme) => {
     let docUrls = findDocUrls(beforeScopeParagraph);
     let modules = await pipe(getModulesV1(inScopeParagraph, name, url), 
     // E.Either<string, ContestModule[]>
-    E.orElse(() => getModulesV2(inScopeParagraph, name, url)), 
+    E.orElse(() => getModulesV2(inScopeParagraph, name, url)), E.orElse(() => getModulesFromTree(inScopeParagraph, name, url)), 
     // TE.TaskEither<string, ContestModule[]>
     TE.fromEither, 
     // verify module urls
@@ -175,6 +190,9 @@ const getDatesError = (startDate, endDate, name) => {
     }
 };
 const getModulesV1 = (inScopeParagraph, contest, repoUrl) => {
+    if (inScopeParagraph.some(it => it.includes("├"))) {
+        return E.left("tree modules");
+    }
     /**
      -   src/
       -   ProxyFactory.sol
@@ -224,6 +242,9 @@ const findModuleFromUl = (line, lines, currentDir, repo, repoUrl) => {
     return { module, currentDir };
 };
 export const getModulesV2 = (inScopeParagraph, contest, repo) => {
+    if (inScopeParagraph.some(it => it.includes("├"))) {
+        return E.left("tree modules");
+    }
     /**
       - [ ] libraries/AppStorage.sol
       - [ ] libraries/DataTypes.sol (struct packing for storage types)
@@ -268,10 +289,12 @@ const getBeforeScopeAndInScopeParagraph = (readme) => {
                 afterInScope = true;
             continue;
         }
-        if (line.toLowerCase().includes("not in scope") || line.toLowerCase().includes("out of scope") || line.startsWith("#")) {
+        if (line.toLowerCase().includes("not in scope") || line.toLowerCase().includes("out of scope") || (line.startsWith("#") && !line.includes("in scope"))) {
             break;
         }
         else {
+            if (line.startsWith("#"))
+                continue;
             inScopeParagraph.push(line);
         }
     }

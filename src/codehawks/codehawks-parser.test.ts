@@ -44,8 +44,7 @@ describe("", () => {
 
   it("parses ditto modules", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1694827901000)
-
-
+    
     vi.stubGlobal("fetch", async (url: string) => {
       if (!url.includes("raw.githubusercontent.com") &&
         !url.includes("/main/contracts/")) {
@@ -75,6 +74,40 @@ describe("", () => {
 
     expect(res.modules.length).toBe(26)
     expect(res.modules[0].url).toContain("/main/contracts/")
+  })
+
+  it("parses steadefi modules", async () => {
+    vi.spyOn(Date, "now").mockImplementation(() => 1698571994000)
+    
+    vi.stubGlobal("fetch", async (url: string) => {
+      if (!url.includes("raw.githubusercontent.com") &&
+        !url.includes("/main/contracts/")) {
+        return Promise.resolve({
+          status: 404
+        })
+      }
+      else if (url.includes("/main/contracts/")) {
+        return Promise.resolve({
+          status: 200,
+        })
+      }
+    })
+
+    let dir = await workingDir()
+    let dittoReadme = fs.readFileSync(`${dir}/src/codehawks/test/2023-10-steadefi.md`).toString()
+
+    await parseContest("2023-10-steadefi", "https://github.com/Cyfrin/2023-10-steadefi", dittoReadme)
+
+    let res = pipe(
+      await parseContest("2023-10-steadefi", "https://github.com/Cyfrin/2023-10-steadefi", dittoReadme),
+      E.getOrElseW((e: string) => {
+        console.log(e)
+        throw new Error(e)
+      })
+    )
+
+    expect(res.modules.length).toBe(22)
+    expect(res.modules[0].url).toContain("/contracts/interfaces/oracles/IChainlinkOracle.sol")
   })
 
   const mockRepos = async () => {
