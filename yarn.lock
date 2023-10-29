@@ -486,6 +486,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"any-date-parser@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "any-date-parser@npm:1.5.4"
+  checksum: 03b9f70ec2d219bd2fc4a1280f9673a1fb0ede4be40496c9b1470cd969010e62deafef819f22cc0c0c6554403282b43ebb64bb2b144f65dd59635e642ce8001f
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3 || ^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -681,6 +688,7 @@ __metadata:
     "@types/fs-extra": ^11.0.2
     "@types/node": ^20.1.5
     ah-shared: "audit-hero/ah-shared#d5c9d8558c6a276c64452fe29484373d661c2c0c"
+    any-date-parser: ^1.5.4
     axios: ^1.4.0
     esbuild: ^0.12.5
     fp-ts: ^2.16.1

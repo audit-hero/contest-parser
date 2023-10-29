@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "ah-shared": "audit-hero/ah-shared#d5c9d8558c6a276c64452fe29484373d661c2c0c",
+    "any-date-parser": "^1.5.4",
     "axios": "^1.4.0",
     "fp-ts": "^2.16.1",
     "fs-extra": "^11.1.1",

@@ -17,7 +17,6 @@ const getModulesRepo = async (repoInfo: ReposInformation, contest: Project, name
   let repoName = repoInfo.url.split("/").pop()
   let dir = process.env.LAMBDA_TASK_ROOT ? `/tmp/${name}/${repoName}` : `${workingDir()}/tmp/${name}/${repoName}`
   if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true })
-  fs.mkdirSync(dir, { recursive: true })
 
   if (!fs.existsSync(dir) || true) {
     await git().clone(repoInfo.url, dir, ["--depth", "1"])

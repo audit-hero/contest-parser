@@ -5,9 +5,13 @@ import E from "fp-ts/lib/Either"
 import T from "fp-ts/lib/Task"
 import TE from "fp-ts/lib/TaskEither"
 import { pipe } from "fp-ts/lib/function.js"
+import anyDate from "any-date-parser"
+
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
+  possibleActive = possibleActive.filter(it => it.name.toLowerCase().includes("steadefi"))
+
   let active = await parseReposJobs(possibleActive, existingContests)
   return active.filter(it => it !== undefined) as ContestWithModules[]
 }
@@ -204,7 +208,7 @@ const getHmAwards = (readme: string[], name: string) => {
 
   let hmAwards = 0
   for (let line of readme) {
-    if (line.toLowerCase().includes("hm awards")) {
+    if (line.toLowerCase().includes("awards")) {
       let split = line.split(":")
       if (split.length < 2) continue
       let amount = split[1].trim()
@@ -231,7 +235,7 @@ const getDatesError = (startDate: number, endDate: number, name: string) => {
   }
 }
 
-const getModulesV1 = (inScopeParagraph: string[], contest: string, repoUrl:string): E.Either<string, ContestModule[]> => {
+const getModulesV1 = (inScopeParagraph: string[], contest: string, repoUrl: string): E.Either<string, ContestModule[]> => {
   /**
    -   src/
     -   ProxyFactory.sol
@@ -262,7 +266,7 @@ const getModulesV1 = (inScopeParagraph: string[], contest: string, repoUrl:strin
   return E.right(modules)
 }
 
-const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string, repoUrl:string) => {
+const findModuleFromUl = (line: string, lines: string[], currentDir: string, repo: string, repoUrl: string) => {
   let module: ContestModule | undefined = undefined
 
   try {
@@ -275,7 +279,7 @@ const findModuleFromUl = (line: string, lines: string[], currentDir: string, rep
     if (isModule) {
       let name = line.replace("- ", "").trim()
       let path = `${currentDir}/${name}`.replace("//", "/")
-       
+
 
       module = {
         name: name!!,
@@ -387,34 +391,48 @@ const getReadmeFromGithub = async (contest: string) => {
   return undefined
 }
 
+let dateSplitWords = [
+  "- start:",
+  "- starts:",
+  "- starts",
+  "- start",
+  "- end:",
+  "- ends:",
+  "- ends",
+  "- end",
+]
+
 function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
   let startDate = 0
   let endDate = 0
 
   for (let line of readme) {
+    line = line.toLowerCase()
     /**
     - Starts August 21, 2023
     - Ends August 28th, 2023
      */
-    if (line.startsWith("- Starts")) {
-      let date = line.split("Starts")[1].trim().replace(/(th|st|nd|rd),/, ',')
-      startDate = getTimestamp(date)
 
-      if (isNaN(startDate)) startDate = 0
-    }
-    else if (line.startsWith("- Ends")) {
-      let date = line.split("Ends")[1].trim().replace(/(th|st|nd|rd),/, ',')
-      endDate = getTimestamp(date)
-      if (isNaN(endDate)) endDate = 0
-    }
+    dateSplitWords.forEach(it => {
+      if (line.includes(it)) {
+        let split = line.split(it)
+        if (split.length < 2) return
+
+        let date = anyDate.attempt(split[1].replace(/(utc|gmt)/, '').trim())
+        if (date.invalid) return
+
+        if (it.includes("start")) startDate = getTimestamp(date)
+        else endDate = getTimestamp(date)
+      }
+    })
   }
   if (startDate === 0 || endDate === 0) sentryError(`no start or end date found for ${readme}`)
 
   return { startDate, endDate }
 }
 
-const getTimestamp = (date: string) => {
+const getTimestamp = (date: any) => {
   // August 21, 2023   
-  var someDate = new Date(date);
+  var someDate = new Date(date.year, date.month - 1, date.day, date.hour ?? 0, date.minute ?? 0, date.second ?? 0);
   return someDate.getTime() / 1000;
 }

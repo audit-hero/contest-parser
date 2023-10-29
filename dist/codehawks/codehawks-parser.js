@@ -5,8 +5,10 @@ import E from "fp-ts/lib/Either";
 import T from "fp-ts/lib/Task";
 import TE from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function.js";
+import anyDate from "any-date-parser";
 export const parseActiveCodeHawksContests = async (existingContests) => {
     let possibleActive = await getPossiblyActiveContests();
+    possibleActive = possibleActive.filter(it => it.name.toLowerCase().includes("steadefi"));
     let active = await parseReposJobs(possibleActive, existingContests);
     return active.filter(it => it !== undefined);
 };
@@ -148,7 +150,7 @@ const getHmAwards = (readme, name) => {
      */
     let hmAwards = 0;
     for (let line of readme) {
-        if (line.toLowerCase().includes("hm awards")) {
+        if (line.toLowerCase().includes("awards")) {
             let split = line.split(":");
             if (split.length < 2)
                 continue;
@@ -298,26 +300,39 @@ const getReadmeFromGithub = async (contest) => {
     Logger.info(`no readme found for ${contest}`);
     return undefined;
 };
+let dateSplitWords = [
+    "- start:",
+    "- starts:",
+    "- starts",
+    "- start",
+    "- end:",
+    "- ends:",
+    "- ends",
+    "- end",
+];
 function getStartEndDate(readme) {
     let startDate = 0;
     let endDate = 0;
     for (let line of readme) {
+        line = line.toLowerCase();
         /**
         - Starts August 21, 2023
         - Ends August 28th, 2023
          */
-        if (line.startsWith("- Starts")) {
-            let date = line.split("Starts")[1].trim().replace(/(th|st|nd|rd),/, ',');
-            startDate = getTimestamp(date);
-            if (isNaN(startDate))
-                startDate = 0;
-        }
-        else if (line.startsWith("- Ends")) {
-            let date = line.split("Ends")[1].trim().replace(/(th|st|nd|rd),/, ',');
-            endDate = getTimestamp(date);
-            if (isNaN(endDate))
-                endDate = 0;
-        }
+        dateSplitWords.forEach(it => {
+            if (line.includes(it)) {
+                let split = line.split(it);
+                if (split.length < 2)
+                    return;
+                let date = anyDate.attempt(split[1].replace(/(utc|gmt)/, '').trim());
+                if (date.invalid)
+                    return;
+                if (it.includes("start"))
+                    startDate = getTimestamp(date);
+                else
+                    endDate = getTimestamp(date);
+            }
+        });
     }
     if (startDate === 0 || endDate === 0)
         sentryError(`no start or end date found for ${readme}`);
@@ -325,7 +340,7 @@ function getStartEndDate(readme) {
 }
 const getTimestamp = (date) => {
     // August 21, 2023   
-    var someDate = new Date(date);
+    var someDate = new Date(date.year, date.month - 1, date.day, date.hour ?? 0, date.minute ?? 0, date.second ?? 0);
     return someDate.getTime() / 1000;
 };
 //# sourceMappingURL=codehawks-parser.js.map
