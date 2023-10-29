@@ -1,4 +1,4 @@
-import { Contest, ContestModule } from "ah-shared"
+import { ContestModule } from "ah-shared"
 import { Project, ReposInformation } from "./types.js"
 import git from "simple-git"
 import { ignoredScopeFiles, workingDir } from "../util.js"
@@ -17,8 +17,9 @@ const getModulesRepo = async (repoInfo: ReposInformation, contest: Project, name
   let repoName = repoInfo.url.split("/").pop()
   let dir = process.env.LAMBDA_TASK_ROOT ? `/tmp/${name}/${repoName}` : `${workingDir()}/tmp/${name}/${repoName}`
   if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true })
+  fs.mkdirSync(dir, { recursive: true })
 
-  if (!fs.existsSync(dir) && true) {
+  if (!fs.existsSync(dir) || true) {
     await git().clone(repoInfo.url, dir, ["--depth", "1"])
   } else {
     Logger.info(`repo already cloned in ${dir}`)
