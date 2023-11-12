@@ -2,7 +2,6 @@ import { afterEach } from "node:test"
 import { SherlockContest } from "../types.js"
 import { parseSherlockContest } from "./sherlockContestParser"
 import { it, vi, describe, expect } from "vitest"
-import fs from "fs-extra"
 
 describe("", () => {
   afterEach(() => {

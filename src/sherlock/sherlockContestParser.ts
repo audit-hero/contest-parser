@@ -1,6 +1,5 @@
 import axios from "axios"
 import Logger from "js-logger"
-import { secondsPerLoc } from "../c4/c4ContestParser.js"
 import { sentryError, Result } from "ah-shared"
 import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
 import { getRepoNameFromUrl, getMdHeading, findDocUrl, findTags } from "../util"
@@ -8,24 +7,30 @@ import { SherlockContest } from "../types.js"
 
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests"
 
-export const parseActiveSherlockContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
+export const parseActiveSherlockContests = async (
+  existingContests: ContestWithModules[]
+): Promise<ContestWithModules[]> => {
   let active = await getActiveSherlockContests()
   let res = await Promise.all(parseSherlockContests(active, existingContests))
-  return res.filter(it => it !== undefined) as ContestWithModules[]
+  return res.filter((it) => it !== undefined) as ContestWithModules[]
 }
 
-export const parseSherlockContests = (contests: SherlockContest[], existingContests: ContestWithModules[]) => {
+export const parseSherlockContests = (
+  contests: SherlockContest[],
+  existingContests: ContestWithModules[]
+) => {
   let jobs = [] as Promise<ContestWithModules | undefined>[]
 
   for (let i = 0; i < contests.length; ++i) {
-    let contestExists = existingContests.find(it => it.pk === getRepoNameFromUrl(contests[i].template_repo_name))
+    let contestExists = existingContests.find(
+      (it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name)
+    )
 
     if (contestExists && contestExists.modules.length > 0) {
       Logger.info(`contest ${contests[i].title} already exists, skipping`)
       continue
-    }
-    else {
-      if (contests[i].ends_at < (Date.now() / 1000)) {
+    } else {
+      if (contests[i].ends_at < Date.now() / 1000) {
         Logger.info(`contest ${contests[i].title} has already ended, skipping`)
         continue
       }
@@ -33,15 +38,23 @@ export const parseSherlockContests = (contests: SherlockContest[], existingConte
     }
 
     let contest = parseSherlockContest(contests[i])
-      .then(it => {
+      .then((it) => {
         if (!it.ok) {
-          sentryError(it.error, `failed to parse sherlock contest ${contests[i].title}`, "daily")
-        }
-        else {
+          sentryError(
+            it.error,
+            `failed to parse sherlock contest ${contests[i].title}`,
+            "daily"
+          )
+        } else {
           return it.value
         }
-      }).catch(e => {
-        sentryError(e, `failed to parse sherlock contest ${contests[i].title}`, "daily")
+      })
+      .catch((e) => {
+        sentryError(
+          e,
+          `failed to parse sherlock contest ${contests[i].title}`,
+          "daily"
+        )
         return undefined
       })
 
@@ -51,47 +64,59 @@ export const parseSherlockContests = (contests: SherlockContest[], existingConte
   return jobs
 }
 
-export const getActiveSherlockContests = async (): Promise<SherlockContest[]> => {
+export const getActiveSherlockContests = async (): Promise<
+  SherlockContest[]
+> => {
   // get 2 pages
   let builder: SherlockContest[] = []
 
   for (let i = 0; i < 2; ++i) {
     let url = `${sherlockContestsUrl}?page=${i + 1}`
-    let contests: SherlockContest[] = await axios.get(url).then(it => {
-      return it.data.items as SherlockContest[]
-    }).catch(e => {
-      console.log(`error ${e}`)
-      sentryError(e, "failed to fetch sherlock contests")
-      return []
-    })
+    let contests: SherlockContest[] = await axios
+      .get(url)
+      .then((it) => {
+        return it.data.items as SherlockContest[]
+      })
+      .catch((e) => {
+        console.log(`error ${e}`)
+        sentryError(e, "failed to fetch sherlock contests")
+        return []
+      })
 
     builder = builder.concat(contests)
   }
 
-  return builder.filter(it => it.status !== "FINISHED")
+  return builder.filter((it) => it.status !== "FINISHED")
 }
 
 const getReadmeFromGithub = async (contest: string) => {
   let baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/main`
 
-  let readme = await axios.get(`${baseUrl}/README.md`).catch((e) => {
-    return undefined
-  }).then(it => {
-    return it?.data as string
-  })
+  let readme = await axios
+    .get(`${baseUrl}/README.md`)
+    .catch((e) => {
+      return undefined
+    })
+    .then((it) => {
+      return it?.data as string
+    })
 
-  if (readme) return {
-    main: readme,
-    baseUrl: baseUrl
-  }
+  if (readme)
+    return {
+      main: readme,
+      baseUrl: baseUrl,
+    }
 
   baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/master`
 
-  readme = await axios.get(`${baseUrl}/README.md`).catch((e) => {
-    return undefined
-  }).then(it => {
-    return it?.data as string
-  })
+  readme = await axios
+    .get(`${baseUrl}/README.md`)
+    .catch((e) => {
+      return undefined
+    })
+    .then((it) => {
+      return it?.data as string
+    })
 
   if (readme) return { master: readme, baseUrl: baseUrl }
 
@@ -99,15 +124,20 @@ const getReadmeFromGithub = async (contest: string) => {
   return undefined
 }
 
-export const parseSherlockContest = async (contest: SherlockContest): Promise<Result<ContestWithModules>> => {
+export const parseSherlockContest = async (
+  contest: SherlockContest
+): Promise<Result<ContestWithModules>> => {
   // let githubLink = contest.repo
   let jsonUrl = `${sherlockContestsUrl}/${contest.id}`
-  let contestDetails = await axios.get(jsonUrl, { headers: { "Content-Type": "application/json" } }).catch(e => {
-    console.log(`error ${e}`)
-    return undefined
-  }).then(it => {
-    return it?.data as SherlockContest
-  })
+  let contestDetails = await axios
+    .get(jsonUrl, { headers: { "Content-Type": "application/json" } })
+    .catch((e) => {
+      console.log(`error ${e}`)
+      return undefined
+    })
+    .then((it) => {
+      return it?.data as SherlockContest
+    })
 
   let name = getRepoName(contestDetails)
 
@@ -130,26 +160,23 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
     if (contest.starts_at < now) {
       return {
         ok: false,
-        error: `no readme found for ${contest}`
+        error: `no readme found for ${contest}`,
       }
-    }
-    else {
+    } else {
       return {
         ok: true,
         value: {
           ...nonParsedDetails,
           modules: [],
-          tags: []
-        }
+          tags: [],
+        },
       } as any
     }
   }
 
-
   let readme
   if (readmeObj.main) readme = readmeObj.main
   else readme = readmeObj.master
-
 
   let modules = [] as ContestModule[]
   let repos = [] as string[]
@@ -171,17 +198,30 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
           let newDocs = findDocUrl(line, headings)
           if (newDocs.length > 0) docUrls = docUrls.concat(newDocs)
 
-          if (line.toLowerCase().includes("scope") &&
-            line.toLowerCase().includes("# ")) afterInScope = true
+          if (
+            line.toLowerCase().includes("scope") &&
+            line.toLowerCase().includes("# ")
+          )
+            afterInScope = true
           continue
         }
 
-        if (line.toLowerCase().includes("not in scope") || line.toLowerCase().includes("out of scope") || line.startsWith("#")) {
+        if (
+          line.toLowerCase().includes("not in scope") ||
+          line.toLowerCase().includes("out of scope") ||
+          line.startsWith("#")
+        ) {
           afterInScope = false
         }
 
         if (afterInScope) {
-          let module = findModuleSloc(line, contest, name, repos, readmeObj!.baseUrl)
+          let module = findModuleSloc(
+            line,
+            contest,
+            name,
+            repos,
+            readmeObj!.baseUrl
+          )
           if (module.module) modules.push(module.module)
           if (module.repo) repos.push(module.repo)
         }
@@ -200,13 +240,12 @@ export const parseSherlockContest = async (contest: SherlockContest): Promise<Re
     value: {
       ...nonParsedDetails,
       readme: String(readme),
-      auditTime: modules.map(it => it.auditTime).reduce((sum, it) => (sum ?? 0) + (it ?? 0), 0),
-      loc: modules.map(it => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
+      loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
       modules: modules,
       doc_urls: docUrls,
       repo_urls: repos,
-      tags: tags
-    }
+      tags: tags,
+    },
   }
 }
 
@@ -219,11 +258,15 @@ const getRepoName = (contest: SherlockContest) => {
 
 const sherlockStatusToStatus = (status: SherlockContest["status"]): Status => {
   switch (status) {
-    case "CREATED": return "created"
-    case "FINISHED": return "finished"
+    case "CREATED":
+      return "created"
+    case "FINISHED":
+      return "finished"
     case "SHERLOCK_JUDGING":
-    case "JUDGING": return "judging"
-    case "RUNNING": return "active"
+    case "JUDGING":
+      return "judging"
+    case "RUNNING":
+      return "active"
     default:
       sentryError(`unknown status ${status}`)
       return "active"
@@ -231,16 +274,22 @@ const sherlockStatusToStatus = (status: SherlockContest["status"]): Status => {
 }
 
 type ModuleOrRepo = {
-  module?: ContestModule,
+  module?: ContestModule
   repo?: string
 }
 
-const findModuleSloc = (line: string, contest: SherlockContest, contestName: string, repos: string[], baseUrl: string): ModuleOrRepo => {
+const findModuleSloc = (
+  line: string,
+  contest: SherlockContest,
+  contestName: string,
+  repos: string[],
+  baseUrl: string
+): ModuleOrRepo => {
   try {
     let includesSol = line.includes(".sol")
 
     if (includesSol) {
-      let lineSplit: string[] = line.split(".sol").map(it => it.trim())
+      let lineSplit: string[] = line.split(".sol").map((it) => it.trim())
       let path = lineSplit[0] + ".sol"
       path = path.replace("- [", "")
       path = path.replace("- ", "")
@@ -259,18 +308,16 @@ const findModuleSloc = (line: string, contest: SherlockContest, contestName: str
           loc: loc,
           contest: contestName,
           active: 1,
-          auditTime: loc * secondsPerLoc
-        }
+        },
       }
-    }
-    else {
+    } else {
       // if is git repo similar to "[index-coop-smart-contracts @ 317dfb677e9738fc990cf69d198358065e8cb595](https://github.com/IndexCoop/index-coop-smart-contracts/tree/317dfb677e9738fc990cf69d198358065e8cb595)"
       // then  return the link
-      let lineSplit: string[] = line.split("](").map(it => it.trim())
+      let lineSplit: string[] = line.split("](").map((it) => it.trim())
       if (lineSplit.length < 2) return {}
       let url = lineSplit[1].split(")")[0]
       return {
-        repo: url
+        repo: url,
       }
     }
   } catch (e) {
@@ -278,10 +325,4 @@ const findModuleSloc = (line: string, contest: SherlockContest, contestName: str
   }
 
   return {}
-}
-
-
-const getTimestamp = (date: string) => {
-  var someDate = new Date(date);
-  return someDate.getTime() / 1000;
 }

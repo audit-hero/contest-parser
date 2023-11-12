@@ -1,3 +1,4 @@
+export declare let docHeadings: string[];
 export declare let ignoredScopeFiles: string[];
 export declare const getContestStatus: (dates: {
     startDate: number;

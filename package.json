@@ -28,5 +28,6 @@
     "glob": "^10.3.4",
     "js-logger": "^1.6.1",
     "simple-git": "^3.19.1"
-  }
+  },
+  "packageManager": "yarn@4.0.1"
 }

@@ -1,4 +1,4 @@
-import { findTags, getContestStatus } from "../util";
+import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util";
 import Logger from "js-logger";
 import { sentryError } from "ah-shared";
 import { getModules } from "./hats-parser.modules.js";
@@ -91,7 +91,7 @@ const parseContest = async (contest, name) => {
     let modules = [];
     if (!inFuture) {
         if (contest.scope.docsLink)
-            docUrls.push(contest.scope.docsLink);
+            docUrls = [...findDocUrl(contest.scope.docsLink, docHeadings)];
         modules = await getModules(contest, name);
     }
     let tags = findTags(contest["project-metadata"].oneLiner.split("\n"));

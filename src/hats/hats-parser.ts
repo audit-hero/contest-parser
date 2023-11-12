@@ -1,4 +1,4 @@
-import { findTags, getContestStatus } from "../util"
+import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util"
 import Logger from "js-logger"
 import { Project, Projects } from "./types"
 import { Result, sentryError, ContestWithModules, ContestModule } from "ah-shared"
@@ -111,7 +111,7 @@ const parseContest = async (contest: Project, name: string): Promise<Result<Cont
   let docUrls = [] as string[]
   let modules = [] as ContestModule[]
   if (!inFuture) {
-    if (contest.scope.docsLink) docUrls.push(contest.scope.docsLink)
+    if (contest.scope.docsLink) docUrls = [...findDocUrl(contest.scope.docsLink, docHeadings)]
     modules = await getModules(contest, name)
   }
 

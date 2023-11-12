@@ -4,15 +4,15 @@ let ignoreLinkWords = [
   "report",
   "twitter",
   "discord",
-  "security-review"
+  "security-review",
 ] as string[]
 
-let docHeadings = [
+export let docHeadings = [
   "about", "overview", "resources", "q&a", "additional context"
 ]
 
 export let ignoredScopeFiles = [
-  "test", "mock"
+  "test", "mock", "script", ".s.sol", "forge-std", "hardhat"
 ]
 
 export const getContestStatus = (dates: { startDate: number, endDate: number }): Status => {
