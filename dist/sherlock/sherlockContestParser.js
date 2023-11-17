@@ -1,10 +1,12 @@
 import axios from "axios";
 import Logger from "js-logger";
 import { sentryError } from "ah-shared";
-import { getRepoNameFromUrl, getMdHeading, findDocUrl, findTags } from "../util";
+import { getRepoNameFromUrl, findTags } from "../util";
+import { findModules } from "./modules.js";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {
     let active = await getActiveSherlockContests();
+    active = active.filter((it) => it.template_repo_name.includes("convergence"));
     let res = await Promise.all(parseSherlockContests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };
@@ -143,36 +145,15 @@ export const parseSherlockContest = async (contest) => {
     let docUrls = [];
     if (readme) {
         let lines = readme.split("\n");
-        const findModules = () => {
-            let afterInScope = false;
-            let headings = [];
-            // modules
-            for (let line of lines) {
-                getMdHeading(line, headings);
-                if (!afterInScope) {
-                    let newDocs = findDocUrl(line, headings);
-                    if (newDocs.length > 0)
-                        docUrls = docUrls.concat(newDocs);
-                    if (line.toLowerCase().includes("scope") &&
-                        line.toLowerCase().includes("# "))
-                        afterInScope = true;
-                    continue;
-                }
-                if (line.toLowerCase().includes("not in scope") ||
-                    line.toLowerCase().includes("out of scope") ||
-                    line.startsWith("#")) {
-                    afterInScope = false;
-                }
-                if (afterInScope) {
-                    let module = findModuleSloc(line, contest, name, repos, readmeObj.baseUrl);
-                    if (module.module)
-                        modules.push(module.module);
-                    if (module.repo)
-                        repos.push(module.repo);
-                }
-            }
-        };
-        findModules();
+        let { modules: modulesFromReadme, docUrls: docUrlsFromReadme } = findModules({
+            lines,
+            contest,
+            name,
+            repos,
+            readmeObj,
+        });
+        modules = modulesFromReadme;
+        docUrls = docUrlsFromReadme;
         tags = findTags(lines);
     }
     if (modules.length === 0)
@@ -212,45 +193,5 @@ const sherlockStatusToStatus = (status) => {
             sentryError(`unknown status ${status}`);
             return "active";
     }
-};
-const findModuleSloc = (line, contest, contestName, repos, baseUrl) => {
-    try {
-        let includesSol = line.includes(".sol");
-        if (includesSol) {
-            let lineSplit = line.split(".sol").map((it) => it.trim());
-            let path = lineSplit[0] + ".sol";
-            path = path.replace("- [", "");
-            path = path.replace("- ", "");
-            path = path.replace("`", "");
-            let loc = 0;
-            let url = `${baseUrl}/${path}`;
-            let name = path.split("/").pop();
-            return {
-                module: {
-                    name: name,
-                    path: path,
-                    url: url,
-                    loc: loc,
-                    contest: contestName,
-                    active: 1,
-                },
-            };
-        }
-        else {
-            // if is git repo similar to "[index-coop-smart-contracts @ 317dfb677e9738fc990cf69d198358065e8cb595](https://github.com/IndexCoop/index-coop-smart-contracts/tree/317dfb677e9738fc990cf69d198358065e8cb595)"
-            // then  return the link
-            let lineSplit = line.split("](").map((it) => it.trim());
-            if (lineSplit.length < 2)
-                return {};
-            let url = lineSplit[1].split(")")[0];
-            return {
-                repo: url,
-            };
-        }
-    }
-    catch (e) {
-        console.log(`failed to parse line ${line}`);
-    }
-    return {};
 };
 //# sourceMappingURL=sherlockContestParser.js.map
