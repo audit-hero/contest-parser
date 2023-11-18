@@ -5,7 +5,6 @@ import { sentryError } from "ah-shared";
 import { getTimestamp, findModules, getHmAwards, truncateLongNames } from "./parse-utils.js";
 export const parseActiveC4Contests = async (existingContests) => {
     let active = await getActiveC4Contests();
-    active = active.filter(it => it.trimmedSlug.includes("canto"));
     let res = await Promise.all(parseC4Contests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };
