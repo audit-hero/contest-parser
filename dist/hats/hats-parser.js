@@ -18,7 +18,9 @@ let hatsNameToContestName = (project) => {
         .toLowerCase()
         .replaceAll(" ", "-")
         .replaceAll("--", "-")
-        .replaceAll("--", "-")}`;
+        .replaceAll("--", "-")
+        .replaceAll("(", "")
+        .replaceAll(")", "")}`;
     return name;
 };
 export const parseContests = async (contests, existingContests) => {

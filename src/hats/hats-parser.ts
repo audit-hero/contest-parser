@@ -28,7 +28,9 @@ let hatsNameToContestName = (project: Project["project-metadata"]) => {
     .toLowerCase()
     .replaceAll(" ", "-")
     .replaceAll("--", "-")
-    .replaceAll("--", "-")}`
+    .replaceAll("--", "-")
+    .replaceAll("(", "")
+    .replaceAll(")", "")}`
   return name
 }
 
