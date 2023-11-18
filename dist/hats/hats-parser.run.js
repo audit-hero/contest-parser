@@ -1,6 +1,6 @@
 import Logger from "js-logger";
-import { parseActiveHatsContests } from "./hats-parser.js";
 import fs from "fs";
+import { parseActiveHatsContests } from "./hats-parser.js";
 Logger.useDefaults();
 let res = await parseActiveHatsContests([]);
 console.log(`got ${res.length} hats contests`);
