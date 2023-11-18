@@ -6,7 +6,6 @@ import { findModules } from "./modules.js";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {
     let active = await getActiveSherlockContests();
-    active = active.filter((it) => it.template_repo_name.includes("convergence"));
     let res = await Promise.all(parseSherlockContests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };
