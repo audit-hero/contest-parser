@@ -1,5 +1,5 @@
 import { sentryError } from "ah-shared";
-import { findDocUrl, findTags, getAllRepos, getContestStatus, getMdHeading, logTrace } from "../util";
+import { findDocUrl, findTags, getAllRepos, getAnyDateTimestamp, getContestStatus, getMdHeading, logTrace } from "../util";
 import Logger from "js-logger";
 import E from "fp-ts/lib/Either";
 import T from "fp-ts/lib/Task";
@@ -351,9 +351,9 @@ function getStartEndDate(readme) {
                 if (date.invalid)
                     return;
                 if (it.includes("start"))
-                    startDate = getTimestamp(date);
+                    startDate = getAnyDateTimestamp(date);
                 else
-                    endDate = getTimestamp(date);
+                    endDate = getAnyDateTimestamp(date);
             }
         });
     }
@@ -361,9 +361,4 @@ function getStartEndDate(readme) {
         sentryError(`no start or end date found for ${readme}`);
     return { startDate, endDate };
 }
-const getTimestamp = (date) => {
-    // August 21, 2023   
-    var someDate = new Date(date.year, date.month - 1, date.day, date.hour ?? 0, date.minute ?? 0, date.second ?? 0);
-    return someDate.getTime() / 1000;
-};
 //# sourceMappingURL=codehawks-parser.js.map

@@ -1,5 +1,5 @@
 import { sentryError, ContestModule, ContestWithModules, Repo } from "ah-shared"
-import { findDocUrl, findTags, getAllRepos, getContestStatus, getMdHeading, logTrace } from "../util"
+import { findDocUrl, findTags, getAllRepos, getAnyDateTimestamp, getContestStatus, getMdHeading, logTrace } from "../util"
 import Logger from "js-logger"
 import E from "fp-ts/lib/Either"
 import T from "fp-ts/lib/Task"
@@ -449,8 +449,8 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
         let date = anyDate.attempt(split[1].replace(/(utc|gmt)/, '').trim())
         if (date.invalid) return
 
-        if (it.includes("start")) startDate = getTimestamp(date)
-        else endDate = getTimestamp(date)
+        if (it.includes("start")) startDate = getAnyDateTimestamp(date)
+        else endDate = getAnyDateTimestamp(date)
       }
     })
   }
@@ -459,8 +459,3 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
   return { startDate, endDate }
 }
 
-const getTimestamp = (date: any) => {
-  // August 21, 2023   
-  var someDate = new Date(date.year, date.month - 1, date.day, date.hour ?? 0, date.minute ?? 0, date.second ?? 0);
-  return someDate.getTime() / 1000;
-}

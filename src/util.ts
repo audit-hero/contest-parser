@@ -8,14 +8,26 @@ let ignoreLinkWords = [
 ] as string[]
 
 export let docHeadings = [
-  "about", "overview", "resources", "q&a", "additional context"
+  "about",
+  "overview",
+  "resources",
+  "q&a",
+  "additional context",
 ]
 
 export let ignoredScopeFiles = [
-  "test", "mock", "script", ".s.sol", "forge-std", "hardhat"
+  "test",
+  "mock",
+  "script",
+  ".s.sol",
+  "forge-std",
+  "hardhat",
 ]
 
-export const getContestStatus = (dates: { startDate: number, endDate: number }): Status => {
+export const getContestStatus = (dates: {
+  startDate: number
+  endDate: number
+}): Status => {
   let now = Date.now() / 1000
   if (now < dates.startDate) return "created"
   else if (now > dates.endDate) return "finished"
@@ -29,22 +41,26 @@ export const getMdHeading = (line: string, headings: string[]) => {
   if (match?.length ?? 0 > 0) {
     let newHeading = match![0]
     let headingLevel = newHeading.match(/#/g)!.length
-    let existingHeading = headings.findIndex(it => it.match(/#/g)!.length === headingLevel)
+    let existingHeading = headings.findIndex(
+      (it) => it.match(/#/g)!.length === headingLevel
+    )
     if (existingHeading > -1) {
       // replace the heading and all of headings below it
       headings.splice(existingHeading)
       headings.push(newHeading)
-    }
-    else headings.push(newHeading)
+    } else headings.push(newHeading)
 
     return newHeading
   }
 }
 
 export const findDocUrl = (line: string, headings: string[]) => {
-  if (!docHeadings.some(docHeadings =>
-    headings.some(heading => heading.toLowerCase().includes(docHeadings)))
-  ) return []
+  if (
+    !docHeadings.some((docHeadings) =>
+      headings.some((heading) => heading.toLowerCase().includes(docHeadings))
+    )
+  )
+    return []
 
   const pattern = /\bhttps?:\/\/\S+\b/g
 
@@ -54,7 +70,7 @@ export const findDocUrl = (line: string, headings: string[]) => {
   if (urls?.length ?? 0 > 0) {
     for (let i = 0; i < urls!.length; ++i) {
       let url = urls![i]
-      if (ignoreLinkWords.some(it => url.toLowerCase().includes(it))) continue
+      if (ignoreLinkWords.some((it) => url.toLowerCase().includes(it))) continue
       docs.push(url)
     }
   }
@@ -83,12 +99,15 @@ export const getAllRepos = async (org: string): Promise<Repo[]> => {
   var reposBuilder: any[] = []
   var page = 1
   while (reposLength == 100) {
-    let repos = await fetch(`https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}`, githubParams)
-      .then(async it => {
+    let repos = await fetch(
+      `https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}`,
+      githubParams
+    )
+      .then(async (it) => {
         let text = await it.text()
         return JSON.parse(text) as Repo[]
-      }
-      ).catch(e => {
+      })
+      .catch((e) => {
         Logger.error(`get repos error: ${e}`)
         throw e
       })
@@ -102,7 +121,8 @@ export const getAllRepos = async (org: string): Promise<Repo[]> => {
   return reposBuilder
 }
 
-const getPushTimestamp = (timestamp: string) => Math.floor(new Date(timestamp).getTime() / 1000)
+const getPushTimestamp = (timestamp: string) =>
+  Math.floor(new Date(timestamp).getTime() / 1000)
 
 export const getRepoNameFromUrl = (url: string) => {
   let split = url.split("/")
@@ -115,10 +135,36 @@ import { Tag, ALL_TAGS, Status } from "ah-shared"
 import { Repo } from "ah-shared"
 
 export let workingDir = () => {
-  let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`
+  let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`
   return workingDir
 }
 
 export const logTrace = (msg: () => string) => {
   Logger.getLevel() === Logger.TRACE && Logger.debug(msg())
+}
+
+export let truncateLongContestName = (name: string) => {
+  // cohere table starts with `ah-00000000-3a7b-` 17 characters.
+  // max length is 64, so 47 characters left
+
+  let maxLength = 47
+  let trimmedSlug = name
+
+  if (trimmedSlug.length > maxLength) {
+    trimmedSlug = name.slice(0, maxLength)
+    for (let i = 1; i < 10; i++) {
+      if (name[maxLength - 1 - i] == "-") {
+        trimmedSlug = name.slice(0, maxLength - 1 - i)
+        break
+      }
+    }
+  }
+
+  return trimmedSlug
+}
+
+export const getAnyDateTimestamp = (anyDate: any) => {
+  // August 21, 2023   
+  var someDate = new Date(anyDate.year, anyDate.month - 1, anyDate.day, anyDate.hour ?? 0, anyDate.minute ?? 0, anyDate.second ?? 0);
+  return someDate.getTime() / 1000;
 }

@@ -6,10 +6,19 @@ let ignoreLinkWords = [
     "security-review",
 ];
 export let docHeadings = [
-    "about", "overview", "resources", "q&a", "additional context"
+    "about",
+    "overview",
+    "resources",
+    "q&a",
+    "additional context",
 ];
 export let ignoredScopeFiles = [
-    "test", "mock", "script", ".s.sol", "forge-std", "hardhat"
+    "test",
+    "mock",
+    "script",
+    ".s.sol",
+    "forge-std",
+    "hardhat",
 ];
 export const getContestStatus = (dates) => {
     let now = Date.now() / 1000;
@@ -26,7 +35,7 @@ export const getMdHeading = (line, headings) => {
     if (match?.length ?? 0 > 0) {
         let newHeading = match[0];
         let headingLevel = newHeading.match(/#/g).length;
-        let existingHeading = headings.findIndex(it => it.match(/#/g).length === headingLevel);
+        let existingHeading = headings.findIndex((it) => it.match(/#/g).length === headingLevel);
         if (existingHeading > -1) {
             // replace the heading and all of headings below it
             headings.splice(existingHeading);
@@ -38,7 +47,7 @@ export const getMdHeading = (line, headings) => {
     }
 };
 export const findDocUrl = (line, headings) => {
-    if (!docHeadings.some(docHeadings => headings.some(heading => heading.toLowerCase().includes(docHeadings))))
+    if (!docHeadings.some((docHeadings) => headings.some((heading) => heading.toLowerCase().includes(docHeadings))))
         return [];
     const pattern = /\bhttps?:\/\/\S+\b/g;
     let urls = line.match(pattern);
@@ -46,7 +55,7 @@ export const findDocUrl = (line, headings) => {
     if (urls?.length ?? 0 > 0) {
         for (let i = 0; i < urls.length; ++i) {
             let url = urls[i];
-            if (ignoreLinkWords.some(it => url.toLowerCase().includes(it)))
+            if (ignoreLinkWords.some((it) => url.toLowerCase().includes(it)))
                 continue;
             docs.push(url);
         }
@@ -76,7 +85,8 @@ export const getAllRepos = async (org) => {
             .then(async (it) => {
             let text = await it.text();
             return JSON.parse(text);
-        }).catch(e => {
+        })
+            .catch((e) => {
             Logger.error(`get repos error: ${e}`);
             throw e;
         });
@@ -96,10 +106,31 @@ export const getRepoNameFromUrl = (url) => {
 import { githubParams } from "./config.js";
 import { ALL_TAGS } from "ah-shared";
 export let workingDir = () => {
-    let workingDir = `/${import.meta.url.split('/').slice(3, -2).join('/')}`;
+    let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`;
     return workingDir;
 };
 export const logTrace = (msg) => {
     Logger.getLevel() === Logger.TRACE && Logger.debug(msg());
+};
+export let truncateLongContestName = (name) => {
+    // cohere table starts with `ah-00000000-3a7b-` 17 characters.
+    // max length is 64, so 47 characters left
+    let maxLength = 47;
+    let trimmedSlug = name;
+    if (trimmedSlug.length > maxLength) {
+        trimmedSlug = name.slice(0, maxLength);
+        for (let i = 1; i < 10; i++) {
+            if (name[maxLength - 1 - i] == "-") {
+                trimmedSlug = name.slice(0, maxLength - 1 - i);
+                break;
+            }
+        }
+    }
+    return trimmedSlug;
+};
+export const getAnyDateTimestamp = (anyDate) => {
+    // August 21, 2023   
+    var someDate = new Date(anyDate.year, anyDate.month - 1, anyDate.day, anyDate.hour ?? 0, anyDate.minute ?? 0, anyDate.second ?? 0);
+    return someDate.getTime() / 1000;
 };
 //# sourceMappingURL=util.js.map
