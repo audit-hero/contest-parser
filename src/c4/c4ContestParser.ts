@@ -10,10 +10,11 @@ import { getTimestamp, findModules, getHmAwards, truncateLongNames } from "./par
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
-  let active = await getActiveC4Contests()
+  let active = (await getActiveC4Contests())
+  .filter((it) => it.title.toLowerCase().includes("guild")) // TODO: remove this filter
   let res = await Promise.all(parseC4Contests(active, existingContests))
   return res.filter((it) => it !== undefined) as ContestWithModules[]
-}
+} 
 
 export const parseC4Contests = (
   contests: C4Contest[],
@@ -59,7 +60,8 @@ export const getActiveC4Contests = async () => {
       throw Error("can't fetch code4rena")
     })
     .then((it) => {
-      let contests = it.data.split(`contests\":`)[1].replace(`}]}]}]\n`, "")
+      let contests = it.data.split(`contests\":`)[1]
+      .split("}],\"coreAppPage\"")[0]
       let contestsJson = JSON.parse(contests)
       return contestsJson
     })
@@ -164,7 +166,8 @@ export const parseMd = (
         .map((it) => it.auditTime)
         .reduce((sum, it) => (sum ?? 0) + (it ?? 0), 0),
       loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
-      modules: modules,
+      modules: modules.filter(it => it.url?.endsWith(".sol")),
+      allModules: modules,
       doc_urls: docUrls,
       repo_urls: [repo],
       tags: tags,

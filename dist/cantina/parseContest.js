@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown } from "node-html-markdown";
-import { findDocUrl, findTags, } from "../util.js";
+import { findDocUrl, findTags } from "../util.js";
 export const parseContest = async (contest) => {
     let md = await downloadContestAsMd(contest);
     return parseMd(contest, md);
@@ -15,6 +15,7 @@ export const parseMd = (mdContest, md) => {
     let lines = md.split("\n# ").slice(1).join("").split("\n");
     if (lines[lines.length - 5].startsWith("You need to be logged in"))
         lines = lines.slice(0, -5);
+    let modules = findModules(mdContest.name, lines);
     let contest = {
         pk: mdContest.name,
         readme: `# ${lines.join("\n")}`,
@@ -25,7 +26,8 @@ export const parseMd = (mdContest, md) => {
         url: `https://cantina.xyz/competitions/${mdContest.id}`,
         active: 1,
         status: "active",
-        modules: findModules(mdContest.name, lines),
+        modules: modules,
+        allModules: modules,
         doc_urls: findDocUrls(lines),
         prize: mdContest.prize,
         tags: findTags(lines),

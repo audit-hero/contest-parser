@@ -76,8 +76,9 @@ export const findModules = (repo, lines, moduleFindWay) => {
 const findModuleFromTable = (line, repo, referenceLinks) => {
     let module = undefined;
     try {
-        let includesSolInTable = line.includes("|") && line.includes(".sol");
-        if (includesSolInTable) {
+        // any file with an extension
+        let isAFile = line.includes("|") && line.match(/\.[a-z0-9]+/g);
+        if (isAFile) {
             let lineSplit = line.split("|").map((it) => it.trim());
             if (lineSplit.length < 2)
                 return undefined;
@@ -109,8 +110,8 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
                     break;
                 }
             }
-            if (!url.endsWith(".sol")) {
-                Logger.info(`url does not end with .sol ${url}`);
+            if (!url.match(/\.[a-z0-9]+$/g)) {
+                Logger.info(`url does not end with file extension: ${url}`);
                 url = "";
                 // one option would be to find this file from the repo
                 // you can also just manually edit the item in ddb console
@@ -187,8 +188,8 @@ const getModulePathAndUrlBySplit = (pathAndUrl) => {
     try {
         let path, url;
         let pathAndUrlSplit = pathAndUrl.split("](");
-        path = pathAndUrlSplit[0].split("[")[1];
-        url = pathAndUrlSplit[1].split(")")[0];
+        path = pathAndUrlSplit[0].split("[")[1].replaceAll("`", "");
+        url = pathAndUrlSplit[1].split(")")[0].replaceAll("`", "");
         if (url.endsWith("/"))
             url = url.substring(0, url.length - 1);
         if (url.endsWith(".sol") && !path.endsWith(".sol"))

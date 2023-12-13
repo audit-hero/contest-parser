@@ -82,6 +82,7 @@ const parseContest = async (contest, name) => {
         status: getContestStatus({ startDate, endDate }),
         prize: hmAwards,
         modules: modules,
+        allModules: modules,
         doc_urls: docUrls,
         repo_urls: contest.scope.reposInformation.map((it) => it.url),
         tags: tags,

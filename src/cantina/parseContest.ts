@@ -1,9 +1,6 @@
 import { ContestModule, ContestWithModules } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import {
-  findDocUrl,
-  findTags,
-} from "../util.js"
+import { findDocUrl, findTags } from "../util.js"
 import { MdContest } from "./getActive.js"
 
 export const parseContest = async (
@@ -29,6 +26,7 @@ export const parseMd = (
   if (lines[lines.length - 5].startsWith("You need to be logged in"))
     lines = lines.slice(0, -5)
 
+  let modules = findModules(mdContest.name, lines)
   let contest: ContestWithModules = {
     pk: mdContest.name,
     readme: `# ${lines.join("\n")}`,
@@ -39,7 +37,8 @@ export const parseMd = (
     url: `https://cantina.xyz/competitions/${mdContest.id}`,
     active: 1,
     status: "active",
-    modules: findModules(mdContest.name, lines),
+    modules: modules,
+    allModules: modules,
     doc_urls: findDocUrls(lines),
     prize: mdContest.prize,
     tags: findTags(lines),
