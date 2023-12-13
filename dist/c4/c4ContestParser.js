@@ -4,8 +4,7 @@ import { findTags } from "../util";
 import { sentryError } from "ah-shared";
 import { getTimestamp, findModules, getHmAwards, truncateLongNames } from "./parse-utils.js";
 export const parseActiveC4Contests = async (existingContests) => {
-    let active = (await getActiveC4Contests())
-        .filter((it) => it.title.toLowerCase().includes("guild")); // TODO: remove this filter
+    let active = (await getActiveC4Contests());
     let res = await Promise.all(parseC4Contests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };

@@ -11,7 +11,6 @@ export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
   let active = (await getActiveC4Contests())
-  .filter((it) => it.title.toLowerCase().includes("guild")) // TODO: remove this filter
   let res = await Promise.all(parseC4Contests(active, existingContests))
   return res.filter((it) => it !== undefined) as ContestWithModules[]
 } 
