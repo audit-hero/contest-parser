@@ -161,12 +161,9 @@ export const parseMd = (
       active: 1,
       status: status,
       prize: hmAwards,
-      auditTime: modules
-        .map((it) => it.auditTime)
-        .reduce((sum, it) => (sum ?? 0) + (it ?? 0), 0),
       loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
       modules: modules.filter(it => it.url?.endsWith(".sol")),
-      allModules: modules,
+      all_modules: modules,
       doc_urls: docUrls,
       repo_urls: [repo],
       tags: tags,

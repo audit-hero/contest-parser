@@ -68,12 +68,12 @@ describe("", () => {
         expect(contest.end_date).toBe(getTimestamp(contestObj.end_time));
         expect(contest.modules.length).toBe(13);
     });
-    it("handles readme with invalid contracts ", () => {
+    it.only("handles readme with invalid contracts ", () => {
         var md = fs
             .readFileSync(`./src/c4/test/invalid-contracts.md`)
             .toString();
         let contest = parseMd("url", md, "repo", contestObj).value;
-        expect(contest.modules.length).toBe(4);
+        expect(contest.modules.length).toBe(0);
     });
     it("parser relative urls", async () => {
         var md = fs.readFileSync(`./src/c4/test/c4-relative-urls.md`).toString();

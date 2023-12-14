@@ -38,7 +38,7 @@ export const parseMd = (
     active: 1,
     status: "active",
     modules: modules,
-    allModules: modules,
+    all_modules: modules,
     doc_urls: findDocUrls(lines),
     prize: mdContest.prize,
     tags: findTags(lines),

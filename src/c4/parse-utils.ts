@@ -2,6 +2,7 @@ import { ContestModule } from "ah-shared"
 import { C4Contest } from "../types.js"
 import { getMdHeading, findDocUrl } from "../util.js"
 import Logger from "js-logger"
+import { string } from "fp-ts"
 
 export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
   if (contest.hm_award_pool) return contest.hm_award_pool.toString()
@@ -33,6 +34,21 @@ export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
   return hmAwards
 }
 
+const notInScopeHeadingLine = (line: string) => {
+  let lowerCaseLine = line.toLowerCase()
+  return (
+    lowerCaseLine.includes("not in scope") ||
+    lowerCaseLine.includes("out of scope")
+  )
+}
+
+const inScopeHeadingLine = (line: string) => {
+  let lowerCaseLine = line.toLowerCase()
+  return (
+    lowerCaseLine.includes("scope") && !notInScopeHeadingLine(lowerCaseLine)
+  )
+}
+
 export const findModules = (
   repo: string,
   lines: string[],
@@ -56,14 +72,13 @@ export const findModules = (
     if (newDocs.length > 0) docUrls = docUrls.concat(newDocs)
 
     if (!inScopeHeading) {
-      if (line.toLowerCase().includes("scope")) inScopeHeading = true
+      if (inScopeHeadingLine(line)) {
+        inScopeHeading = true
+      }
       continue
     }
 
-    if (
-      line.toLowerCase().includes("not in scope") ||
-      line.toLowerCase().includes("out of scope")
-    ) {
+    if (notInScopeHeadingLine(line)) {
       inScopeHeading = false
     }
 

@@ -442,10 +442,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ah-shared@audit-hero/ah-shared#8a2c7fd3b5c1370133d9575e5feafc2e84152cfa":
+"ah-shared@audit-hero/ah-shared#227b2b9b03baa41337d6f3652aaf4fe8d102d0a6":
   version: 0.0.0
-  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=8a2c7fd3b5c1370133d9575e5feafc2e84152cfa"
-  checksum: 205b2de8b9b93a7cda16a43929b71f077658d1be55d36e05c0438aa147f59963425fd53820bf95a6fd82660871ea30959c13e6fbfd3e4fd2700ff74667a64bd5
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=227b2b9b03baa41337d6f3652aaf4fe8d102d0a6"
+  checksum: 57b552e2f02d1274b151e35dd79830505d29e5a006c728aec82baff3a3fa9b85883cb3ae6a36727413eb1a0cbd103ad6714166d6268e4ae0034842a178a04565
   languageName: node
   linkType: hard
 
@@ -701,7 +701,7 @@ __metadata:
   dependencies:
     "@types/fs-extra": "npm:^11.0.2"
     "@types/node": "npm:^20.1.5"
-    ah-shared: "audit-hero/ah-shared#8a2c7fd3b5c1370133d9575e5feafc2e84152cfa"
+    ah-shared: "audit-hero/ah-shared#227b2b9b03baa41337d6f3652aaf4fe8d102d0a6"
     any-date-parser: "npm:^1.5.4"
     axios: "npm:^1.4.0"
     chalk: "npm:^5.3.0"
