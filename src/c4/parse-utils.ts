@@ -3,6 +3,7 @@ import { C4Contest } from "../types.js"
 import { getMdHeading, findDocUrl } from "../util.js"
 import Logger from "js-logger"
 import { string } from "fp-ts"
+import parseUrl from "parse-url"
 
 export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
   if (contest.hm_award_pool) return contest.hm_award_pool.toString()
@@ -157,6 +158,11 @@ const findModuleFromTable = (
         }
       }
 
+      if (!isValidUrl(url)) {
+        Logger.warn(`invalid url ${url}`)
+        url = ""
+      }
+
       module = {
         name: name,
         path: path,
@@ -172,10 +178,21 @@ const findModuleFromTable = (
 
   return module
 }
+
+const isValidUrl = (url: string) => {
+  try {
+    parseUrl(url)
+  } catch (e) {
+    return false
+  }
+  return true
+}
+
 type ReferenceLink = {
   name: string
   url: string
 }
+
 const getLinkReferences = (content: string[]) => {
   // find [`LSP0ERC725AccountCore.sol`]: https://githu...tCore.sol
   // style links
