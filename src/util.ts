@@ -13,6 +13,7 @@ export let docHeadings = [
   "resources",
   "q&a",
   "additional context",
+  "links"
 ]
 
 export let ignoredScopeFiles = [
