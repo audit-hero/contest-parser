@@ -17,3 +17,4 @@ contracts
 ```
  */
 export declare const parseTreeModules: (scope: string[]) => string[];
+export declare let parseTreeModulesV2: (lines: string[]) => string[];

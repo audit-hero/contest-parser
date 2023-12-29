@@ -6,12 +6,12 @@ import T from "fp-ts/lib/Task"
 import TE from "fp-ts/lib/TaskEither"
 import { pipe } from "fp-ts/lib/function.js"
 import anyDate from "any-date-parser"
-import { parseTreeModules } from "../parse-modules.js"
+import { parseTreeModulesV2 } from "../parse-modules.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
   
-  // possibleActive = possibleActive.filter(it => it.name.includes("2023-12-Voting-Booth"))
+  // possibleActive = possibleActive.filter(it => it.name.includes("2023-12-stake-link"))
 
   let active = await parseReposJobs(possibleActive, existingContests)
   return active.filter(it => it !== undefined) as ContestWithModules[]
@@ -19,7 +19,6 @@ export const parseActiveCodeHawksContests = async (existingContests: ContestWith
 
 export const getPossiblyActiveContests = async (): Promise<Repo[]> => {
   let repos = await getAllRepos("Cyfrin")
-
 
   logTrace(() => `got ${repos.map(it => JSON.stringify(it)).join("\n")}`)
 
@@ -78,7 +77,7 @@ export const parseReposJobs = async (contests: Repo[], existingContests: Contest
 }
 
 const getModulesFromTree = (inScopeParagraph: string[], name: string, url: string): E.Either<string, ContestModule[]> => {
-  let modules = parseTreeModules(inScopeParagraph)
+  let modules = parseTreeModulesV2(inScopeParagraph)
 
   if (modules.length === 0) return E.left(`no modules found for ${name}`)
 
