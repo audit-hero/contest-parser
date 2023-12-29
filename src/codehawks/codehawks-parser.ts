@@ -10,6 +10,7 @@ import { parseTreeModules } from "../parse-modules.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
+  
   // possibleActive = possibleActive.filter(it => it.name.includes("2023-12-Voting-Booth"))
 
   let active = await parseReposJobs(possibleActive, existingContests)

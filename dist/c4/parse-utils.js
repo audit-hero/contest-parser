@@ -1,5 +1,6 @@
 import { getMdHeading, findDocUrl } from "../util.js";
 import Logger from "js-logger";
+import parseUrl from "parse-url";
 export const getHmAwards = (contest, lines) => {
     if (contest.hm_award_pool)
         return contest.hm_award_pool.toString();
@@ -119,11 +120,9 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
                     break;
                 }
             }
-            if (!url.match(/\.[a-z0-9]+$/g)) {
-                Logger.info(`url does not end with file extension: ${url}`);
+            if (!isValidUrl(url)) {
+                Logger.warn(`invalid url ${url}`);
                 url = "";
-                // one option would be to find this file from the repo
-                // you can also just manually edit the item in ddb console
             }
             module = {
                 name: name,
@@ -139,6 +138,15 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
         console.log(`failed to parse line ${line}`);
     }
     return module;
+};
+const isValidUrl = (url) => {
+    try {
+        parseUrl(url);
+    }
+    catch (e) {
+        return false;
+    }
+    return true;
 };
 const getLinkReferences = (content) => {
     // find [`LSP0ERC725AccountCore.sol`]: https://githu...tCore.sol
