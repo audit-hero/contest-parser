@@ -10,7 +10,7 @@ import { parseTreeModules } from "../parse-modules.js"
 
 export const parseActiveCodeHawksContests = async (existingContests: ContestWithModules[]): Promise<ContestWithModules[]> => {
   let possibleActive = await getPossiblyActiveContests()
-  possibleActive = possibleActive.filter(it => it.name.toLowerCase().includes("steadefi"))
+  // possibleActive = possibleActive.filter(it => it.name.includes("2023-12-Voting-Booth"))
 
   let active = await parseReposJobs(possibleActive, existingContests)
   return active.filter(it => it !== undefined) as ContestWithModules[]
@@ -421,13 +421,15 @@ const getReadmeFromGithub = async (contest: string) => {
 }
 
 let dateSplitWords = [
-  "- start:",
+  "- starts -",
+  "- ends - ",
   "- starts:",
   "- starts",
+  "- start:",
   "- start",
-  "- end:",
   "- ends:",
   "- ends",
+  "- end:",
   "- end",
 ]
 
@@ -447,7 +449,13 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
         let split = line.split(it)
         if (split.length < 2) return
 
-        let date = anyDate.attempt(split[1].replace(/(utc|gmt)/, '').trim())
+        let trimmed = pipe(
+          split[1].trim(),
+          replaceNoonLine,
+          replaceUtc
+        )
+        
+        let date = anyDate.attempt(trimmed)
         if (date.invalid) return
 
         if (it.includes("start")) startDate = getAnyDateTimestamp(date)
@@ -460,3 +468,12 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
   return { startDate, endDate }
 }
 
+
+let replaceNoonLine = (date:string) => {
+  // convert December 27, 2023 Noon UTC to December 27, 2023 12:00 UTC
+  return date.replace("noon utc", "12:00 utc")
+}
+
+let replaceUtc = (date:string) => {
+  return date.replace(/(utc|gmt)/, '')
+}
