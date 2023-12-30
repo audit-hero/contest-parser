@@ -234,6 +234,7 @@ const getHmAwards = (readme: string[], name: string) => {
       if (split.length < 2) continue
       let amount = split[1].trim()
       hmAwards = parseInt(amount.replace("$", "").replace(",", ""))
+      break
     }
   }
 

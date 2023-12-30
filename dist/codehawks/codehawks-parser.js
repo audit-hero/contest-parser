@@ -172,6 +172,7 @@ const getHmAwards = (readme, name) => {
                 continue;
             let amount = split[1].trim();
             hmAwards = parseInt(amount.replace("$", "").replace(",", ""));
+            break;
         }
     }
     if (hmAwards === 0)
