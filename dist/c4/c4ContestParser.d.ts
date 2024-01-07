@@ -6,3 +6,4 @@ export declare const parseC4Contests: (contests: C4Contest[], existingContests: 
 export declare const getActiveC4Contests: () => Promise<C4Contest[]>;
 export declare const parseC4Contest: (contest: C4Contest) => Promise<Result<ContestWithModules>>;
 export declare const parseMd: (url: string, readme: string | undefined, repo: string, contest: C4Contest) => Result<ContestWithModules>;
+export declare let trimContestAmount: (amount: string) => string;

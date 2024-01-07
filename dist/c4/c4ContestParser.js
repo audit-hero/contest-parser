@@ -2,9 +2,10 @@ import axios from "axios";
 import log from "js-logger";
 import { findTags } from "../util";
 import { sentryError } from "ah-shared";
-import { getTimestamp, findModules, getHmAwards, truncateLongNames } from "./parse-utils.js";
+import { getTimestamp, findModules, getHmAwards, truncateLongNames, } from "./parse-utils.js";
 export const parseActiveC4Contests = async (existingContests) => {
-    let active = (await getActiveC4Contests());
+    let active = await getActiveC4Contests();
+    active = active.filter((it) => it.title.includes("Curves"));
     let res = await Promise.all(parseC4Contests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };
@@ -39,8 +40,9 @@ export const getActiveC4Contests = async () => {
         throw Error("can't fetch code4rena");
     })
         .then((it) => {
-        let contests = it.data.split(`contests\":`)[1]
-            .split("}],\"coreAppPage\"")[0];
+        let contests = it.data
+            .split(`contests\":`)[1]
+            .split('}],"coreAppPage"')[0];
         let contestsJson = JSON.parse(contests);
         return contestsJson;
     });
@@ -89,7 +91,7 @@ export const parseMd = (url, readme, repo, contest) => {
     let start_date = getTimestamp(contest.start_time), end_date = getTimestamp(contest.end_time);
     let modules = [];
     let docUrls = [];
-    let hmAwards = contest.amount;
+    let hmAwards = trimContestAmount(contest.amount);
     if (readme) {
         let lines = readme.split("\n");
         let modulesResult = findModules(repo, lines, 0);
@@ -118,12 +120,24 @@ export const parseMd = (url, readme, repo, contest) => {
             status: status,
             prize: hmAwards,
             loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
-            modules: modules.filter(it => it.url?.endsWith(".sol")),
+            modules: modules.filter((it) => it.url?.endsWith(".sol")),
             all_modules: modules,
             doc_urls: docUrls,
             repo_urls: [repo],
             tags: tags,
         },
     };
+};
+let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"];
+export let trimContestAmount = (amount) => {
+    amount = amount.replace("$$", "$").replace(" in ", " ");
+    if (usdCoins.some((it) => amount.includes(it))) {
+        amount = amount.replace("$", "").replace(" ", "");
+        usdCoins.forEach((it) => {
+            amount = amount.replace(it, "");
+        });
+        amount = amount + " $";
+    }
+    return amount;
 };
 //# sourceMappingURL=c4ContestParser.js.map
