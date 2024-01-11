@@ -21,7 +21,10 @@ export const getActiveContests = (md) => {
             let dateLine = lines[i - 2];
             let { start_date, end_date } = getStartEndDate(dateLine);
             let prize = lines[i - 4];
-            results.push({ name, id, start_date, end_date, prize });
+            let epochSeconds = Math.floor(Date.now() / 1000);
+            if (start_date <= epochSeconds && end_date >= epochSeconds) {
+                results.push({ name, id, start_date, end_date, prize });
+            }
             name = "";
         }
     }

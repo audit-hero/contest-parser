@@ -5,8 +5,10 @@ let websiteAsMd = `[How it works](/welcome#how-it-works)[Services](/welcome#serv
 
 
 it("parses", () => {
+  vi.spyOn(Date, "now").mockImplementation(() => 1701870338000)
+
   let contests = getActiveContests(websiteAsMd)
 
-  expect(contests.length).toBe(2)
-  expect(contests[1].prize).toBe("$100,000 USDC")
+  expect(contests.length).toBe(1)
+  expect(contests[0].prize).toBe("$100,000 USDC")
 })
