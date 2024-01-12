@@ -124,27 +124,8 @@ const findModuleFromTable = (
       let lineSplit: string[] = line.split("|").map((it) => it.trim())
       if (lineSplit.length < 2) return undefined
 
-      let url = "",
-        path = ""
-      for (let i = 0; i < lineSplit.length; ++i) {
-        let pathAndUrl = lineSplit[i]
-
-        let bySplit = getModulePathAndUrlBySplit(pathAndUrl)
-        if (bySplit) {
-          url = bySplit.url
-          path = bySplit.path
-          break
-        } else {
-          let referenceLink = matchReferenceLink(pathAndUrl, referenceLinks)
-          if (referenceLink) {
-            url = referenceLink
-            path = pathAndUrl
-            break
-          }
-        }
-      }
-
-      path = path.replaceAll("`", "")
+      let { path, url } = getPathAndUrl(lineSplit, referenceLinks)
+      if (path == "") return undefined // can be a table header, eg Contracts(13)
 
       let name = path.split("/").pop()!!
 
@@ -177,6 +158,34 @@ const findModuleFromTable = (
   }
 
   return module
+}
+
+const getPathAndUrl = (
+  lineSplit: string[],
+  referenceLinks: ReferenceLink[]
+) => {
+  let url = "",
+    path = ""
+  for (let i = 0; i < lineSplit.length; ++i) {
+    let pathAndUrl = lineSplit[i]
+
+    let bySplit = getModulePathAndUrlBySplit(pathAndUrl)
+    if (bySplit) {
+      url = bySplit.url
+      path = bySplit.path
+      break
+    } else {
+      let referenceLink = matchReferenceLink(pathAndUrl, referenceLinks)
+      if (referenceLink) {
+        url = referenceLink
+        path = pathAndUrl
+        break
+      }
+    }
+  }
+
+  path = path.replaceAll("`", "")
+  return { path, url }
 }
 
 const isValidUrl = (url: string) => {
