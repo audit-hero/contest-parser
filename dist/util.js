@@ -1,4 +1,7 @@
 import Logger from "js-logger";
+export let moduleExtensions = [
+    ".sol", ".go", ".rs"
+];
 let ignoreLinkWords = [
     "report",
     "twitter",

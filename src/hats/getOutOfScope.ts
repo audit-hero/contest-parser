@@ -20,7 +20,7 @@ export const getOutOfScope = (split: string[]) => {
 
 export const getInScopeFromOutOfScope = (split: string[]) => {
   if (!split.some(it => inScopeKeywords.some(k => it.match(k) !== null))) {
-    return undefined
+    return []
   }
 
   // find out of scope section. after that, all of the mentioned files are out of scope
@@ -31,12 +31,12 @@ export const getInScopeFromOutOfScope = (split: string[]) => {
 
   inScope = getInScopeLines(inScopeStart, split, inScope, scope);
 
-  let modules = getModules("", scope)
+  let modules = getModulesFromTree("", scope)
   return modules
   // if there is `in scope` `within the scope` part, then use that part
 }
 
-export const getModules = (path: string, inScopeTree: string[]) => {
+export const getModulesFromTree = (path: string, inScopeTree: string[]) => {
   /**
 ├── Announcements.sol
 ├── MultiSig.sol

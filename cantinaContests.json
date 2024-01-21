@@ -1,5 +1,52 @@
 [
   {
+    "pk": "2024-01-olas",
+    "readme": "# Olas Competition\n\nOlas is a unified network for off-chain services like automation, oracles, co-owned AI. It offers a stack for building services and a protocol for incentivizing their creation and their operation in a co-owned and decentralized way.\n\nThe competition at a glance:\n\n* **Monday, January 15th 20:00 UTC** until **Friday, January 26th 20:00 UTC**\n* **$50,000** total prize pool.\n\n### Documentation\n\n* [Bonding\\_mechanism\\_with\\_liquidity\\_on\\_Solana\\_v1\\_v2.pdf ](https://github.com/valory-xyz/lockbox-solana/blob/main/lockbox/doc/Bonding%5Fmechanism%5Fwith%5Fliquidity%5Fon%5FSolana%5Fv1%5Fv2.pdf)\n* [Vulnerabilities\\_list\\_solana\\_lockbox\\_v1.pdf](https://github.com/valory-xyz/lockbox-solana/blob/main/lockbox/doc/Vulnerabilities%5Flist%5Fsolana%5Flockbox%5Fv1.pdf)\n\nFurther documentation on OLAS tokenomics and OLAS protocol can be found in what follows:\n\n* [Autonolas\\_tokenomics\\_audit.pdf](https://github.com/valory-xyz/autonolas-tokenomics/blob/main/docs/Autonolas%5Ftokenomics%5Faudit.pdf)\n* [Whitepaper.pdf](https://www.autonolas.network/documents/whitepaper/Whitepaper%20v1.0.pdf)\n* [Autonolas\\_Tokenomics\\_Core\\_Technical\\_Document.pdf ](https://www.autonolas.network/documents/whitepaper/Autonolas%5FTokenomics%5FCore%5FTechnical%5FDocument.pdf)\nPrize distribution and scoring\n\nThe prize distribution works as follows:\n\n* Security reviewers will score points for each finding.\n* Prizes are distributed proportionally to the number of points scored.\n* A High Severity is worth 10 points, and a Medium Severity 3 points.\n* Duplicate findings will be resolved using a scoring formula that incentivizes unique findings.\n* Duplicate findings will be resolved using the following scoring formula that incentivizes unique findings:  \n   * Each duplicate finding will be scaled down by 0.9n−1/n0.9^{n - 1} / n0.9n−1/n, where nnn is the # of duplicates.\n* 10% of the prize pot is reserved for Low Severity or informational findings. These reports are judged based on quality and researchers are then ranked from 1st to 5th for the purpose of prize allocation:  \n   * 1st: $2.5k  \n   * 2nd: $1.25k  \n   * 3rd: $600  \n   * 4th: $400  \n   * 5th: $250\nScope\n\n### Build Instructions\n\n* Pre-requisites and development steps for lockbox can be found here: [valory-xyz/lockbox-solana/tree/main/lockbox#readme](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox#readme)\n* Pre-requisites and development steps for lockbox2 can be found here: [valory-xyz/lockbox-solana/tree/main/lockbox2#readme ](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox2#readme)\n\n### Basic POC test\n\n* Basic POC for lockbox can be found here: [lockbox/tests/lockbox\\_init.ts](https://github.com/valory-xyz/lockbox-solana/blob/main/lockbox/tests/lockbox%5Finit.ts)\n* Basic POC for lockbox 2 can be found here: [lockbox2/tests/lockbox\\_init.ts](https://github.com/valory-xyz/lockbox-solana/blob/main/lockbox2/tests/lockbox%5Finit.ts)\n\n### Olas Contracts\n\n* Repository: [github.com/valory-xyz/lockbox-solana](https://github.com/valory-xyz/lockbox-solana)\n* Commit: [1736f39671c263311b0cedee290aef7eb9a81ef8](https://github.com/valory-xyz/lockbox-solana/commit/1736f39671c263311b0cedee290aef7eb9a81ef8)\n* Total LOC: 1,162\n* Files: all files in `src`\n\n| File                                                | blank | comment | code |\n| --------------------------------------------------- | ----- | ------- | ---- |\n| ./lockbox/programs/liquidity\\_lockbox/src/lib.rs    | 92    | 77      | 510  |\n| ./lockbox/programs/liquidity\\_lockbox/src/state.rs  | 10    | 13      | 67   |\n| ./lockbox2/programs/liquidity\\_lockbox/src/lib.rs   | 103   | 87      | 547  |\n| ./lockbox2/programs/liquidity\\_lockbox/src/state.rs | 5     | 7       | 38   |\n| **SUM:**                                            | 210   | 184     | 1162 |\n\n### Out of Scope issues\n\nKnown issues [Vulnerabilities\\_list\\_solana\\_lockbox\\_v1.pdf](https://github.com/valory-xyz/lockbox-solana/blob/main/lockbox/doc/Vulnerabilities%5Flist%5Fsolana%5Flockbox%5Fv1.pdf) and any issues documented in the doc folders [valory-xyz/lockbox-solana/tree/main/lockbox/doc](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox/doc) and [valory-xyz/lockbox-solana/tree/main/lockbox2/doc](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox2/doc) or in the audits folders [valory-xyz/lockbox-solana/tree/main/lockbox/audits](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox/audits) and [valory-xyz/lockbox-solana/tree/main/lockbox2/audits](https://github.com/valory-xyz/lockbox-solana/tree/main/lockbox2/audits).\nContact us\n\nFor any issues or concerns regarding Cantina Competitions or Cantina Code - please reach out to us at [Cantina](https://x.com/cantinaxyz).\nSummary\n\nStatus\n\nLive\n\nTotal reward:\n\n$50,000 USDC\n\nStart date:\n\n15 Jan 2024 8:00pm (local time)\n\nEnd date:\n\n29 Jan 2024 8:00pm (local time)\n\nYou need to be logged in as a researcher in order to join.\n\nThe first marketplace for web3 security. We've aggregated the security talent and solutions so you don't have to.\n\n[Blog](https://cantina.mirror.xyz/)[Branding](/branding)[Citation Guide](/citation)[Privacy Policy](/privacy-policy)[Terms of Use](/terms-of-use)\n\n[Request a Security Review](/rfp/create)[Portfolio](/portfolio)[Public Goods](/crowdfund)[Support](https://support.cantina.xyz/)[Security Contact](mailto:security@cantina.xyz)\n\nSignup below to stay notified on Cantina updates and new feature announcements.\n\n[Subscribe](https://form.typeform.com/to/ZYRF8QYH)\n\n---\n\n© 2024 Cantina. All rights reserved.",
+    "start_date": 1705251600,
+    "end_date": 1706461200,
+    "platform": "cantina",
+    "sk": "0",
+    "url": "https://cantina.xyz/competitions/829164bf-7fba-4b84-a6b8-76652205bd97",
+    "active": 1,
+    "status": "active",
+    "modules": [],
+    "all_modules": [
+      {
+        "name": "lib.rs",
+        "contest": "2024-01-olas",
+        "active": 1,
+        "path": "lockbox/programs/liquidity_lockbox/src/lib.rs",
+        "url": "https://github.com/valory-xyz/lockbox-solana/tree/1736f39671c263311b0cedee290aef7eb9a81ef8/lockbox/programs/liquidity_lockbox/src/lib.rs"
+      },
+      {
+        "name": "state.rs",
+        "contest": "2024-01-olas",
+        "active": 1,
+        "path": "lockbox/programs/liquidity_lockbox/src/state.rs",
+        "url": "https://github.com/valory-xyz/lockbox-solana/tree/1736f39671c263311b0cedee290aef7eb9a81ef8/lockbox/programs/liquidity_lockbox/src/state.rs"
+      },
+      {
+        "name": "lib.rs",
+        "contest": "2024-01-olas",
+        "active": 1,
+        "path": "lockbox2/programs/liquidity_lockbox/src/lib.rs",
+        "url": "https://github.com/valory-xyz/lockbox-solana/tree/1736f39671c263311b0cedee290aef7eb9a81ef8/lockbox2/programs/liquidity_lockbox/src/lib.rs"
+      },
+      {
+        "name": "state.rs",
+        "contest": "2024-01-olas",
+        "active": 1,
+        "path": "lockbox2/programs/liquidity_lockbox/src/state.rs",
+        "url": "https://github.com/valory-xyz/lockbox-solana/tree/1736f39671c263311b0cedee290aef7eb9a81ef8/lockbox2/programs/liquidity_lockbox/src/state.rs"
+      }
+    ],
+    "doc_urls": [],
+    "prize": "$50,000 USDC",
+    "tags": [
+      "token"
+    ]
+  },
+  {
     "pk": "zerolend-competition",
     "readme": "# Zerolend Competition\n\nZeroLend is the leading lending market on zkSync!\n\n### What are ZeroLend governance contracts\n\nA walkthrough of the governance contracts will be done on 9th of January.\n\n## Prize distribution and scoring\n\nThe prize distribution works as follows:\n\n* Security reviewers will score points for each finding.\n* Prizes are distributed proportionally to the number of points scored.\n* A High Severity is worth 10 points, and a Medium Severity 3 points.\n* Duplicate findings will be resolved using a scoring formula that incentivizes unique findings.\n* Duplicate findings will be resolved using the following scoring formula that incentivizes unique findings:  \n   * Each duplicate finding will be scaled down by 0.9n−1/n0.9^{n - 1} / n0.9n−1/n, where nnn is the # of duplicates.\n* 10% of the prize pot is reserved for Low Severity or informational findings. These reports are judged based on quality and researchers are then ranked from 1st to 5th for the purpose of prize allocation:  \n   * 1st: $4k  \n   * 2nd: $2k  \n   * 3rd: $1k  \n   * 4th: $500  \n   * 5th: $500\n\n## Scope\n\n### Basic POC test\n\n* [zerolend/incentive-contracts/blob/master/test/Basic.ts](https://github.com/zerolend/incentive-contracts/blob/master/test/Basic.ts)\n\n`import { loadFixture } from \"@nomicfoundation/hardhat-toolbox/network-helpers\";\nimport { expect } from \"chai\";\nimport { deployFixture } from \"./fixtures/core\";\n\ndescribe(\"Basic\", function () {\n  it(\"Should deploy token properly\", async function () {\n    const { token, owner } = await loadFixture(deployFixture);\n    expect(await token.owner()).to.equal(owner.address);\n    expect(await token.owner()).to.equal(owner.address);\n  });\n});\n`\n\n### Zerolend incentive-contracts\n\n* Repository: [zerolend/incentive-contracts](https://github.com/zerolend/incentive-contracts)\n* Commit: [3fbcd817c310d1682d2301d23233f0fc7e7d1f00](https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00)\n* Total LOC: 2,401\n* Files: all files in `src`\n\n| File                                   | blank | comment | code |\n| -------------------------------------- | ----- | ------- | ---- |\n| ./ZeroLocker.sol                       | 123   | 268     | 732  |\n| ./ZLRewardsController.sol              | 89    | 215     | 512  |\n| ./ZeroLockerTimelock.sol               | 46    | 179     | 297  |\n| ./FeeDistributor.sol                   | 68    | 11      | 228  |\n| ./StreamedVesting.sol                  | 50    | 22      | 186  |\n| ./interfaces/IZLRewardsController.sol  | 39    | 9       | 73   |\n| ./interfaces/IZeroLocker.sol           | 24    | 4       | 63   |\n| ./Epoch.sol                            | 20    | 14      | 58   |\n| ./interfaces/IStreamedVesting.sol      | 9     | 1       | 43   |\n| ./StakingEmissions.sol                 | 11    | 10      | 40   |\n| ./VestedZeroLend.sol                   | 12    | 10      | 39   |\n| ./BonusPool.sol                        | 9     | 10      | 35   |\n| ./ZeroLend.sol                         | 8     | 10      | 27   |\n| ./interfaces/IZeroLend.sol             | 3     | 10      | 15   |\n| ./interfaces/IFeeDistributor.sol       | 6     | 10      | 15   |\n| ./utils/RecoverERC20.sol               | 4     | 8       | 11   |\n| ./interfaces/IIncentivesController.sol | 2     | 1       | 9    |\n| ./interfaces/IBonusPool.sol            | 5     | 1       | 7    |\n| ./interfaces/IERC20Burnable.sol        | 3     | 1       | 6    |\n| ./interfaces/IWETH.sol                 | 2     | 1       | 5    |\n| **SUM:**                               | 533   | 795     | 2401 |\n\n### Out of Scope issues\n\n* Previous security reviews.\n* Automated [findings](https://gist.github.com/misirov/4dbae4e3810f0a9a75e6b3558d39ebd3) from 4naly3er.\n\n## Summary\n\nStatus\n\nLive\n\nTotal reward:\n\n$80,000 USDC\n\nStart date:\n\n8 Jan 2024 8:00pm (local time)\n\nEnd date:\n\n25 Jan 2024 8:00pm (local time)\n\nYou need to be logged in as a researcher in order to join.\n\nThe first marketplace for web3 security. We've aggregated the security talent and solutions so you don't have to.\n\n[Blog](https://cantina.mirror.xyz/)[Branding](/branding)[Citation Guide](/citation)[Privacy Policy](/privacy-policy)[Terms of Use](/terms-of-use)\n\n[Request a Security Review](/rfp/create)[Portfolio](/portfolio)[Public Goods](/crowdfund)[Support](https://support.cantina.xyz/)[Security Contact](mailto:security@cantina.xyz)\n\nSignup below to stay notified on Cantina updates and new feature announcements.\n\n[Subscribe](https://form.typeform.com/to/ZYRF8QYH)\n\n---\n\n© 2024 Cantina. All rights reserved.",
     "start_date": 1704646800,
@@ -14,141 +61,141 @@
         "name": "ZeroLocker.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLocker.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLocker.sol"
+        "path": "ZeroLocker.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLocker.sol"
       },
       {
         "name": "ZLRewardsController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZLRewardsController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZLRewardsController.sol"
+        "path": "ZLRewardsController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZLRewardsController.sol"
       },
       {
         "name": "ZeroLockerTimelock.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLockerTimelock.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLockerTimelock.sol"
+        "path": "ZeroLockerTimelock.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLockerTimelock.sol"
       },
       {
         "name": "FeeDistributor.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./FeeDistributor.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./FeeDistributor.sol"
+        "path": "FeeDistributor.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/FeeDistributor.sol"
       },
       {
         "name": "StreamedVesting.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./StreamedVesting.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./StreamedVesting.sol"
+        "path": "StreamedVesting.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/StreamedVesting.sol"
       },
       {
         "name": "IZLRewardsController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZLRewardsController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZLRewardsController.sol"
+        "path": "interfaces/IZLRewardsController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZLRewardsController.sol"
       },
       {
         "name": "IZeroLocker.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZeroLocker.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZeroLocker.sol"
+        "path": "interfaces/IZeroLocker.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZeroLocker.sol"
       },
       {
         "name": "Epoch.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./Epoch.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./Epoch.sol"
+        "path": "Epoch.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/Epoch.sol"
       },
       {
         "name": "IStreamedVesting.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IStreamedVesting.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IStreamedVesting.sol"
+        "path": "interfaces/IStreamedVesting.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IStreamedVesting.sol"
       },
       {
         "name": "StakingEmissions.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./StakingEmissions.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./StakingEmissions.sol"
+        "path": "StakingEmissions.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/StakingEmissions.sol"
       },
       {
         "name": "VestedZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./VestedZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./VestedZeroLend.sol"
+        "path": "VestedZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/VestedZeroLend.sol"
       },
       {
         "name": "BonusPool.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./BonusPool.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./BonusPool.sol"
+        "path": "BonusPool.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/BonusPool.sol"
       },
       {
         "name": "ZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLend.sol"
+        "path": "ZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLend.sol"
       },
       {
         "name": "IZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZeroLend.sol"
+        "path": "interfaces/IZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZeroLend.sol"
       },
       {
         "name": "IFeeDistributor.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IFeeDistributor.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IFeeDistributor.sol"
+        "path": "interfaces/IFeeDistributor.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IFeeDistributor.sol"
       },
       {
         "name": "RecoverERC20.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./utils/RecoverERC20.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./utils/RecoverERC20.sol"
+        "path": "utils/RecoverERC20.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/utils/RecoverERC20.sol"
       },
       {
         "name": "IIncentivesController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IIncentivesController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IIncentivesController.sol"
+        "path": "interfaces/IIncentivesController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IIncentivesController.sol"
       },
       {
         "name": "IBonusPool.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IBonusPool.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IBonusPool.sol"
+        "path": "interfaces/IBonusPool.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IBonusPool.sol"
       },
       {
         "name": "IERC20Burnable.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IERC20Burnable.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IERC20Burnable.sol"
+        "path": "interfaces/IERC20Burnable.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IERC20Burnable.sol"
       },
       {
         "name": "IWETH.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IWETH.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IWETH.sol"
+        "path": "interfaces/IWETH.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IWETH.sol"
       }
     ],
     "all_modules": [
@@ -156,141 +203,141 @@
         "name": "ZeroLocker.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLocker.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLocker.sol"
+        "path": "ZeroLocker.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLocker.sol"
       },
       {
         "name": "ZLRewardsController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZLRewardsController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZLRewardsController.sol"
+        "path": "ZLRewardsController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZLRewardsController.sol"
       },
       {
         "name": "ZeroLockerTimelock.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLockerTimelock.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLockerTimelock.sol"
+        "path": "ZeroLockerTimelock.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLockerTimelock.sol"
       },
       {
         "name": "FeeDistributor.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./FeeDistributor.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./FeeDistributor.sol"
+        "path": "FeeDistributor.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/FeeDistributor.sol"
       },
       {
         "name": "StreamedVesting.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./StreamedVesting.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./StreamedVesting.sol"
+        "path": "StreamedVesting.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/StreamedVesting.sol"
       },
       {
         "name": "IZLRewardsController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZLRewardsController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZLRewardsController.sol"
+        "path": "interfaces/IZLRewardsController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZLRewardsController.sol"
       },
       {
         "name": "IZeroLocker.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZeroLocker.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZeroLocker.sol"
+        "path": "interfaces/IZeroLocker.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZeroLocker.sol"
       },
       {
         "name": "Epoch.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./Epoch.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./Epoch.sol"
+        "path": "Epoch.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/Epoch.sol"
       },
       {
         "name": "IStreamedVesting.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IStreamedVesting.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IStreamedVesting.sol"
+        "path": "interfaces/IStreamedVesting.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IStreamedVesting.sol"
       },
       {
         "name": "StakingEmissions.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./StakingEmissions.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./StakingEmissions.sol"
+        "path": "StakingEmissions.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/StakingEmissions.sol"
       },
       {
         "name": "VestedZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./VestedZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./VestedZeroLend.sol"
+        "path": "VestedZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/VestedZeroLend.sol"
       },
       {
         "name": "BonusPool.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./BonusPool.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./BonusPool.sol"
+        "path": "BonusPool.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/BonusPool.sol"
       },
       {
         "name": "ZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./ZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./ZeroLend.sol"
+        "path": "ZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/ZeroLend.sol"
       },
       {
         "name": "IZeroLend.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IZeroLend.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IZeroLend.sol"
+        "path": "interfaces/IZeroLend.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IZeroLend.sol"
       },
       {
         "name": "IFeeDistributor.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IFeeDistributor.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IFeeDistributor.sol"
+        "path": "interfaces/IFeeDistributor.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IFeeDistributor.sol"
       },
       {
         "name": "RecoverERC20.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./utils/RecoverERC20.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./utils/RecoverERC20.sol"
+        "path": "utils/RecoverERC20.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/utils/RecoverERC20.sol"
       },
       {
         "name": "IIncentivesController.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IIncentivesController.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IIncentivesController.sol"
+        "path": "interfaces/IIncentivesController.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IIncentivesController.sol"
       },
       {
         "name": "IBonusPool.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IBonusPool.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IBonusPool.sol"
+        "path": "interfaces/IBonusPool.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IBonusPool.sol"
       },
       {
         "name": "IERC20Burnable.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IERC20Burnable.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IERC20Burnable.sol"
+        "path": "interfaces/IERC20Burnable.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IERC20Burnable.sol"
       },
       {
         "name": "IWETH.sol",
         "contest": "zerolend-competition",
         "active": 1,
-        "path": "./interfaces/IWETH.sol",
-        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/./interfaces/IWETH.sol"
+        "path": "interfaces/IWETH.sol",
+        "url": "https://github.com/zerolend/incentive-contracts/tree/3fbcd817c310d1682d2301d23233f0fc7e7d1f00/interfaces/IWETH.sol"
       }
     ],
     "doc_urls": [],
@@ -300,25 +347,6 @@
       "token",
       "erc20",
       "weth"
-    ]
-  },
-  {
-    "pk": "superform-ctf",
-    "readme": "# Superform CTF\n\nHack Superform, keep the money.\n\n* Add your wallet address to your profile (Profile -> Edit Profile -> CTF Addresses).\n* The contracts are live, you can (legally) hack it onchain.\n* Use cantina code interface to submit a writeup about the exploit, with a link to etherscan / equivalent.\n* There is no judging. No severity disputes. No PoC. Just hacking!\n\n## Planting The Flags\n\nStarting December 28th, the Superform Protocol will be deployed on Avalanche, BNB Chain, and Polygon. Deposits will be made into 3 vaults on each chain for a total of 9 vaults. Deposits will be made into 3 vaults daily in tranches of $2.5k at 15:00 UTC until all deposits have been made.\n\nThe goal is to steal the ERC4626 shares held in Superform Protocol’s Superform contracts and tokens in transit from chain to chain. If stolen, the security researcher can keep the bounty in the vault. Users may do this via any protocol action — creating new Superforms, depositing/withdrawing from the protocol into vaults themselves via our contracts, etc.\n\n## Resources:\n\n* [Superform V1 Deployment](https://docs.superform.xyz/resources/deployment-addresses)\n* [Superform Addresses with Deposits](https://docs.superform.xyz/resources/ctf-competition-deposit-addresses)\n\nSee the full announcement [here](https://mirror.xyz/superform.eth/KOgVtZJgzT7VZ7X6zRIYTzoN8dJkWobKknUMUYQnyAM)\n\n## Summary\n\nStatus\n\nLive\n\nTotal reward:\n\n$100,000 USDC\n\nStart date:\n\n28 Dec 2023 10:00pm (local time)\n\nEnd date:\n\n14 Jan 2024 10:00pm (local time)\n\nYou need to be logged in as a researcher in order to join.\n\nThe first marketplace for web3 security. We've aggregated the security talent and solutions so you don't have to.\n\n[Blog](https://cantina.mirror.xyz/)[Branding](/branding)[Citation Guide](/citation)[Privacy Policy](/privacy-policy)[Terms of Use](/terms-of-use)\n\n[Request a Security Review](/rfp/create)[Portfolio](/portfolio)[Public Goods](/crowdfund)[Support](https://support.cantina.xyz/)[Security Contact](mailto:security@cantina.xyz)\n\nSignup below to stay notified on Cantina updates and new feature announcements.\n\n[Subscribe](https://form.typeform.com/to/ZYRF8QYH)\n\n---\n\n© 2024 Cantina. All rights reserved.",
-    "start_date": 1703696400,
-    "end_date": 1705165200,
-    "platform": "cantina",
-    "sk": "0",
-    "url": "https://cantina.xyz/competitions/f0cfe0e9-290b-4967-94ac-504375329127",
-    "active": 1,
-    "status": "active",
-    "modules": [],
-    "all_modules": [],
-    "doc_urls": [],
-    "prize": "$100,000 USDC",
-    "tags": [
-      "4626",
-      "token"
     ]
   }
 ]

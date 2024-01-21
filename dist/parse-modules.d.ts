@@ -16,5 +16,5 @@ contracts
   _     ├── GMXOracle.sol
 ```
  */
-export declare const parseTreeModules: (scope: string[]) => string[];
+export declare const parseTreeModulesOld: (scope: string[]) => string[];
 export declare let parseTreeModulesV2: (lines: string[]) => string[];

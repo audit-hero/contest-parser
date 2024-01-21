@@ -17,18 +17,18 @@ export const getOutOfScope = (split) => {
 };
 export const getInScopeFromOutOfScope = (split) => {
     if (!split.some(it => inScopeKeywords.some(k => it.match(k) !== null))) {
-        return undefined;
+        return [];
     }
     // find out of scope section. after that, all of the mentioned files are out of scope
     let inScopeStart = split.findIndex(it => inScopeKeywords.some(k => it.match(k) !== null));
     let scope = [];
     let inScope = false;
     inScope = getInScopeLines(inScopeStart, split, inScope, scope);
-    let modules = getModules("", scope);
+    let modules = getModulesFromTree("", scope);
     return modules;
     // if there is `in scope` `within the scope` part, then use that part
 };
-export const getModules = (path, inScopeTree) => {
+export const getModulesFromTree = (path, inScopeTree) => {
     /**
   ├── Announcements.sol
   ├── MultiSig.sol

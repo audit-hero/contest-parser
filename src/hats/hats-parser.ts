@@ -113,7 +113,7 @@ const parseContest = async (
     active: 1, // end_date > now
     status: getContestStatus({ startDate, endDate }),
     prize: hmAwards,
-    modules: modules,
+    modules: modules.filter(it => it.path?.endsWith(".sol")),
     all_modules: modules,
     doc_urls: docUrls,
     repo_urls: contest.scope.reposInformation.map((it) => it.url),

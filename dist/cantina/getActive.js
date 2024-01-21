@@ -11,8 +11,8 @@ export const getActiveContests = (md) => {
     let name = "";
     for (let i = 0; i < lines.length; ++i) {
         let line = lines[i];
-        if (line.startsWith("# ")) {
-            name = truncateLongContestName(line.replace("# ", "").toLowerCase().replace(/ /g, "-"));
+        if (name === "" && (line.startsWith("# ") || line.startsWith("## "))) {
+            name = truncateLongContestName(line.replace("## ", "").replace("# ", "").toLowerCase().replace(/ /g, "-"));
         }
         if (name !== "" && line.startsWith("[View competition](")) {
             let id = line
@@ -21,6 +21,10 @@ export const getActiveContests = (md) => {
             let dateLine = lines[i - 2];
             let { start_date, end_date } = getStartEndDate(dateLine);
             let prize = lines[i - 4];
+            // let startDate = new Date(start_date * 1000)
+            let startYear = new Date(start_date * 1000).getFullYear();
+            let startMonth = new Date(start_date * 1000).getMonth() + 1;
+            name = `${startYear}-${startMonth.toString().padStart(2, "0")}-${name.replace("-competition", "")}`;
             let epochSeconds = Math.floor(Date.now() / 1000);
             if (start_date <= epochSeconds && end_date >= epochSeconds) {
                 results.push({ name, id, start_date, end_date, prize });

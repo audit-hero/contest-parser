@@ -1,5 +1,6 @@
 // general module parser from a tree. finds the files that end with .sol, and their directory paths
 //  according to character count before the directories.
+import { moduleExtensions } from "./util.js";
 /**
  *
 all of these options should work
@@ -18,7 +19,7 @@ contracts
   _     ├── GMXOracle.sol
 ```
  */
-export const parseTreeModules = (scope) => {
+export const parseTreeModulesOld = (scope) => {
     // if line contains .sol, then it is a module
     // otherwise, it is a directory expansion
     let modules = [];
@@ -29,7 +30,7 @@ export const parseTreeModules = (scope) => {
         let line = scope[i];
         if (line.trim().startsWith("```"))
             continue;
-        if (line.includes(".sol")) {
+        if (lineIsContract(line)) {
             let module = line.match(/\w+\.sol/);
             if (module)
                 modules.push(`${currentPath}/${module[0]}`);
@@ -64,6 +65,9 @@ export const parseTreeModules = (scope) => {
             }
             lastDepths[lastPathDepth] = firstWord[0];
         }
+    }
+    if (modules.length === 0) {
+        modules = parseTreeModulesV2(scope);
     }
     return modules;
 };
@@ -108,7 +112,7 @@ export let parseTreeModulesV2 = (lines) => {
         // Adjust current path based on depth
         currentPath = currentPath.slice(0, depth / 4 + 1); // Using 4 spaces as one indentation level, +1 for the "contracts" base
         // Check if the name ends with '.sol', which indicates it's a file
-        if (name.endsWith(".sol")) {
+        if (lineIsContract(name)) {
             const filePath = [...currentPath, name].join("/"); // Construct the full file path
             paths.push(filePath);
         }
@@ -117,5 +121,8 @@ export let parseTreeModulesV2 = (lines) => {
         }
     }
     return paths.map((path) => path.replaceAll("//", "/"));
+};
+let lineIsContract = (line) => {
+    return moduleExtensions.some(it => line.endsWith(it));
 };
 //# sourceMappingURL=parse-modules.js.map

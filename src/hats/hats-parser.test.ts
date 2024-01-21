@@ -47,6 +47,15 @@ describe("", () => {
     expect(parsed[0]?.doc_urls?.at(0)).toBe("https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs")
   })
 
+  it("parses in scope in description", async () => {
+    vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
+
+    let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description.json`).toString()
+    let parsed = await parseContests([JSON.parse(contestString)], [])
+
+    expect(parsed[0]?.all_modules.length).toBe(9)
+  })
+
   const mockRequests = async () => {
     let workDir = workingDir()
     let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString()

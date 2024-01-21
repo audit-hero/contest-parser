@@ -1,9 +1,10 @@
 import git from "simple-git";
-import { ignoredScopeFiles, workingDir } from "../util.js";
+import { ignoredScopeFiles, moduleExtensions, workingDir } from "../util.js";
 import { glob } from "glob";
 import fs from "fs";
 import Logger from "js-logger";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
+import { parseTreeModulesV2 } from "../parse-modules.js";
 export const getModules = async (contest, name) => {
     let jobs = contest.scope.reposInformation.map(it => getModulesRepo(it, contest, name));
     let res = await Promise.all(jobs);
@@ -11,6 +12,7 @@ export const getModules = async (contest, name) => {
 };
 const getModulesRepo = async (repoInfo, contest, name) => {
     let repoName = repoInfo.url.split("/").pop();
+    Logger.info(`cloning ${repoName} for contest ${name}`);
     let dir = process.env.LAMBDA_TASK_ROOT ? `/tmp/${name}/${repoName}` : `${workingDir()}/tmp/${name}/${repoName}`;
     if (fs.existsSync(dir))
         fs.rmSync(dir, { recursive: true });
@@ -20,25 +22,28 @@ const getModulesRepo = async (repoInfo, contest, name) => {
     else {
         Logger.info(`repo already cloned in ${dir}`);
     }
-    // get all .sol/.go files in the repo
-    let files = glob.sync(`${dir}/**/*.sol`).map(it => it.replace(dir, ""));
-    files.push(...glob.sync(`${dir}/**/*.go`).map(it => it.replace(dir, "")));
+    // get all .sol/.go/.rs files in the repo
+    let files = [];
+    moduleExtensions.forEach(extension => {
+        files.push(...glob.sync(`${dir}/**/*${extension}`).map(it => it.replace(dir, "")));
+    });
     files = files.filter(path => !ignoredScopeFiles.some(excludePath => path.includes(excludePath)));
-    // 2. filter out of scope files
-    let split = contest.scope.outOfScope.split("\n");
-    let filteredPaths;
-    try {
-        filteredPaths = getInScopeFromOutOfScope(split);
-    }
-    catch (e) { }
-    if (!filteredPaths) {
-        let outOfScopePaths = getOutOfScope(split);
-        filteredPaths = files.filter(path => {
-            return !outOfScopePaths.some(excludePath => {
-                let trimmedPath = removeSuffix(excludePath, "**");
-                return path.startsWith(trimmedPath);
+    let filteredPaths = getInScopeFromScopeDescription(contest.scope.description);
+    if (filteredPaths.length === 0) {
+        let split = contest.scope.outOfScope.split("\n");
+        try {
+            filteredPaths = getInScopeFromOutOfScope(split);
+        }
+        catch (e) { }
+        if (filteredPaths.length === 0) {
+            let outOfScopePaths = getOutOfScope(split);
+            filteredPaths = files.filter(path => {
+                return !outOfScopePaths.some(excludePath => {
+                    let trimmedPath = removeSuffix(excludePath, "**");
+                    return path.startsWith(trimmedPath);
+                });
             });
-        });
+        }
     }
     let repoRawContentUrl = repoInfo.url.replace("github.com", "raw.githubusercontent.com");
     let commit = repoInfo.commitHash;
@@ -56,6 +61,30 @@ const getModulesRepo = async (repoInfo, contest, name) => {
         };
         return res;
     });
+};
+let getInScopeFromScopeDescription = (scope) => {
+    let lines = scope.split("\n");
+    let inScope = [];
+    let inScopeStarted = false;
+    for (let line of lines) {
+        if (line.includes("## ") && line.includes("scope") && !line.includes("out of scope")) {
+            inScopeStarted = true;
+            continue;
+        }
+        if (inScopeStarted && (line.includes("out of scope") || line.includes("## "))) {
+            inScopeStarted = false;
+            continue;
+        }
+        if (inScopeStarted) {
+            if (line.includes("```"))
+                continue;
+            if (line.trim() === "")
+                continue;
+            inScope.push(line);
+        }
+    }
+    let paths = parseTreeModulesV2(inScope);
+    return paths;
 };
 function removeSuffix(excludePath, suffix) {
     let excludedUntil = 0;
