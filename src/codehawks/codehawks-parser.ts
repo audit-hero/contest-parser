@@ -438,31 +438,35 @@ function getStartEndDate(readme: string[]): { startDate: any; endDate: any } {
   let startDate = 0
   let endDate = 0
 
-  for (let line of readme) {
+  upper:for (let line of readme) {
     line = line.toLowerCase()
     /**
     - Starts August 21, 2023
     - Ends August 28th, 2023
      */
 
-    dateSplitWords.forEach(it => {
-      if (line.includes(it)) {
-        let split = line.split(it)
-        if (split.length < 2) return
+    for (let splitWord of dateSplitWords) {
+      if (line.includes(splitWord)) {
+        let split = line.split(splitWord)
+        if (split.length < 2) continue
 
         let trimmed = pipe(
           split[1].trim(),
           replaceNoonLine,
-          replaceUtc
+          replaceUtc,
+          moveTimeToEnd
         )
         
         let date = anyDate.attempt(trimmed)
-        if (date.invalid) return
+        if (date.invalid) continue
 
-        if (it.includes("start")) startDate = getAnyDateTimestamp(date)
+        if (splitWord.includes("start")) startDate = getAnyDateTimestamp(date)
         else endDate = getAnyDateTimestamp(date)
+
+        if (startDate && endDate) break
+        continue upper
       }
-    })
+    }
   }
   if (startDate === 0 || endDate === 0) sentryError(`no start or end date found for ${readme}`)
 
@@ -477,4 +481,19 @@ let replaceNoonLine = (date:string) => {
 
 let replaceUtc = (date:string) => {
   return date.replace(/(utc|gmt)/, '')
+}
+
+let moveTimeToEnd = (date:string) => {
+  date = date.replace("  ", " ")
+  // remove "dd:dd" if it exists, and put it to the end
+  let split = date.split(" ")
+  if (split.length < 3) return date
+
+  if (split[0].includes(":")) {
+    let time = split[0]
+    split = split.slice(1)
+    split.push(time)
+  }
+
+  return split.join(" ")
 }
