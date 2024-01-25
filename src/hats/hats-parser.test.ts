@@ -33,7 +33,9 @@ describe("", () => {
 
     expect(contest.prize).toBe("150000")
     expect(contest.modules.length).toBe(36)
-    expect(contest.url).toBe("https://app.hats.finance/audit-competitions/stakewise-0xd91cd6ed6c9a112fdc112b1a3c66e47697f522cd")
+    expect(contest.url).toBe(
+      "https://app.hats.finance/audit-competitions/stakewise-0xd91cd6ed6c9a112fdc112b1a3c66e47697f522cd"
+    )
     expect(contest.repo_urls![0]).toBe("https://github.com/stakewise/v3-core")
     expect(contest.doc_urls![0]).toBe("https://docs-v3.stakewise.io")
   })
@@ -41,17 +43,25 @@ describe("", () => {
   it("parses hopr", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1696519000000)
 
-    let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/hopr.json`).toString()
+    let contestString = fs
+      .readFileSync(`${workingDir()}/src/hats/test/hopr.json`)
+      .toString()
     let parsed = await parseContests([JSON.parse(contestString)], [])
 
     expect(parsed[0]?.modules.length).toBe(18)
-    expect(parsed[0]?.doc_urls?.at(0)).toBe("https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs")
+    expect(parsed[0]?.doc_urls?.at(0)).toBe(
+      "https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs"
+    )
   })
 
   it("parses in scope in description", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
 
-    let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description.json`).toString()
+    let contestString = fs
+      .readFileSync(
+        `${workingDir()}/src/hats/test/in-scope-in-description.json`
+      )
+      .toString()
     let parsed = await parseContests([JSON.parse(contestString)], [])
 
     expect(parsed[0]?.all_modules.length).toBe(9)
@@ -60,16 +70,32 @@ describe("", () => {
   it("parses in scope in description with format", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
 
-    let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description-with-format.json`).toString()
+    let contestString = fs
+      .readFileSync(
+        `${workingDir()}/src/hats/test/in-scope-in-description-with-format.json`
+      )
+      .toString()
     let parsed = await getModules(JSON.parse(contestString), "name")
 
+    // 2 repos
     expect(parsed.length).toBe(23)
+    for (let i = 0; i < 10; i++) {
+      expect(parsed[i].path?.split("/")[0]).toBe("evm")
+    }
+    // 10 is README.md
+    for (let i = 11; i < 23; i++) {
+      expect(parsed[i].path?.split("/")[0]).toBe("src")
+    }
   })
 
   const mockRequests = async () => {
     let workDir = workingDir()
-    let repos = fs.readFileSync(`${workDir}/src/hats/test/all-projects.json`).toString()
-    let readme = fs.readFileSync(`${workDir}/src/hats/test/stakewise.json`).toString()
+    let repos = fs
+      .readFileSync(`${workDir}/src/hats/test/all-projects.json`)
+      .toString()
+    let readme = fs
+      .readFileSync(`${workDir}/src/hats/test/stakewise.json`)
+      .toString()
 
     let myUrls = [
       "QmSkvN3btWFD5Ve68Xax7t5k2Y9rrTgSGWSghzcHUhgD7n",
@@ -78,18 +104,18 @@ describe("", () => {
 
     vi.stubGlobal("fetch", async (url: string) => {
       return Promise.resolve({
-        ok: myUrls.some(it => url.includes(it)),
+        ok: myUrls.some((it) => url.includes(it)),
         json: () => {
-          if (url == "https://api.thegraph.com/subgraphs/name/hats-finance/hats") {
+          if (
+            url == "https://api.thegraph.com/subgraphs/name/hats-finance/hats"
+          ) {
             return Promise.resolve(JSON.parse(repos))
-          }
-          else if (myUrls.some(it => url.includes(it))) {
+          } else if (myUrls.some((it) => url.includes(it))) {
             return Promise.resolve(JSON.parse(readme))
-          }
-          else {
+          } else {
             return Promise.resolve("")
           }
-        }
+        },
       })
     }) as any
 
@@ -99,9 +125,12 @@ describe("", () => {
           clone: () => {
             // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
             fs.mkdirSync(`./tmp/2023-08-stakewise/v3-core`, { recursive: true })
-            fs.copySync(`./src/hats/test/stakewise-repo/`, `./tmp/2023-08-stakewise/v3-core`)
-          }
-        })
+            fs.copySync(
+              `./src/hats/test/stakewise-repo/`,
+              `./tmp/2023-08-stakewise/v3-core`
+            )
+          },
+        }),
       }
     })
   }

@@ -1,5 +1,6 @@
 // general module parser from a tree. finds the files that end with .sol, and their directory paths
 //  according to character count before the directories.
+import Logger from "js-logger";
 /**
  *
 all of these options should work
@@ -29,7 +30,7 @@ export const parseTreeModulesOld = (scope) => {
         let line = scope[i];
         if (line.trim().startsWith("```"))
             continue;
-        if (lineIsFile(line)) {
+        if (nameIsFile(line)) {
             let module = line.match(/\w+\.sol/);
             if (module)
                 modules.push(`${currentPath}/${module[0]}`);
@@ -70,58 +71,61 @@ export const parseTreeModulesOld = (scope) => {
     }
     return modules;
 };
-/*
-parses this kind:
-
-contracts/
-└── core/
-    ├── ccip/
-    │   ├── base/
-    │   │   └── SDLPoolCCIPController.sol
-    │   ├── RESDLTokenBridge.sol
-    │   ├── SDLPoolCCIPControllerPrimary.sol
-    │   ├── SDLPoolCCIPControllerSecondary.sol
-    │   └── WrappedTokenBridge.sol
-    └── sdlPool/
-        ├── base/
-        │   └── SDLPool.sol
-        ├── LinearBoostController.sol
-        ├── SDLPoolPrimary.sol
-        └── SDLPoolSecondary.sol
-    └── RewardsInitiator.sol
-
-expects that there is a whitespace " " before the name of the file or directory. That will be used as the depth indicator.
-*/
 export let parseTreeModulesV2 = (lines) => {
     let paths = [];
-    let currentPath = []; // Start with "contracts" as the base directory
-    // Iterate through the lines, ignoring the first one as it just contains "contracts/"
+    let currentPath = [];
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (line.trim().startsWith("```"))
             continue;
         const depth = line.lastIndexOf(" ");
-        if (depth === -1 && currentPath.length === 0) {
-            currentPath = [line.trim()];
-        }
         const name = line
             .substr(depth + 1)
             .replace(/[└├─│]/g, "")
             .trim();
-        // Adjust current path based on depth
-        currentPath = currentPath.slice(0, depth / 4 + 1); // Using 4 spaces as one indentation level, +1 for the "contracts" base
-        // Check if the name ends with '.sol', which indicates it's a file
-        if (lineIsFile(name)) {
-            const filePath = [...currentPath, name].join("/"); // Construct the full file path
+        if (nameIsFile(name)) {
+            if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
+                // lower the path depth. remove until the current depth and replace
+                for (let i = currentPath.length - 1; i >= 0; i--) {
+                    if (currentPath[i].depth >= depth) {
+                        currentPath.splice(i, 1);
+                    }
+                }
+            }
+            const filePath = [...currentPath.map(it => it.part), name].join("/");
             paths.push(filePath);
         }
+        else if (nameIsDir(name)) {
+            if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
+                // lower the path depth. remove until the current depth and replace
+                for (let i = currentPath.length - 1; i >= 0; i--) {
+                    if (currentPath[i].depth >= depth) {
+                        currentPath.splice(i, 1);
+                    }
+                }
+                currentPath.push({
+                    depth,
+                    part: name
+                });
+            }
+            else {
+                currentPath.push({
+                    depth,
+                    part: name
+                }); // Add the new directory to the current path
+            }
+        }
         else {
-            currentPath.push(name); // Add the new directory to the current path
+            Logger.info("unknown line", name);
         }
     }
     return paths.map((path) => path.replaceAll("//", "/"));
 };
-let lineIsFile = (line) => {
-    return line.match(/.*\.[a-zA-Z0-9]+$/);
+let nameIsDir = (name) => {
+    // does not include normal character after last " "
+    return name.match(/^(\/?[\w+\-_.]+\/?)$/);
+};
+let nameIsFile = (line) => {
+    return line.match(/.*\.[a-zA-Z0-9]+(\/|)$/);
 };
 //# sourceMappingURL=parse-modules.js.map

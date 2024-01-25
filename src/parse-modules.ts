@@ -1,6 +1,7 @@
 // general module parser from a tree. finds the files that end with .sol, and their directory paths
 //  according to character count before the directories.
 
+import Logger from "js-logger"
 import { moduleExtensions } from "./util.js"
 
 /**
@@ -121,11 +122,20 @@ export let parseTreeModulesV2 = (lines: string[]) => {
 
     
     if (nameIsFile(name)) {
+      if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
+        // lower the path depth. remove until the current depth and replace
+        for (let i = currentPath.length - 1; i>=0; i--) {
+          if (currentPath[i].depth >= depth) {
+            currentPath.splice(i, 1)
+          }
+        }
+      }
+
       const filePath = [...currentPath.map(it => it.part), name].join("/") 
       paths.push(filePath)
     } else if (nameIsDir(name)) {
       if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
-        // lower path depth. remove until the current depth and replace
+        // lower the path depth. remove until the current depth and replace
         for (let i = currentPath.length - 1; i>=0; i--) {
           if (currentPath[i].depth >= depth) {
             currentPath.splice(i, 1)
@@ -136,7 +146,6 @@ export let parseTreeModulesV2 = (lines: string[]) => {
           depth,
           part: name
         })
-
       }
       else {
         currentPath.push({
@@ -145,6 +154,9 @@ export let parseTreeModulesV2 = (lines: string[]) => {
         }) // Add the new directory to the current path
       }
     }
+    else {
+      Logger.info("unknown line", name)
+    }
   }
 
   return paths.map((path) => path.replaceAll("//", "/"))
@@ -152,7 +164,7 @@ export let parseTreeModulesV2 = (lines: string[]) => {
 
 let nameIsDir = (name: string) => {
   // does not include normal character after last " "
-  return name.match(/^(\/|)\w+(\/|)$/)
+  return name.match(/^(\/?[\w+\-_.]+\/?)$/)
 }
 
 let nameIsFile = (line: string) => {
