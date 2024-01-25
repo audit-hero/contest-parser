@@ -57,7 +57,7 @@ describe("", () => {
     expect(parsed[0]?.all_modules.length).toBe(9)
   })
 
-  it.only("parses in scope in description with format", async () => {
+  it("parses in scope in description with format", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
 
     let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description-with-format.json`).toString()
