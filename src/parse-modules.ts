@@ -33,7 +33,7 @@ export const parseTreeModulesOld = (scope: string[]) => {
     let line = scope[i]
     if (line.trim().startsWith("```")) continue
 
-    if (lineIsContract(line)) {
+    if (lineIsFile(line)) {
       let module = line.match(/\w+\.sol/)
       if (module) modules.push(`${currentPath}/${module[0]}`)
     } else {
@@ -121,7 +121,7 @@ export let parseTreeModulesV2 = (lines: string[]) => {
     // Adjust current path based on depth
     currentPath = currentPath.slice(0, depth / 4 + 1) // Using 4 spaces as one indentation level, +1 for the "contracts" base
     // Check if the name ends with '.sol', which indicates it's a file
-    if (lineIsContract(name)) {
+    if (lineIsFile(name)) {
       const filePath = [...currentPath, name].join("/") // Construct the full file path
       paths.push(filePath)
     } else {
@@ -132,7 +132,6 @@ export let parseTreeModulesV2 = (lines: string[]) => {
   return paths.map((path) => path.replaceAll("//", "/"))
 }
 
-
-let lineIsContract = (line:string) => {
-  return moduleExtensions.some(it => line.endsWith(it))
+let lineIsFile = (line:string) => {
+  return line.match(/.*\.[a-zA-Z0-9]+$/)
 } 

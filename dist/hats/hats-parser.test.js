@@ -3,6 +3,7 @@ import fs from "fs-extra";
 import { parseContests } from "./hats-parser";
 import { getActiveContests } from "./getActiveContests";
 import { workingDir } from "../util";
+import { getModules } from "./hats-parser.modules.js";
 describe("", () => {
     afterEach(() => {
         vi.unstubAllGlobals();
@@ -39,6 +40,12 @@ describe("", () => {
         let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description.json`).toString();
         let parsed = await parseContests([JSON.parse(contestString)], []);
         expect(parsed[0]?.all_modules.length).toBe(9);
+    });
+    it.only("parses in scope in description with format", async () => {
+        vi.spyOn(Date, "now").mockImplementation(() => 1705590000000);
+        let contestString = fs.readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description-with-format.json`).toString();
+        let parsed = await getModules(JSON.parse(contestString), "name");
+        expect(parsed.length).toBe(23);
     });
     const mockRequests = async () => {
         let workDir = workingDir();

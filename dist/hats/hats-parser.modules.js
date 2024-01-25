@@ -6,14 +6,16 @@ import Logger from "js-logger";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
 export const getModules = async (contest, name) => {
-    let jobs = contest.scope.reposInformation.map(it => getModulesRepo(it, contest, name));
+    let jobs = contest.scope.reposInformation.map((it) => getModulesRepo(it, contest, name));
     let res = await Promise.all(jobs);
     return res.flat();
 };
 const getModulesRepo = async (repoInfo, contest, name) => {
     let repoName = repoInfo.url.split("/").pop();
     Logger.info(`cloning ${repoName} for contest ${name}`);
-    let dir = process.env.LAMBDA_TASK_ROOT ? `/tmp/${name}/${repoName}` : `${workingDir()}/tmp/${name}/${repoName}`;
+    let dir = process.env.LAMBDA_TASK_ROOT
+        ? `/tmp/${name}/${repoName}`
+        : `${workingDir()}/tmp/${name}/${repoName}`;
     if (fs.existsSync(dir))
         fs.rmSync(dir, { recursive: true });
     if (!fs.existsSync(dir) || true) {
@@ -24,11 +26,16 @@ const getModulesRepo = async (repoInfo, contest, name) => {
     }
     // get all .sol/.go/.rs files in the repo
     let files = [];
-    moduleExtensions.forEach(extension => {
-        files.push(...glob.sync(`${dir}/**/*${extension}`).map(it => it.replace(dir, "")));
+    moduleExtensions.forEach((extension) => {
+        files.push(...glob.sync(`${dir}/**/*${extension}`).map((it) => it.replace(dir, "")));
     });
-    files = files.filter(path => !ignoredScopeFiles.some(excludePath => path.includes(excludePath)));
-    let filteredPaths = getInScopeFromScopeDescription(contest.scope.description);
+    files = files.filter((path) => !ignoredScopeFiles.some((excludePath) => path.includes(excludePath)));
+    let allReposFilteredPaths = getInScopeFromScopeDescription(contest.scope.description);
+    let filteredPaths = allReposFilteredPaths.find((it) => {
+        return it.some((it) => it.includes(repoName));
+    }) ?? [];
+    // some retain repo name in path
+    filteredPaths = filteredPaths.map((it) => it.replace(new RegExp(`^${repoName}/`), ""));
     if (filteredPaths.length === 0) {
         let split = contest.scope.outOfScope.split("\n");
         try {
@@ -37,8 +44,8 @@ const getModulesRepo = async (repoInfo, contest, name) => {
         catch (e) { }
         if (filteredPaths.length === 0) {
             let outOfScopePaths = getOutOfScope(split);
-            filteredPaths = files.filter(path => {
-                return !outOfScopePaths.some(excludePath => {
+            filteredPaths = files.filter((path) => {
+                return !outOfScopePaths.some((excludePath) => {
                     let trimmedPath = removeSuffix(excludePath, "**");
                     return path.startsWith(trimmedPath);
                 });
@@ -47,7 +54,7 @@ const getModulesRepo = async (repoInfo, contest, name) => {
     }
     let repoRawContentUrl = repoInfo.url.replace("github.com", "raw.githubusercontent.com");
     let commit = repoInfo.commitHash;
-    let urls = filteredPaths.map(path => {
+    let urls = filteredPaths.map((path) => {
         let url = `${repoRawContentUrl}/${commit}/${path}`;
         return url;
     });
@@ -57,34 +64,46 @@ const getModulesRepo = async (repoInfo, contest, name) => {
             path: it,
             url: urls[index],
             contest: name,
-            active: 1
+            active: 1,
         };
         return res;
     });
 };
+// let getInScopeFromScopeDescription = (scope: string): string[][] => {
+// }
 let getInScopeFromScopeDescription = (scope) => {
     let lines = scope.split("\n");
     let inScope = [];
     let inScopeStarted = false;
     for (let line of lines) {
-        if (line.includes("## ") && line.includes("scope") && !line.includes("out of scope")) {
+        if (line.includes("## ") &&
+            line.includes("scope") &&
+            !line.includes("out of scope")) {
             inScopeStarted = true;
             continue;
         }
-        if (inScopeStarted && (line.includes("out of scope") || line.includes("## "))) {
+        if (inScopeStarted &&
+            (line.includes("out of scope") || line.includes("## "))) {
             inScopeStarted = false;
             continue;
         }
         if (inScopeStarted) {
-            if (line.includes("```"))
+            let trimmed = line.trim();
+            if (trimmed === "")
                 continue;
-            if (line.trim() === "")
+            if (trimmed.startsWith("```"))
+                continue;
+            if (trimmed.startsWith("*"))
+                continue;
+            if (trimmed.startsWith("#"))
                 continue;
             inScope.push(line);
         }
     }
-    let paths = parseTreeModulesV2(inScope);
-    return paths;
+    // can have multiple repos
+    const regex = /```[\s\S]*?```/g;
+    const blocks = scope.match(regex);
+    return blocks?.map((block) => parseTreeModulesV2(block.split("\n"))) ?? [];
 };
 function removeSuffix(excludePath, suffix) {
     let excludedUntil = 0;
