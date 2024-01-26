@@ -84,7 +84,7 @@ describe("", () => {
     expect(contest.modules.length).toBe(13)
   })
 
-  it.only("handles readme with invalid contracts ", () => {
+  it("handles readme with invalid contracts ", () => {
     var md = fs
       .readFileSync(`./src/c4/test/invalid-contracts.md`)
       .toString() as string
