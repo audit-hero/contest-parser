@@ -1,5 +1,5 @@
 import { sentryError } from "ah-shared";
-import { findDocUrl, findTags, getAllRepos, getAnyDateTimestamp, getContestStatus, getMdHeading, logTrace } from "../util";
+import { findDocUrl, findTags, getAllRepos, getAnyDateUTCTimestamp, getContestStatus, getMdHeading, logTrace } from "../util";
 import Logger from "js-logger";
 import E from "fp-ts/lib/Either";
 import T from "fp-ts/lib/Task";
@@ -356,9 +356,9 @@ function getStartEndDate(readme) {
                 if (date.invalid)
                     continue;
                 if (splitWord.includes("start"))
-                    startDate = getAnyDateTimestamp(date);
+                    startDate = getAnyDateUTCTimestamp(date);
                 else
-                    endDate = getAnyDateTimestamp(date);
+                    endDate = getAnyDateUTCTimestamp(date);
                 if (startDate && endDate)
                     break;
                 continue upper;

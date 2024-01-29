@@ -1,4 +1,4 @@
-import { getAnyDateTimestamp, truncateLongContestName } from "../util.js";
+import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js";
 import anyDate from "any-date-parser";
 import { statuses } from "./types.js";
 export const parseMd = (md) => {
@@ -40,7 +40,10 @@ export const parseMd = (md) => {
     return results;
 };
 let getStatus = (line) => {
-    line = line.trim().toLowerCase().replace(/^#{1,3} /, "");
+    line = line
+        .trim()
+        .toLowerCase()
+        .replace(/^#{1,3} /, "");
     let isSingleWordLine = line.match(/^[a-zA-Z]+$/);
     let isStatusLine = isSingleWordLine &&
         statuses.some((it) => it.match(new RegExp(`^${line.trim()}$`)));
@@ -50,9 +53,13 @@ let getStatus = (line) => {
     }
     return status;
 };
+// the date is 8pm UTC
 const getStartEndDate = (dateLine) => {
-    let start_date = getAnyDateTimestamp(anyDate.attempt(dateLine.split(" - ")[0]));
-    let end_date = getAnyDateTimestamp(anyDate.attempt(dateLine.split(" - ")[1]));
+    // their end date is 8pm UTC
+    let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00";
+    let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr));
+    let endDateStr = dateLine.split(" - ")[1] + "T20:00+00:00";
+    let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateStr));
     return { start_date, end_date };
 };
 //# sourceMappingURL=parseContests.js.map

@@ -15,4 +15,4 @@ import { Repo } from "ah-shared";
 export declare let workingDir: () => string;
 export declare const logTrace: (msg: () => string) => void;
 export declare let truncateLongContestName: (name: string) => string;
-export declare const getAnyDateTimestamp: (anyDate: any) => number;
+export declare const getAnyDateUTCTimestamp: (anyDate: any) => number;

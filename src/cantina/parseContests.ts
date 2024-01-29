@@ -1,5 +1,4 @@
-import { NodeHtmlMarkdown } from "node-html-markdown"
-import { getAnyDateTimestamp, truncateLongContestName } from "../util.js"
+import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
 import anyDate from "any-date-parser"
 import { MdContest, MdStatus, statuses } from "./types.js"
 
@@ -51,7 +50,10 @@ export const parseMd = (md: string): MdContest[] => {
 }
 
 let getStatus = (line: string): MdStatus | undefined => {
-  line = line.trim().toLowerCase().replace(/^#{1,3} /, "")
+  line = line
+    .trim()
+    .toLowerCase()
+    .replace(/^#{1,3} /, "")
   let isSingleWordLine = line.match(/^[a-zA-Z]+$/)
   let isStatusLine =
     isSingleWordLine &&
@@ -66,16 +68,17 @@ let getStatus = (line: string): MdStatus | undefined => {
   return status
 }
 
+// the date is 8pm UTC
 const getStartEndDate = (
   dateLine: string
 ): {
   start_date: number
   end_date: number
 } => {
-  let start_date = getAnyDateTimestamp(
-    anyDate.attempt(dateLine.split(" - ")[0])
-  )
-  let end_date = getAnyDateTimestamp(anyDate.attempt(dateLine.split(" - ")[1]))
-
+  // their end date is 8pm UTC
+  let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00"
+  let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr))
+  let endDateStr = dateLine.split(" - ")[1] + "T20:00+00:00"
+  let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateStr))
   return { start_date, end_date }
 }

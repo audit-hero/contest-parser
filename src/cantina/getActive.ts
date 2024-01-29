@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { getAnyDateTimestamp, truncateLongContestName } from "../util.js"
+import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
 import anyDate from "any-date-parser"
 import { MdContest, MdStatus, statuses } from "./types.js"
 import { parseMd } from "./parseContests.js"

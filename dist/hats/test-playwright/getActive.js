@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { getAnyDateTimestamp, truncateLongContestName } from "../../util.js";
+import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js";
 import anyDate from "any-date-parser";
 import { waitForPageToLoad } from "./web-load/playwright-loader.js";
 export const getActive = async () => {
@@ -61,8 +61,8 @@ export const getActiveContests = (md) => {
     return results;
 };
 const getStartEndDate = (dateLine) => {
-    let start_date = getAnyDateTimestamp(anyDate.attempt(dateLine.split(" - ")[0]));
-    let end_date = getAnyDateTimestamp(anyDate.attempt(dateLine.split(" - ")[1]));
+    let start_date = getAnyDateUTCTimestamp(anyDate.attempt(dateLine.split(" - ")[0]));
+    let end_date = getAnyDateUTCTimestamp(anyDate.attempt(dateLine.split(" - ")[1]));
     return { start_date, end_date };
 };
 //# sourceMappingURL=getActive.js.map

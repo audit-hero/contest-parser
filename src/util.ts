@@ -168,20 +168,21 @@ export let truncateLongContestName = (name: string) => {
   return trimmedSlug
 }
 
-export const getAnyDateTimestamp = (anyDate: any) => {
+export const getAnyDateUTCTimestamp = (anyDate: any) => {
   // August 21, 2023
   if (anyDate.year === undefined) anyDate.year = new Date().getFullYear()
   
   if (anyDate.month === undefined || anyDate.day === undefined)
     throw new Error("invalid anydate")
 
-  var someDate = new Date(
+  var someDate = Date.UTC(
     anyDate.year,
     anyDate.month - 1,
     anyDate.day,
     anyDate.hour ?? 0,
     anyDate.minute ?? 0,
-    anyDate.second ?? 0
+    anyDate.second ?? 0,
   )
-  return someDate.getTime() / 1000
+
+  return someDate / 1000
 }
