@@ -1,7 +1,7 @@
-import { ContestModule, ContestWithModules } from "ah-shared"
+import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { findDocUrl, findTags } from "../util.js"
-import { MdContest } from "./getActive.js"
+import { MdContest, MdStatus } from "./types.js"
 
 export const parseContest = async (
   contest: MdContest
@@ -28,7 +28,8 @@ export const parseMd = (
   if (lines[lines.length - 5].startsWith("You need to be logged in"))
     lines = lines.slice(0, -5)
 
-  let modules = findModules(mdContest.name, lines)
+  let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0
+  let modules = findModules(mdContest.name, lines, active)
   let contest: ContestWithModules = {
     pk: mdContest.name,
     readme: `# ${lines.join("\n")}`,
@@ -37,8 +38,8 @@ export const parseMd = (
     platform: "cantina",
     sk: "0",
     url: `https://cantina.xyz/competitions/${mdContest.id}`,
-    active: 1,
-    status: "active",
+    active: active,
+    status: mdStatusToStatus(mdContest.status),
     modules: modules.filter((it) => it.path?.includes(".sol")),
     all_modules: modules,
     doc_urls: findDocUrls(lines),
@@ -47,6 +48,15 @@ export const parseMd = (
   }
 
   return contest
+}
+
+let mdStatusToStatus = (status: MdStatus): Status => {
+  if (status === "live") return "active"
+  if (status === "upcoming") return "created"
+  if (status === "judging") return "judging"
+  if (status === "escalations") return "judging"
+  if (status === "ended") return "finished"
+  throw new Error(`Unknown status: ${status}`)
 }
 
 let getModulesStartIndex = (lines: string[]) => {
@@ -66,7 +76,7 @@ let getModulesStartIndex = (lines: string[]) => {
   return modulesStart
 }
 
-const findModules = (contest: string, lines: string[]): ContestModule[] => {
+const findModules = (contest: string, lines: string[], active:number): ContestModule[] => {
   let modulesStart = getModulesStartIndex(lines)
 
   let modulesEnd = lines.findIndex((it) => {
@@ -87,22 +97,22 @@ const findModules = (contest: string, lines: string[]): ContestModule[] => {
       line.includes("github.com") ||
       line.includes("raw.githubusercontent.com")
     )
-      currentRepo = line.split("](").pop()!.slice(0, -1).replace("/commit/", "/tree/")
+      currentRepo = line
+        .split("](")
+        .pop()!
+        .slice(0, -1)
+        .replace("/commit/", "/tree/")
 
     // doesn't have an extension
     if (!line.includes("|") || !line.match(/\.[0-9a-z]+/i)) continue
 
     if (currentRepo !== "") {
-      let path = line
-        .split("|")[1]
-        .trim()
-        .replace("./", "")
-        .replace("\\_", "_")
+      let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_")
 
       let module: ContestModule = {
         name: path.split("/").pop()!,
         contest: contest,
-        active: 1,
+        active: active,
         path,
         url: `${currentRepo}/${path}`,
       }

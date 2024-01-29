@@ -17,7 +17,8 @@ export const parseMd = (mdContest, md) => {
         lines = md.split("\n## ").slice(1).join("").split("\n");
     if (lines[lines.length - 5].startsWith("You need to be logged in"))
         lines = lines.slice(0, -5);
-    let modules = findModules(mdContest.name, lines);
+    let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
+    let modules = findModules(mdContest.name, lines, active);
     let contest = {
         pk: mdContest.name,
         readme: `# ${lines.join("\n")}`,
@@ -26,8 +27,8 @@ export const parseMd = (mdContest, md) => {
         platform: "cantina",
         sk: "0",
         url: `https://cantina.xyz/competitions/${mdContest.id}`,
-        active: 1,
-        status: "active",
+        active: active,
+        status: mdStatusToStatus(mdContest.status),
         modules: modules.filter((it) => it.path?.includes(".sol")),
         all_modules: modules,
         doc_urls: findDocUrls(lines),
@@ -35,6 +36,19 @@ export const parseMd = (mdContest, md) => {
         tags: findTags(lines),
     };
     return contest;
+};
+let mdStatusToStatus = (status) => {
+    if (status === "live")
+        return "active";
+    if (status === "upcoming")
+        return "created";
+    if (status === "judging")
+        return "judging";
+    if (status === "escalations")
+        return "judging";
+    if (status === "ended")
+        return "finished";
+    throw new Error(`Unknown status: ${status}`);
 };
 let getModulesStartIndex = (lines) => {
     let modulesStart = lines.findIndex((it) => it.includes("# ") &&
@@ -45,7 +59,7 @@ let getModulesStartIndex = (lines) => {
     }
     return modulesStart;
 };
-const findModules = (contest, lines) => {
+const findModules = (contest, lines, active) => {
     let modulesStart = getModulesStartIndex(lines);
     let modulesEnd = lines.findIndex((it) => {
         return ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
@@ -62,20 +76,20 @@ const findModules = (contest, lines) => {
         let line = lines[i];
         if (line.includes("github.com") ||
             line.includes("raw.githubusercontent.com"))
-            currentRepo = line.split("](").pop().slice(0, -1).replace("/commit/", "/tree/");
+            currentRepo = line
+                .split("](")
+                .pop()
+                .slice(0, -1)
+                .replace("/commit/", "/tree/");
         // doesn't have an extension
         if (!line.includes("|") || !line.match(/\.[0-9a-z]+/i))
             continue;
         if (currentRepo !== "") {
-            let path = line
-                .split("|")[1]
-                .trim()
-                .replace("./", "")
-                .replace("\\_", "_");
+            let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_");
             let module = {
                 name: path.split("/").pop(),
                 contest: contest,
-                active: 1,
+                active: active,
                 path,
                 url: `${currentRepo}/${path}`,
             };
