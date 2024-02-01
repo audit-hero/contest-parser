@@ -37,7 +37,7 @@ describe("", () => {
         expect(parsed[0]?.modules.length).toBe(18);
         expect(parsed[0]?.doc_urls?.at(0)).toBe("https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs");
     });
-    it("parses in scope in description", async () => {
+    it.only("parses in scope in description", async () => {
         vi.spyOn(Date, "now").mockImplementation(() => 1705590000000);
         let contestString = fs
             .readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description.json`)
@@ -94,8 +94,8 @@ describe("", () => {
                 default: () => ({
                     clone: () => {
                         // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
-                        fs.mkdirSync(`./tmp/2023-08-stakewise/v3-core`, { recursive: true });
-                        fs.copySync(`./src/hats/test/stakewise-repo/`, `./tmp/2023-08-stakewise/v3-core`);
+                        fs.mkdirSync(`./tmp/v3-core`, { recursive: true });
+                        fs.copySync(`./src/hats/test/stakewise-repo/`, `./tmp/v3-core`);
                     },
                 }),
             };

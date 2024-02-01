@@ -1,10 +1,8 @@
-import git from "simple-git";
-import { ignoredScopeFiles, moduleExtensions, workingDir } from "../util.js";
-import { glob } from "glob";
-import fs from "fs";
-import Logger from "js-logger";
+import { ignoredScopeFiles } from "../util.js";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
+import { cryptoIgnoreGlobs, cryptoIncludeGlobs, getGitFilePaths, } from "../utils/getGitFilePaths.js";
+import Logger from "js-logger";
 export const getModules = async (contest, name) => {
     let jobs = contest.scope.reposInformation.map((it) => getModulesRepo(it, contest, name));
     let res = await Promise.all(jobs);
@@ -13,21 +11,10 @@ export const getModules = async (contest, name) => {
 const getModulesRepo = async (repoInfo, contest, name) => {
     let repoName = repoInfo.url.split("/").pop();
     Logger.info(`cloning ${repoName} for contest ${name}`);
-    let dir = process.env.LAMBDA_TASK_ROOT
-        ? `/tmp/${name}/${repoName}`
-        : `${workingDir()}/tmp/${name}/${repoName}`;
-    if (fs.existsSync(dir))
-        fs.rmSync(dir, { recursive: true });
-    if (!fs.existsSync(dir) || true) {
-        await git().clone(repoInfo.url, dir, ["--depth", "1"]);
-    }
-    else {
-        Logger.info(`repo already cloned in ${dir}`);
-    }
-    // get all .sol/.go/.rs/.cairo files in the repo
-    let files = [];
-    moduleExtensions.forEach((extension) => {
-        files.push(...glob.sync(`${dir}/**/*${extension}`).map((it) => it.replace(dir, "")));
+    let files = await getGitFilePaths({
+        url: repoInfo.url,
+        includeGlobs: cryptoIncludeGlobs,
+        ignoreGlobs: cryptoIgnoreGlobs,
     });
     files = files.filter((path) => !ignoredScopeFiles.some((excludePath) => path.includes(excludePath)));
     let allReposFilteredPaths = getInScopeFromScopeDescription(contest.scope.description);

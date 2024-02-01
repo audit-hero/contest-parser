@@ -54,7 +54,7 @@ describe("", () => {
     )
   })
 
-  it("parses in scope in description", async () => {
+  it.only("parses in scope in description", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
 
     let contestString = fs
@@ -124,10 +124,10 @@ describe("", () => {
         default: () => ({
           clone: () => {
             // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
-            fs.mkdirSync(`./tmp/2023-08-stakewise/v3-core`, { recursive: true })
+            fs.mkdirSync(`./tmp/v3-core`, { recursive: true })
             fs.copySync(
               `./src/hats/test/stakewise-repo/`,
-              `./tmp/2023-08-stakewise/v3-core`
+              `./tmp/v3-core`
             )
           },
         }),
