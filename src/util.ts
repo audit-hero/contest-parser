@@ -1,7 +1,7 @@
 import Logger from "js-logger"
 
 export let moduleExtensions = [
-  ".sol", ".go", ".rs"
+  ".sol", ".go", ".rs", "cairo"
 ]
 
 let ignoreLinkWords = [
