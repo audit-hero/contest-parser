@@ -63,7 +63,7 @@ const findModules = (contest, lines, active) => {
     let modulesStart = getModulesStartIndex(lines);
     let modulesEnd = lines.findIndex((it) => {
         return ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
-            (it.includes("# ") && it.toLowerCase().includes("Summary")));
+            (it.includes("# ") && it.toLowerCase().includes("summary")));
     });
     if (modulesEnd === -1)
         modulesEnd = lines.length;

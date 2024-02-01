@@ -12,7 +12,7 @@ export const getActiveContests = async () => {
     });
 };
 const getHtmlAsMd = async () => {
-    let contests = await fetch("https://cantina.xyz/competitions")
+    let contests = await fetch("https://www.codehawks.com/contests")
         .then((it) => {
         return it.text();
     })

@@ -116,7 +116,7 @@ export let parseTreeModulesV2 = (lines) => {
             }
         }
         else {
-            Logger.info("unknown line", name);
+            Logger.info(`unknown line: ${name}`);
         }
     }
     return paths.map((path) => path.replaceAll("//", "/"));

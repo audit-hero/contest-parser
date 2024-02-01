@@ -24,7 +24,7 @@ const getModulesRepo = async (repoInfo, contest, name) => {
     else {
         Logger.info(`repo already cloned in ${dir}`);
     }
-    // get all .sol/.go/.rs files in the repo
+    // get all .sol/.go/.rs/.cairo files in the repo
     let files = [];
     moduleExtensions.forEach((extension) => {
         files.push(...glob.sync(`${dir}/**/*${extension}`).map((it) => it.replace(dir, "")));
