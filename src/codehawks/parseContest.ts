@@ -1,7 +1,9 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { findDocUrl, findTags } from "../util.js"
+import { findDocUrl, findTags, getAnyDateUTCTimestamp } from "../util.js"
 import { HawksMdContest, MdStatus } from "./types.js"
+import { parseTreeModulesV2 } from "../parse-modules.js"
+import anyDate from "any-date-parser"
 
 export const parseContest = async (
   contest: HawksMdContest
@@ -11,7 +13,7 @@ export const parseContest = async (
 }
 
 let downloadContestAsMd = async (contest: HawksMdContest): Promise<string> => {
-  let url = `https://cantina.xyz/competitions/${contest.id}`
+  let url = `https://www.codehawks.com/contests/${contest.id}`
   let html = await fetch(url).then((it) => it.text())
   let md = NodeHtmlMarkdown.translate(html)
   return md
@@ -22,22 +24,22 @@ export const parseMd = (
   md: string
 ): ContestWithModules => {
   // remove header links
-  let lines = md.split("\n# ").slice(1).join("").split("\n")
-  if (lines.length === 1)
-    lines = md.split("\n## ").slice(1).join("").split("\n")
-  if (lines[lines.length - 5].startsWith("You need to be logged in"))
-    lines = lines.slice(0, -5)
+  let lines = md.split("MENU")
+  if (lines.length === 1) lines = lines[0].split("\n")
+  else lines = lines[1].split("\n")
 
   let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0
   let modules = findModules(mdContest.name, lines, active)
+  let { start_date, end_date } = getStartEndDate(lines)
+
   let contest: ContestWithModules = {
     pk: mdContest.name,
     readme: `# ${lines.join("\n")}`,
-    start_date: mdContest.start_date,
-    end_date: mdContest.end_date,
-    platform: "cantina",
+    start_date: start_date ?? mdContest.start_date,
+    end_date: end_date ?? mdContest.end_date,
+    platform: "codehawks",
     sk: "0",
-    url: `https://cantina.xyz/competitions/${mdContest.id}`,
+    url: `https://www.codehawks.com/contests/${mdContest.id}`,
     active: active,
     status: mdStatusToStatus(mdContest.status),
     modules: modules.filter((it) => it.path?.includes(".sol")),
@@ -52,10 +54,10 @@ export const parseMd = (
 
 let mdStatusToStatus = (status: MdStatus): Status => {
   if (status === "live") return "active"
-  if (status === "upcoming") return "created"
-  if (status === "judging") return "judging"
-  if (status === "escalations") return "judging"
-  if (status === "ended") return "finished"
+  if (status === "appeal review") return "judging"
+  if (status === "judging period") return "judging"
+  if (status === "completed") return "finished"
+
   throw new Error(`Unknown status: ${status}`)
 }
 
@@ -76,45 +78,64 @@ let getModulesStartIndex = (lines: string[]) => {
   return modulesStart
 }
 
-const findModules = (contest: string, lines: string[], active:number): ContestModule[] => {
+const findModules = (
+  contest: string,
+  lines: string[],
+  active: number
+): ContestModule[] => {
   let modulesStart = getModulesStartIndex(lines)
 
-  let modulesEnd = lines.findIndex((it) => {
+  let modulesEnd = lines.findIndex((it, index) => {
     return (
-      (it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
-      (it.includes("# ") && it.toLowerCase().includes("Summary"))
+      index > modulesStart &&
+      ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
+        (it.includes("# ") && it.toLowerCase().includes("summary")) ||
+        it.match(/^#{1,4} /))
     )
   })
   if (modulesEnd === -1) modulesEnd = lines.length
   if (modulesStart === -1) return []
   modulesStart += 1
 
-  let currentRepo = ""
   let modules = [] as ContestModule[]
-  for (let i = modulesStart; i < modulesEnd; ++i) {
-    let line = lines[i]
-    if (
-      line.includes("github.com") ||
-      line.includes("raw.githubusercontent.com")
-    )
-      currentRepo = line
-        .split("](")
-        .pop()!
-        .slice(0, -1)
-        .replace("/commit/", "/tree/")
 
-    // doesn't have an extension
-    if (!line.includes("|") || !line.match(/\.[0-9a-z]+/i)) continue
+  let scope = lines.slice(modulesStart, modulesEnd).join("\n")
+  let repos = (scope.match(/https:\/\/github.com\/[^/]+\/[^/>]+/g) ?? []).map(
+    (it) => {
+      if (it.includes("tree")) return it
+      return it + "/tree/main"
+    }
+  )
 
-    if (currentRepo !== "") {
-      let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_")
+  if (repos.length === 0) {
+    addMainRepo(lines, repos)
+  }
 
+  const regex = /```[\s\S]*?```/g
+  const blocks = scope.match(regex)
+  let blockModules =
+    blocks?.map((block) => parseTreeModulesV2(block.split("\n"))) ?? []
+
+  if (repos.length < blockModules.length) {
+    // fill repos until moduleStrings.length
+    let reposLength = repos.length
+    let diff = blockModules.length - reposLength
+    for (let i = 0; i < diff; ++i) {
+      repos.push(repos[reposLength - 1])
+    }
+  }
+
+  for (let i = 0; i < blockModules.length; ++i) {
+    let moduleStrings = blockModules[i]
+    let repo = repos[i]
+
+    for (let path of moduleStrings) {
       let module: ContestModule = {
         name: path.split("/").pop()!,
-        contest: contest,
-        active: active,
+        contest,
+        active,
         path,
-        url: `${currentRepo}/${path}`,
+        url: `${repo}/${path}`,
       }
 
       modules.push(module)
@@ -136,4 +157,50 @@ const findDocUrls = (lines: string[]) => {
   }
 
   return docUrls
+}
+
+let getStartEndDate = (lines: string[]) => {
+  let start_date = 0
+  let end_date = 0
+  for (let line of lines) {
+    if (start_date && end_date) break
+
+    let startDate = line.match(/Start Date /)
+
+    if (startDate) {
+      let date = anyDate.attempt(
+        line.replace("Start Date ", "").replaceAll(/(\(|\))/g, "")
+      )
+      if (date.invalid) continue
+      start_date = getAnyDateUTCTimestamp(date)
+      continue
+    }
+
+    let endDate = line.match(/End Date /)
+    if (endDate) {
+      let date = anyDate.attempt(
+        line.replace("End Date ", "").replaceAll(/(\(|\))/g, "")
+      )
+      if (date.invalid) continue
+      end_date = getAnyDateUTCTimestamp(date)
+      continue
+    }
+  }
+
+  return { start_date, end_date }
+}
+
+function addMainRepo(lines: string[], repos: string[]) {
+  let mainRepo = ""
+  for (let line of lines) {
+    let repo = line.match(/https:\/\/github.com\/[^/]+\/[^/>\)]+/g)
+    if (repo) {
+      mainRepo = repo[0]
+      break
+    }
+  }
+  if (mainRepo) {
+    if (!mainRepo.includes("tree")) mainRepo += "/tree/main"
+    repos.push(mainRepo)
+  }
 }

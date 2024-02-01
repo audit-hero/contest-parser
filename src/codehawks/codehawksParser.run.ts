@@ -1,9 +1,9 @@
 import Logger from "js-logger"
-import { parseActiveCantinaContests } from "./codehawksParser.js"
+import { parseActiveCodeHawksContests } from "./codehawksParser.js"
 import fs from "fs"
 
 Logger.useDefaults()
 
-let res = await parseActiveCantinaContests([])
+let res = await parseActiveCodeHawksContests([])
 
-fs.writeFileSync("cantinaContests.json", JSON.stringify(res, null, 2))
+fs.writeFileSync("codehawksContests.json", JSON.stringify(res, null, 2))

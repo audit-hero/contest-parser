@@ -154,7 +154,7 @@ export let parseTreeModulesV2 = (lines: string[]) => {
       }
     }
     else {
-      Logger.info("unknown line", name)
+      Logger.info(`unknown line: ${name}`)
     }
   }
 

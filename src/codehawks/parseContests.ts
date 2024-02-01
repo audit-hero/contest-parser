@@ -33,6 +33,7 @@ export const parseMd = (md: string): HawksMdContest[] => {
         .replace("[view](contests/", "")
         .replace(")", "")
       let dateLine = lines[i - 4]
+      // note: contest parser parses to more specific date
       let { start_date, end_date } = getStartEndDate(dateLine)
       let prize = lines[i - 2].replace(/^#{1,4} /, "")
       // let startDate = new Date(start_date * 1000)
