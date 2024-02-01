@@ -1,6 +1,6 @@
 import fs from "fs"
 import { getPossiblyActiveContests, parseContest, parseReposJobs } from "./codehawks-parser"
-import { workingDir } from "../util.js"
+import { workingDir } from "../../util.js"
 import { Repo } from "ah-shared"
 import { it, beforeEach, afterEach, expect, vi, describe } from "vitest"
 import * as E from "fp-ts/lib/Either"

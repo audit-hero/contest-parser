@@ -38,7 +38,7 @@ const getModulesRepo = async (
     Logger.info(`repo already cloned in ${dir}`)
   }
 
-  // get all .sol/.go/.rs files in the repo
+  // get all .sol/.go/.rs/.cairo files in the repo
   let files = [] as string[]
 
   moduleExtensions.forEach((extension) => {

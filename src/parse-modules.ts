@@ -2,7 +2,6 @@
 //  according to character count before the directories.
 
 import Logger from "js-logger"
-import { moduleExtensions } from "./util.js"
 
 /**
  * 

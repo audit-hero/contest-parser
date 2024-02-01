@@ -1,8 +1,8 @@
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { MdContest } from "./types.js"
+import { HawksMdContest } from "./types.js"
 import { parseMd } from "./parseContests.js"
 
-export const getAllContests = async (): Promise<MdContest[]> => {
+export const getAllContests = async (): Promise<HawksMdContest[]> => {
   let md = await getHtmlAsMd()
   return parseMd(md)
 }
@@ -18,7 +18,7 @@ export const getActiveContests = async () => {
 }
 
 const getHtmlAsMd = async () => {
-  let contests: string = await fetch("https://cantina.xyz/competitions")
+  let contests: string = await fetch("https://www.codehawks.com/contests")
     .then((it) => {
       return it.text()
     })
