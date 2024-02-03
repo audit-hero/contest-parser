@@ -12,7 +12,15 @@ export type Input = {
   ignoreGlobs?: string[]
 }
 
-let ignoredScopeFolders = ["test", "tests", "mock", "mocks", "script", "forge-std", "hardhat"]
+let ignoredScopeFolders = [
+  "test",
+  "tests",
+  "mock",
+  "mocks",
+  "script",
+  "forge-std",
+  "hardhat",
+]
 let ignoreScopeFiles = [".s.sol"]
 export let cryptoIgnoreGlobs = [
   ...ignoredScopeFolders.map((it) => `**/${it}/**`),
@@ -32,7 +40,7 @@ export const getGitFilePaths = async ({
   let dir = process.env.LAMBDA_TASK_ROOT
     ? `/tmp/${repoName}`
     : `${workingDir()}/tmp/${repoName}`
-  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true }) // TODO: uncomment
+  if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true })
 
   await git().clone(url, dir, ["--depth", "1"])
 
@@ -44,7 +52,9 @@ export const getGitFilePaths = async ({
     )
   })
 
-  let ignoredFiles = ignoreGlobs.map((it) => glob.sync(`${dir}/${it}`)).flat()
+  let ignoredFiles = ignoreGlobs
+    .map((it) => glob.sync(`${dir}/${it}`).map((it) => it.replace(dir, "")))
+    .flat()
   files = files.filter((path) => !ignoredFiles.includes(path))
 
   return files

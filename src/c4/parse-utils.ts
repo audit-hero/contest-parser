@@ -1,6 +1,6 @@
 import { ContestModule } from "ah-shared"
 import { C4Contest } from "../types.js"
-import { getMdHeading, findDocUrl } from "../util.js"
+import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js"
 import Logger from "js-logger"
 import { string } from "fp-ts"
 import parseUrl from "parse-url"
@@ -190,6 +190,8 @@ const getPathAndUrl = (
 
 const isValidUrl = (url: string) => {
   try {
+    if (moduleExtensions.filter((it) => url.endsWith(it)).length === 0) return false
+    
     parseUrl(url)
   } catch (e) {
     return false

@@ -11,16 +11,15 @@ export type Input = {
   includeGlobs: string[]
   ignoreGlobs?: string[]
 }
-
 */
 let sample = `'{"url":"https://github.com/blast-io/blast/", "includeGlobs": ${JSON.stringify(
   cryptoIncludeGlobs
-)}}', "ignoreGlobs": ${JSON.stringify(cryptoIgnoreGlobs)}`
+)}}', "ignoreGlobs": ${JSON.stringify(cryptoIgnoreGlobs)}}'`
 
 let input: Input = {} as any
 try {
   input = JSON.parse(process.argv[2]) as Input
-} catch (e) {}
+} catch (e) {console.log(e)}
 
 if (!input.url) {
   console.error(`url is required\n\n${sample}`)

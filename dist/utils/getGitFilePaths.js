@@ -27,7 +27,7 @@ export const getGitFilePaths = async ({ url, includeGlobs, ignoreGlobs = [], }) 
         ? `/tmp/${repoName}`
         : `${workingDir()}/tmp/${repoName}`;
     if (fs.existsSync(dir))
-        fs.rmSync(dir, { recursive: true }); // TODO: uncomment
+        fs.rmSync(dir, { recursive: true });
     await git().clone(url, dir, ["--depth", "1"]);
     let files = [];
     includeGlobs.forEach((includeGlob) => {
