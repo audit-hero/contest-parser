@@ -4,7 +4,15 @@ import { workingDir, moduleExtensions } from "../util.js";
 import fs from "fs";
 import git from "simple-git";
 export let cryptoIncludeGlobs = moduleExtensions.map((it) => `**/*${it}`);
-let ignoredScopeFolders = ["test", "tests", "mock", "mocks", "script", "forge-std", "hardhat"];
+let ignoredScopeFolders = [
+    "test",
+    "tests",
+    "mock",
+    "mocks",
+    "script",
+    "forge-std",
+    "hardhat",
+];
 let ignoreScopeFiles = [".s.sol"];
 export let cryptoIgnoreGlobs = [
     ...ignoredScopeFolders.map((it) => `**/${it}/**`),
@@ -25,7 +33,9 @@ export const getGitFilePaths = async ({ url, includeGlobs, ignoreGlobs = [], }) 
     includeGlobs.forEach((includeGlob) => {
         files.push(...glob.sync(`${dir}/${includeGlob}`).map((it) => it.replace(dir, "")));
     });
-    let ignoredFiles = ignoreGlobs.map((it) => glob.sync(`${dir}/${it}`)).flat();
+    let ignoredFiles = ignoreGlobs
+        .map((it) => glob.sync(`${dir}/${it}`).map((it) => it.replace(dir, "")))
+        .flat();
     files = files.filter((path) => !ignoredFiles.includes(path));
     return files;
 };

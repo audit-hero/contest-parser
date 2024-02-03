@@ -2,6 +2,28 @@
 
 set -e
 
+# Redirect output to stderr.
+exec 1>&2
+
+# Check for 'TODO' in .ts files.
+TODO_REGEX='// TODO'
+
+# Getting all .ts files
+FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
+
+if [ -n "$FILES" ]; then
+    # Check for the TODO_REGEX in each staged .ts file
+    for FILE in $FILES; do
+        if grep -q "$TODO_REGEX" "$FILE"; then
+            echo "ERROR: Found 'TODO' reference in $FILE"
+            echo "Please remove 'TODO' comments before committing."
+            exit 1
+        fi
+    done
+fi
+
+# All checks passed, so allow the commit.
+
 yarn test
 yarn build
-git add .
+git add dist
