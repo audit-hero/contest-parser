@@ -1,4 +1,4 @@
-import { getMdHeading, findDocUrl } from "../util.js";
+import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js";
 import Logger from "js-logger";
 import parseUrl from "parse-url";
 export const getHmAwards = (contest, lines) => {
@@ -147,6 +147,8 @@ const getPathAndUrl = (lineSplit, referenceLinks) => {
 };
 const isValidUrl = (url) => {
     try {
+        if (moduleExtensions.filter((it) => url.endsWith(it)).length === 0)
+            return false;
         parseUrl(url);
     }
     catch (e) {

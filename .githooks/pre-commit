@@ -1,29 +1,37 @@
 #!/bin/bash
 
 set -e
-
-# Redirect output to stderr.
 exec 1>&2
 
-# Check for 'TODO' in .ts files.
-TODO_REGEX='// TODO'
+function check_todo() {
+  TODO_REGEX='// TODO'
+  FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
+  if [ -n "$FILES" ]; then
+      # Check for the TODO_REGEX in each staged .ts file
+      for FILE in $FILES; do
+          if grep -q "$TODO_REGEX" "$FILE"; then
+              echo "ERROR: Found 'TODO' reference in $FILE"
+              echo "Please remove 'TODO' comments before committing."
+              exit 1
+          fi
+      done
+  fi
+}
 
-# Getting all .ts files
-FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
+function check_committer() {
+  COMMITTER_NAME=$(git config user.name)
+  if [ "$COMMITTER_NAME" != "totovoto" ]; then
+    echo "not totovoto"
+    exit 1
+  fi
+}
 
-if [ -n "$FILES" ]; then
-    # Check for the TODO_REGEX in each staged .ts file
-    for FILE in $FILES; do
-        if grep -q "$TODO_REGEX" "$FILE"; then
-            echo "ERROR: Found 'TODO' reference in $FILE"
-            echo "Please remove 'TODO' comments before committing."
-            exit 1
-        fi
-    done
-fi
+function build_dist() {
+  yarn test
+  yarn build
+  git add dist
+}
 
-# All checks passed, so allow the commit.
-
-yarn test
-yarn build
-git add dist
+check_committer
+check_todo
+build_dist
