@@ -37,7 +37,7 @@ describe("", () => {
         expect(parsed[0]?.modules.length).toBe(18);
         expect(parsed[0]?.doc_urls?.at(0)).toBe("https://github.com/hoprnet/hoprnet/tree/master/docs/sc-audit-08-2023/docs");
     });
-    it.only("parses in scope in description", async () => {
+    it("parses in scope in description", async () => {
         vi.spyOn(Date, "now").mockImplementation(() => 1705590000000);
         let contestString = fs
             .readFileSync(`${workingDir()}/src/hats/test/in-scope-in-description.json`)

@@ -44,7 +44,7 @@ export const parseContests = async (
     let name = hatsNameToContestName(contests[i]["project-metadata"])
     let contestExists = existingContests.find((it) => it.pk === name)
 
-    if (contestExists && contestExists.all_modules.length > 0) {
+    if (contestExists && contestExists.modules.length > 0) {
       Logger.info(`contest ${name} already exists, skipping`)
       continue
     }
@@ -113,8 +113,7 @@ const parseContest = async (
     active: 1, // end_date > now
     status: getContestStatus({ startDate, endDate }),
     prize: hmAwards,
-    modules: modules.filter(it => it.path?.endsWith(".sol")),
-    all_modules: modules,
+    modules,
     doc_urls: docUrls,
     repo_urls: contest.scope.reposInformation.map((it) => it.url),
     tags: tags,

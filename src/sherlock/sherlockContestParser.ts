@@ -27,7 +27,7 @@ export const parseSherlockContests = (
       (it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name)
     )
 
-    if (contestExists && contestExists.all_modules.length > 0) {
+    if (contestExists && contestExists.modules?.length > 0) {
       Logger.info(`contest ${contests[i].title} already exists, skipping`)
       continue
     } else {
@@ -211,7 +211,6 @@ export const parseSherlockContest = async (
       readme: String(readme),
       loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
       modules: modules,
-      all_modules: modules,
       doc_urls: docUrls,
       repo_urls: repos,
       tags: tags,

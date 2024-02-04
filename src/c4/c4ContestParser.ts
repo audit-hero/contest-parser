@@ -31,7 +31,7 @@ export const parseC4Contests = (
       (it) => it.pk === contests[i].trimmedSlug
     )
 
-    if (contestExists && contestExists.all_modules.length > 0) {
+    if (contestExists && contestExists.modules.length > 0) {
       log.info(`contest ${contests[i].title} already exists, skipping`)
       continue
     }
@@ -168,8 +168,7 @@ export const parseMd = (
       status: status,
       prize: hmAwards,
       loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
-      modules: modules.filter((it) => it.url?.endsWith(".sol")),
-      all_modules: modules,
+      modules: modules,
       doc_urls: docUrls,
       repo_urls: [repo],
       tags: tags,

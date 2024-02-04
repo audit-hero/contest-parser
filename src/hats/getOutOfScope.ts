@@ -65,7 +65,7 @@ export const getModulesFromTree = (path: string, inScopeTree: string[]) => {
 
 const getModuleFromTree = (line: string, currentDir: string) => {
   line = line.trim()
-  let isDir = !line.endsWith(".sol");
+  let isDir = !line.match(/\.[a-z]+$/)
 
   if (isDir) {
     let depth = line.match(/(├|│|└)/g)!.length

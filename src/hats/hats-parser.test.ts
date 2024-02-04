@@ -54,7 +54,7 @@ describe("", () => {
     )
   })
 
-  it.only("parses in scope in description", async () => {
+  it("parses in scope in description", async () => {
     vi.spyOn(Date, "now").mockImplementation(() => 1705590000000)
 
     let contestString = fs
@@ -64,7 +64,7 @@ describe("", () => {
       .toString()
     let parsed = await parseContests([JSON.parse(contestString)], [])
 
-    expect(parsed[0]?.all_modules.length).toBe(9)
+    expect(parsed[0]?.modules.length).toBe(9)
   })
 
   it("parses in scope in description with format", async () => {

@@ -19,7 +19,7 @@ function check_todo() {
 }
 
 function check_no_it_only() {
-  ONLY_REGEX='\.only\('
+  ONLY_REGEX='.only('
   FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
   if [ -n "$FILES" ]; then
       # Check for the ONLY_REGEX in each staged test.ts file
