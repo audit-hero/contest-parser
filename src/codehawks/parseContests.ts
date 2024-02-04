@@ -1,6 +1,7 @@
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
 import anyDate from "any-date-parser"
 import { HawksMdContest, MdStatus, statuses } from "./types.js"
+import { sentryError } from "ah-shared"
 
 export const parseMd = (md: string): HawksMdContest[] => {
   let lines = md.split("\n")
@@ -25,9 +26,6 @@ export const parseMd = (md: string): HawksMdContest[] => {
       )
     }
 
-    if (line.startsWith("[view](")) {
-      let i = 1
-    }
     if (name !== "" && line.startsWith("[view](")) {
       let id = line
         .replace("[view](contests/", "")
@@ -43,7 +41,12 @@ export const parseMd = (md: string): HawksMdContest[] => {
         .toString()
         .padStart(2, "0")}-${name.replace("-competition", "")}`
 
-      results.push({ name, id, start_date, end_date, prize, status })
+      if (status === "unknown") {
+        sentryError(`unknown contest status for ${name}. Try adding the new status codehawks types`)
+      }
+      else {
+        results.push({ name, id, start_date, end_date, prize, status })
+      }
 
       name = ""
       status = "unknown"

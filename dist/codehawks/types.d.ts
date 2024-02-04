@@ -6,5 +6,5 @@ export type HawksMdContest = {
     prize: string;
     status: MdStatus;
 };
-export type MdStatus = "live" | "appeal review" | "judging period" | "completed" | "unknown";
+export type MdStatus = "live" | "appeal review" | "appeal period" | "judging period" | "completed" | "unknown";
 export declare let statuses: MdStatus[];

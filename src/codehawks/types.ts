@@ -10,6 +10,7 @@ export type HawksMdContest = {
 export type MdStatus =
   | "live"
   | "appeal review"
+  | "appeal period"
   | "judging period"
   | "completed"
   | "unknown"
@@ -17,6 +18,7 @@ export type MdStatus =
 export let statuses = [
   "live",
   "appeal review",
+  "appeal period",
   "judging period",
   "completed",
 ] as MdStatus[]

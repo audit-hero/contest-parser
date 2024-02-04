@@ -40,15 +40,20 @@ export const parseMd = (mdContest, md) => {
     return contest;
 };
 let mdStatusToStatus = (status) => {
-    if (status === "live")
-        return "active";
-    if (status === "appeal review")
-        return "judging";
-    if (status === "judging period")
-        return "judging";
-    if (status === "completed")
-        return "finished";
-    throw new Error(`Unknown status: ${status}`);
+    switch (status) {
+        case "live":
+            return "active";
+        case "appeal review":
+            return "judging";
+        case "appeal period":
+            return "judging";
+        case "judging period":
+            return "judging";
+        case "completed":
+            return "finished";
+        case "unknown":
+            throw new Error(`Unknown status: ${status}`);
+    }
 };
 let getModulesStartIndex = (lines) => {
     let modulesStart = lines.findIndex((it) => it.includes("# ") &&

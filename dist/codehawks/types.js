@@ -1,6 +1,7 @@
 export let statuses = [
     "live",
     "appeal review",
+    "appeal period",
     "judging period",
     "completed",
 ];
