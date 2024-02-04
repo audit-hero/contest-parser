@@ -106,7 +106,7 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
             }
             if (!isValidUrl(url)) {
                 Logger.warn(`invalid url ${url}`);
-                url = "";
+                return undefined;
             }
             module = {
                 name: name,

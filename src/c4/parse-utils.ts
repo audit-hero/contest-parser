@@ -141,7 +141,7 @@ const findModuleFromTable = (
 
       if (!isValidUrl(url)) {
         Logger.warn(`invalid url ${url}`)
-        url = ""
+        return undefined
       }
 
       module = {

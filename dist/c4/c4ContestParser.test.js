@@ -78,7 +78,7 @@ describe("", () => {
     it("parser relative urls", async () => {
         var md = fs.readFileSync(`./src/c4/test/c4-relative-urls.md`).toString();
         let parsed = findModules("repo", md.split("\n"), 0);
-        expect(parsed.modules).toHaveLength(107);
+        expect(parsed.modules).toHaveLength(104);
     });
     it("parses slash-ending urls", async () => {
         var md = fs

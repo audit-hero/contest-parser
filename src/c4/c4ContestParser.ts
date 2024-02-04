@@ -16,6 +16,7 @@ export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveC4Contests()
+
   let res = await Promise.all(parseC4Contests(active, existingContests))
   return res.filter((it) => it !== undefined) as ContestWithModules[]
 }
@@ -152,7 +153,7 @@ export const parseMd = (
   }
 
   let status: Status = "active"
-  if (start_date < Math.floor(Date.now() / 1000)) status = "created"
+  if (Math.floor(Date.now() / 1000) < start_date) status = "created"
 
   return {
     ok: true,

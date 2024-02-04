@@ -103,7 +103,7 @@ export const parseMd = (url, readme, repo, contest) => {
         console.log("Warning: Private contest");
     }
     let status = "active";
-    if (start_date < Math.floor(Date.now() / 1000))
+    if (Math.floor(Date.now() / 1000) < start_date)
         status = "created";
     return {
         ok: true,
