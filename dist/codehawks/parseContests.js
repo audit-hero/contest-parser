@@ -14,26 +14,20 @@ export const parseMd = (md) => {
             status = lineStatus;
         if (line.match(/^#{1,4} /) && !line.match(/\$/)) {
             name = truncateLongContestName(line
+                .trim()
                 .replace(/^#{1,4} /, "")
                 .toLowerCase()
                 .replace(/( |\.)/g, "-")
                 .replace("\\", "")
-                .replace(/-{1,4}/, "-"));
+                .replace(/-{2,4}/, "-"));
         }
         if (name !== "" && line.startsWith("[view](")) {
-            let id = line
-                .replace("[view](contests/", "")
-                .replace(")", "");
+            let id = line.replace("[view](contests/", "").replace(")", "");
             let dateLine = lines[i - 4];
             // note: contest parser parses to more specific date
             let { start_date, end_date } = getStartEndDate(dateLine);
             let prize = lines[i - 2].replace(/^#{1,4} /, "");
-            // let startDate = new Date(start_date * 1000)
-            let startYear = new Date(start_date * 1000).getFullYear();
-            let startMonth = new Date(start_date * 1000).getMonth() + 1;
-            name = `${startYear}-${startMonth
-                .toString()
-                .padStart(2, "0")}-${name.replace("-competition", "")}`;
+            name = getContestName(start_date, name);
             if (status === "unknown") {
                 sentryError(`unknown contest status for ${name}. Try adding the new status codehawks types`);
             }
@@ -45,6 +39,11 @@ export const parseMd = (md) => {
         }
     }
     return results;
+};
+let getContestName = (start_date, name) => {
+    let startYear = new Date(start_date * 1000).getFullYear();
+    let startMonth = new Date(start_date * 1000).getMonth() + 1;
+    return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`;
 };
 let getStatus = (line) => {
     line = line

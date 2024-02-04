@@ -32,6 +32,8 @@ export const parseMd = (
   let modules = findModules(mdContest.name, lines, active)
   let { start_date, end_date } = getStartEndDate(lines)
 
+  if (start_date) mdContest = updateContestNameDate(mdContest, start_date)
+
   let contest: ContestWithModules = {
     pk: mdContest.name,
     readme: `# ${lines.join("\n")}`,
@@ -51,8 +53,18 @@ export const parseMd = (
   return contest
 }
 
-let mdStatusToStatus = (status: MdStatus): Status => {
+let updateContestNameDate = (contest: HawksMdContest, start_date: number) => {
+  let startYear = new Date(start_date * 1000).getFullYear()
+  let startMonth = new Date(start_date * 1000).getMonth() + 1
 
+  contest.name = `${startYear}-${startMonth
+    .toString()
+    .padStart(2, "0")}-${contest.name.split("-").slice(2).join("-")}`
+
+  return contest
+}
+
+let mdStatusToStatus = (status: MdStatus): Status => {
   switch (status) {
     case "live":
       return "active"

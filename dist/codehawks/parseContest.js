@@ -22,6 +22,8 @@ export const parseMd = (mdContest, md) => {
     let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
     let modules = findModules(mdContest.name, lines, active);
     let { start_date, end_date } = getStartEndDate(lines);
+    if (start_date)
+        mdContest = updateContestNameDate(mdContest, start_date);
     let contest = {
         pk: mdContest.name,
         readme: `# ${lines.join("\n")}`,
@@ -37,6 +39,14 @@ export const parseMd = (mdContest, md) => {
         prize: mdContest.prize,
         tags: findTags(lines),
     };
+    return contest;
+};
+let updateContestNameDate = (contest, start_date) => {
+    let startYear = new Date(start_date * 1000).getFullYear();
+    let startMonth = new Date(start_date * 1000).getMonth() + 1;
+    contest.name = `${startYear}-${startMonth
+        .toString()
+        .padStart(2, "0")}-${contest.name.split("-").slice(2).join("-")}`;
     return contest;
 };
 let mdStatusToStatus = (status) => {
