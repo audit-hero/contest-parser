@@ -75,6 +75,9 @@ const getStartEndDate = (
   start_date: number
   end_date: number
 } => {
+  dateLine = dateLine.replace(`\\-`, "-")
+  dateLine = dateLine.replaceAll("UTC", "")
+
   // their end date is 8pm UTC
   let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00"
   let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr))

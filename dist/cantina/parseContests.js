@@ -55,6 +55,8 @@ let getStatus = (line) => {
 };
 // the date is 8pm UTC
 const getStartEndDate = (dateLine) => {
+    dateLine = dateLine.replace(`\\-`, "-");
+    dateLine = dateLine.replaceAll("UTC", "");
     // their end date is 8pm UTC
     let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00";
     let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr));
