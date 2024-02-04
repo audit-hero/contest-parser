@@ -12,7 +12,7 @@ export const parseActiveCantinaContests = async (existingContests) => {
     });
     active = active.filter((it) => {
         let existing = existingContests.find((existing) => existing.pk === it.name);
-        return !existing || existing.modules.length === 0;
+        return !existing || existing.modules?.length === 0;
     });
     let contests = await Promise.all(active.map((it) => parseContest(it)));
     return contests;
