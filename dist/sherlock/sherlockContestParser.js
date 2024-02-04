@@ -13,7 +13,7 @@ export const parseSherlockContests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let contestExists = existingContests.find((it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name));
-        if (contestExists && contestExists.all_modules.length > 0) {
+        if (contestExists && contestExists.modules?.length > 0) {
             Logger.info(`contest ${contests[i].title} already exists, skipping`);
             continue;
         }
@@ -110,7 +110,7 @@ export const parseSherlockContest = async (contest) => {
         start_date: contest.starts_at,
         end_date: contest.ends_at,
         platform: "sherlock",
-        active: 1,
+        active: 1, // end_date > now
         status: sherlockStatusToStatus(contest.status),
         prize: `${contest.prize_pool}$`,
     };
@@ -164,7 +164,6 @@ export const parseSherlockContest = async (contest) => {
             readme: String(readme),
             loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
             modules: modules,
-            all_modules: modules,
             doc_urls: docUrls,
             repo_urls: repos,
             tags: tags,

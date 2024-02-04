@@ -12,7 +12,7 @@ export const parseC4Contests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let contestExists = existingContests.find((it) => it.pk === contests[i].trimmedSlug);
-        if (contestExists && contestExists.all_modules.length > 0) {
+        if (contestExists && contestExists.modules.length > 0) {
             log.info(`contest ${contests[i].title} already exists, skipping`);
             continue;
         }
@@ -119,8 +119,7 @@ export const parseMd = (url, readme, repo, contest) => {
             status: status,
             prize: hmAwards,
             loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
-            modules: modules.filter((it) => it.url?.endsWith(".sol")),
-            all_modules: modules,
+            modules: modules,
             doc_urls: docUrls,
             repo_urls: [repo],
             tags: tags,

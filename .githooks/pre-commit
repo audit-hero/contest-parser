@@ -18,6 +18,21 @@ function check_todo() {
   fi
 }
 
+function check_no_it_only() {
+  ONLY_REGEX='\.only\('
+  FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
+  if [ -n "$FILES" ]; then
+      # Check for the ONLY_REGEX in each staged test.ts file
+      for FILE in $FILES; do
+          if grep -q "$ONLY_REGEX" "$FILE"; then
+              echo "ERROR: Found 'only.' reference in $FILE"
+              echo "Please remove 'only.' comments before committing."
+              exit 1
+          fi
+      done
+  fi
+}
+
 function check_committer() {
   COMMITTER_NAME=$(git config user.name)
   if [ "$COMMITTER_NAME" != "totovoto" ]; then
@@ -34,4 +49,5 @@ function build_dist() {
 
 check_committer
 check_todo
+check_no_it_only
 build_dist
