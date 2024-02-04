@@ -13,7 +13,7 @@ export const parseSherlockContests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let contestExists = existingContests.find((it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name));
-        if (contestExists && contestExists.modules.length > 0) {
+        if (contestExists && contestExists.all_modules.length > 0) {
             Logger.info(`contest ${contests[i].title} already exists, skipping`);
             continue;
         }

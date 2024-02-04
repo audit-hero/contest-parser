@@ -27,7 +27,7 @@ export const parseSherlockContests = (
       (it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name)
     )
 
-    if (contestExists && contestExists.modules.length > 0) {
+    if (contestExists && contestExists.all_modules.length > 0) {
       Logger.info(`contest ${contests[i].title} already exists, skipping`)
       continue
     } else {

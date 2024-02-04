@@ -31,7 +31,7 @@ export const parseC4Contests = (
       (it) => it.pk === contests[i].trimmedSlug
     )
 
-    if (contestExists && contestExists.modules.length > 0) {
+    if (contestExists && contestExists.all_modules.length > 0) {
       log.info(`contest ${contests[i].title} already exists, skipping`)
       continue
     }
