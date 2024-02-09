@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-exec 1>&2
 
 function check_todo() {
   TODO_REGEX='// TODO'

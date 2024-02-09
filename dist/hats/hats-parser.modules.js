@@ -4,25 +4,31 @@ import { parseTreeModulesV2 } from "../parse-modules.js";
 import { cryptoIgnoreGlobs, cryptoIncludeGlobs, getGitFilePaths, } from "../utils/getGitFilePaths.js";
 import Logger from "js-logger";
 export const getModules = async (contest, name) => {
-    let jobs = contest.scope.reposInformation.map((it) => getModulesRepo(it, contest, name));
+    let jobs = contest.scope.reposInformation.map((it) => getModulesRepo(contest.scope.reposInformation, it, contest, name));
     let res = await Promise.all(jobs);
     return res.flat();
 };
-const getModulesRepo = async (repoInfo, contest, name) => {
+const getModulesRepo = async (allRepos, repoInfo, contest, name) => {
     let repoName = repoInfo.url.split("/").pop();
     Logger.info(`cloning ${repoName} for contest ${name}`);
-    let files = await getGitFilePaths({
+    let gitFilePaths = await getGitFilePaths({
         url: repoInfo.url,
         includeGlobs: cryptoIncludeGlobs,
         ignoreGlobs: cryptoIgnoreGlobs,
     });
-    files = files.filter((path) => !ignoredScopeFiles.some((excludePath) => path.includes(excludePath)));
-    let allReposFilteredPaths = getInScopeFromScopeDescription(contest.scope.description);
-    let filteredPaths = allReposFilteredPaths.find((it) => {
-        return it.some((it) => it.includes(repoName));
-    }) ?? [];
+    gitFilePaths = gitFilePaths.filter((path) => !ignoredScopeFiles.some((excludePath) => path.includes(excludePath)));
+    let inScopeAllReposPaths = getInScopeFromScopeDescription(contest.scope.description);
+    let filteredPaths = inScopeAllReposPaths[0] ?? [];
+    if (allRepos.length > 1) {
+        // try to find the correct repo
+        filteredPaths = inScopeAllReposPaths.find((it) => {
+            return it.some((it) => it.includes(repoName));
+        }) ?? [];
+    }
     // some retain repo name in path
     filteredPaths = filteredPaths.map((it) => it.replace(new RegExp(`^${repoName}/`), ""));
+    // find the correct path from git files
+    filteredPaths = matchToGitPath(filteredPaths, gitFilePaths);
     if (filteredPaths.length === 0) {
         let split = contest.scope.outOfScope.split("\n");
         try {
@@ -31,7 +37,7 @@ const getModulesRepo = async (repoInfo, contest, name) => {
         catch (e) { }
         if (filteredPaths.length === 0) {
             let outOfScopePaths = getOutOfScope(split);
-            filteredPaths = files.filter((path) => {
+            filteredPaths = gitFilePaths.filter((path) => {
                 return !outOfScopePaths.some((excludePath) => {
                     let trimmedPath = removeSuffix(excludePath, "**");
                     return path.startsWith(trimmedPath);
@@ -91,6 +97,18 @@ let getInScopeFromScopeDescription = (scope) => {
     const regex = /```[\s\S]*?```/g;
     const blocks = scope.match(regex);
     return blocks?.map((block) => parseTreeModulesV2(block.split("\n"))) ?? [];
+};
+const matchToGitPath = (filteredPaths, gitFilePaths) => {
+    return filteredPaths.map((it) => {
+        let found = gitFilePaths.filter((gitPath) => gitPath.endsWith(it));
+        if (found.length > 1)
+            throw new Error(`found multiple paths for ${it}`);
+        if (found.length === 0) {
+            Logger.error(`could not find path for ${it}`);
+            return it;
+        }
+        return found[0];
+    });
 };
 function removeSuffix(excludePath, suffix) {
     let excludedUntil = 0;

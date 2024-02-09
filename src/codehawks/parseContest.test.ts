@@ -30,7 +30,7 @@ it("parses modules", () => {
   expect(contest.end_date).toBe(1706961600)
 })
 
-it.only("uses main repo if scope has no repo", () => {
+it("uses main repo if scope has no repo", () => {
   let mdContest: HawksMdContest = {
     id: "clrzgrole0007xtsq0gfdw8if",
     name: "2024-01-morpheusai",

@@ -32,7 +32,7 @@ describe("", () => {
     expect(contest.pk).toBe("2023-08-stakewise")
 
     expect(contest.prize).toBe("150000")
-    expect(contest.modules.length).toBe(36)
+    expect(contest.modules.length).toBe(14)
     expect(contest.url).toBe(
       "https://app.hats.finance/audit-competitions/stakewise-0xd91cd6ed6c9a112fdc112b1a3c66e47697f522cd"
     )

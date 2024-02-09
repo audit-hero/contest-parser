@@ -23,7 +23,7 @@ describe("", () => {
         let contest = parsed[0];
         expect(contest.pk).toBe("2023-08-stakewise");
         expect(contest.prize).toBe("150000");
-        expect(contest.modules.length).toBe(36);
+        expect(contest.modules.length).toBe(14);
         expect(contest.url).toBe("https://app.hats.finance/audit-competitions/stakewise-0xd91cd6ed6c9a112fdc112b1a3c66e47697f522cd");
         expect(contest.repo_urls[0]).toBe("https://github.com/stakewise/v3-core");
         expect(contest.doc_urls[0]).toBe("https://docs-v3.stakewise.io");

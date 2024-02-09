@@ -16,15 +16,18 @@ let ignoredScopeFolders = [
   "test",
   "tests",
   "mock",
+  "interfaces",
   "mocks",
   "script",
   "forge-std",
   "hardhat",
 ]
-let ignoreScopeFiles = [".s.sol"]
+let ignoreScopeFileExtensions = ["s.sol", "t.sol"]
 export let cryptoIgnoreGlobs = [
   ...ignoredScopeFolders.map((it) => `**/${it}/**`),
-  ...ignoreScopeFiles.map((it) => `**/${it}`),
+  ...ignoreScopeFileExtensions.map((it) => `**/*.${it}`),
+  // interfaces
+  // "**/I*.sol", need to test it
 ]
 
 export const getGitFilePaths = async ({
@@ -51,7 +54,7 @@ export const getGitFilePaths = async ({
       ...glob.sync(`${dir}/${includeGlob}`).map((it) => it.replace(dir, ""))
     )
   })
-
+  
   let ignoredFiles = ignoreGlobs
     .map((it) => glob.sync(`${dir}/${it}`).map((it) => it.replace(dir, "")))
     .flat()

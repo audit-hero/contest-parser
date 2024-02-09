@@ -21,6 +21,7 @@ export let ignoredScopeFiles = [
     "mock",
     "script",
     ".s.sol",
+    ".t.sol",
     "forge-std",
     "hardhat",
 ];

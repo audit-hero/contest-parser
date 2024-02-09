@@ -119,7 +119,16 @@ export let parseTreeModulesV2 = (lines) => {
             Logger.info(`unknown line: ${name}`);
         }
     }
-    return paths.map((path) => path.replaceAll("//", "/"));
+    return paths.map((path) => removeDotPrefix(path.replaceAll("//", "/")));
+};
+let removeDotPrefix = (path) => {
+    if (path.startsWith("./")) {
+        return path.slice(2);
+    }
+    else if (path.startsWith(".")) {
+        return path.slice(1);
+    }
+    return path;
 };
 let nameIsDir = (name) => {
     // does not include normal character after last " "

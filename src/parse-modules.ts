@@ -158,7 +158,18 @@ export let parseTreeModulesV2 = (lines: string[]) => {
     }
   }
 
-  return paths.map((path) => path.replaceAll("//", "/"))
+  return paths.map((path) => removeDotPrefix(path.replaceAll("//", "/")))
+}
+
+let removeDotPrefix = (path:string) => {
+  if (path.startsWith("./")) {
+    return path.slice(2)
+  }
+  else if (path.startsWith(".")) {
+    return path.slice(1)
+  }
+
+  return path
 }
 
 let nameIsDir = (name: string) => {
