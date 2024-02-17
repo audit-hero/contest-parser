@@ -16,6 +16,7 @@ it("parses modules", () => {
     prize: "$22,500 USDC",
     status: "live",
   }
+  let i =1
 
   let contestMd = fs.readFileSync("src/codehawks/test/morpheusai.md").toString()
 
