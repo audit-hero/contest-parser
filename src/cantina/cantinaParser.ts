@@ -7,7 +7,7 @@ export const parseActiveCantinaContests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
   let active = await getAllContests()
-  
+
   active = active.filter((it) => {
     let existing = existingContests.find((existing) => existing.pk === it.name)
     return !existing || existing.modules?.length === 0

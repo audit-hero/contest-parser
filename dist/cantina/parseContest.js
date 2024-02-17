@@ -69,31 +69,30 @@ const findModules = (contest, lines, active) => {
     if (modulesStart === -1)
         return [];
     modulesStart += 1;
-    let currentRepo = "";
+    let currentRepo = "no-repo";
     let modules = [];
     for (let i = modulesStart; i < modulesEnd; ++i) {
         let line = lines[i];
         if (line.includes("github.com") ||
-            line.includes("raw.githubusercontent.com"))
+            line.includes("raw.githubusercontent.com")) {
             currentRepo = line
                 .split("](")
                 .pop()
                 .slice(0, -1)
                 .replace("/commit/", "/tree/");
+        }
         // doesn't have an extension
         if (!line.includes("|") || !line.match(/\.[0-9a-z]+/i))
             continue;
-        if (currentRepo !== "") {
-            let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_");
-            let module = {
-                name: path.split("/").pop(),
-                contest: contest,
-                active: active,
-                path,
-                url: `${currentRepo}/${path}`,
-            };
-            modules.push(module);
-        }
+        let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_");
+        let module = {
+            name: path.split("/").pop(),
+            contest: contest,
+            active: active,
+            path,
+            url: `${currentRepo}/${path}`,
+        };
+        modules.push(module);
     }
     return modules;
 };
