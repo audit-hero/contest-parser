@@ -711,10 +711,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ah-shared@audit-hero/ah-shared#139afebdea73e852015afb28b52d679bd8910db9":
+"ah-shared@audit-hero/ah-shared#2bea043a06c50275ca6e78098b7b3c0d99465eee":
   version: 0.0.0
-  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=139afebdea73e852015afb28b52d679bd8910db9"
-  checksum: 8e41c1485cdc241592c0eb9278bdbe5476fcfb2b2f4d6ff3d558845d38d5b66235095b021dd5030b6951427e2798bf1d008c3bf4357720a05673cd9f623d3278
+  resolution: "ah-shared@https://github.com/audit-hero/ah-shared.git#commit=2bea043a06c50275ca6e78098b7b3c0d99465eee"
+  dependencies:
+    text-splitter: "tonisives/text-splitter#commit=c44985757b5aaa7f262041a55dfccd49e300db58"
+  checksum: df1e0e7efc5b7b7042d426bdd9115991566f1de9fc365497c776617986a817049244f959e433de92f1917bfd6e330642f15d3a6d92be13d49be05cc90465bfc4
   languageName: node
   linkType: hard
 
@@ -970,7 +972,7 @@ __metadata:
   dependencies:
     "@types/fs-extra": "npm:^11.0.4"
     "@types/node": "npm:^20.11.16"
-    ah-shared: "audit-hero/ah-shared#139afebdea73e852015afb28b52d679bd8910db9"
+    ah-shared: "audit-hero/ah-shared#2bea043a06c50275ca6e78098b7b3c0d99465eee"
     any-date-parser: "npm:^1.5.4"
     axios: "npm:^1.6.7"
     chalk: "npm:^5.3.0"
@@ -2608,6 +2610,15 @@ __metadata:
     mkdirp: "npm:^1.0.3"
     yallist: "npm:^4.0.0"
   checksum: 02ca064a1a6b4521fef88c07d389ac0936730091f8c02d30ea60d472e0378768e870769ab9e986d87807bfee5654359cf29ff4372746cc65e30cbddc352660d8
+  languageName: node
+  linkType: hard
+
+"text-splitter@tonisives/text-splitter#commit=c44985757b5aaa7f262041a55dfccd49e300db58":
+  version: 0.0.0
+  resolution: "text-splitter@https://github.com/tonisives/text-splitter.git#commit=c44985757b5aaa7f262041a55dfccd49e300db58"
+  dependencies:
+    chalk: "npm:^5.3.0"
+  checksum: 746787e3daaf79129f7e99e1eb383787da66f63460c3b1e04a3a2f4d2e295ced52a4cee8dc1c739e2f5df4f8540da0f5e3295de5dd96b59ae94e295aeef2f40c
   languageName: node
   linkType: hard
 

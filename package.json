@@ -20,7 +20,7 @@
     "vitest": "^1.2.2"
   },
   "dependencies": {
-    "ah-shared": "audit-hero/ah-shared#139afebdea73e852015afb28b52d679bd8910db9",
+    "ah-shared": "audit-hero/ah-shared#2bea043a06c50275ca6e78098b7b3c0d99465eee",
     "any-date-parser": "^1.5.4",
     "axios": "^1.6.7",
     "chalk": "^5.3.0",

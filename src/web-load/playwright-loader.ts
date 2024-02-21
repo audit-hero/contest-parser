@@ -26,7 +26,8 @@ let activeCount = 0
 
 export let scrape = async (
   url: string,
-  loadingPhrases: string[] = ["Loading.."]
+  loadingPhrases: string[] = ["Loading.."],
+  wait?: number
 ): Promise<ScrapeResult> => {
   let page = await (await browser()).newPage()
 
@@ -44,7 +45,8 @@ export let scrape = async (
 
   let { content, title, startTime } = await waitForPageToLoad(
     page,
-    loadingPhrases
+    loadingPhrases,
+    wait
   )
 
   if (contentTooShort(content) || isNotFoundPage(content, title)) {
@@ -58,16 +60,24 @@ export let scrape = async (
   return { content, title, url }
 }
 
-export async function waitForPageToLoad(page: Page, loadingPhrases: string[]) {
+export async function waitForPageToLoad(
+  page: Page,
+  loadingPhrases: string[],
+  wait?: number
+) {
   let startTime = Date.now()
   let content = "",
     title = "",
     htmlContent = ""
+
+  if (wait && wait > 0) console.log(chalk.magenta(`waiting ${wait}ms...`))
+
   // wait max 150 for some meaningful content to load
   while (
     (contentTooShort(content) ||
       isNotFoundPage(content, title) ||
-      loading(content, loadingPhrases)) &&
+      loading(content, loadingPhrases) ||
+      (wait && (Date.now() - startTime) < wait)) &&
     Date.now() - startTime < 150000
   ) {
     new Promise((resolve) => setTimeout(resolve, 500))

@@ -6,14 +6,14 @@ function check_todo() {
   TODO_REGEX='// TODO'
   FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
   if [ -n "$FILES" ]; then
-      # Check for the TODO_REGEX in each staged .ts file
-      for FILE in $FILES; do
-          if grep -q "$TODO_REGEX" "$FILE"; then
-              echo "ERROR: Found 'TODO' reference in $FILE"
-              echo "Please remove 'TODO' comments before committing."
-              exit 1
-          fi
-      done
+    # Check for the TODO_REGEX in each staged .ts file
+    for FILE in $FILES; do
+      if grep -q "$TODO_REGEX" "$FILE"; then
+        echo "ERROR: Found 'TODO' reference in $FILE"
+        echo "Please remove 'TODO' comments before committing."
+        exit 1
+      fi
+    done
   fi
 }
 
@@ -21,14 +21,14 @@ function check_no_it_only() {
   ONLY_REGEX='.only('
   FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.ts" | tr '\n' ' ')
   if [ -n "$FILES" ]; then
-      # Check for the ONLY_REGEX in each staged test.ts file
-      for FILE in $FILES; do
-          if grep -q "$ONLY_REGEX" "$FILE"; then
-              echo "ERROR: Found 'only.' reference in $FILE"
-              echo "Please remove 'only.' comments before committing."
-              exit 1
-          fi
-      done
+    # Check for the ONLY_REGEX in each staged test.ts file
+    for FILE in $FILES; do
+      if grep -q "$ONLY_REGEX" "$FILE"; then
+        echo "ERROR: Found 'only.' reference in $FILE"
+        echo "Please remove 'only.' comments before committing."
+        exit 1
+      fi
+    done
   fi
 }
 

@@ -1,7 +1,7 @@
 import { Browser, chromium } from "playwright"
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js"
 import anyDate from "any-date-parser"
-import { waitForPageToLoad } from "./web-load/playwright-loader.js"
+import { waitForPageToLoad } from "../../web-load/playwright-loader.js"
 
 export const getActive = async (): Promise<MdContest[]> => {
   let contestUrls = await getContestUrls()

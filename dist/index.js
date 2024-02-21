@@ -4,4 +4,5 @@ export * from "./hats/hats-parser.js";
 export * from "./sherlock/sherlockContestParser.js";
 export { setLogLevel } from "./config.js";
 export * from "./cantina/cantinaParser.js";
+export * from "./immunefi/immunefiParser.js";
 //# sourceMappingURL=index.js.map

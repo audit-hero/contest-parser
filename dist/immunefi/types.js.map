@@ -1,0 +1,1 @@
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../../src/immunefi/types.ts"],"names":[],"mappings":"AASA,MAAM,CAAC,IAAI,QAAQ,GAAG,CAAC,MAAM,EAAE,aAAa,EAAE,UAAU,CAAe,CAAA;AAIvE,MAAM,CAAC,IAAI,QAAQ,GAAG,CAAC,MAAe,EAAE,EAAE;IACxC,OAAO,MAAM,KAAK,MAAM,IAAI,MAAM,KAAK,aAAa,CAAA;AACtD,CAAC,CAAA"}
