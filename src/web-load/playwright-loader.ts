@@ -1,8 +1,8 @@
 import chalk from "chalk"
-import { BrowserContext, Page } from "playwright"
+import { BrowserContext, Page, chromium } from "playwright-core"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
-import { chromium } from "playwright"
+import Logger from "js-logger"
 
 let _browser: BrowserContext | undefined = undefined
 
@@ -114,5 +114,7 @@ export async function waitForPageToLoad(
       lastLogTime = Date.now()
     }
   }
+
+  Logger.debug(`Scraped ${content}`)
   return { content, title, startTime }
 }

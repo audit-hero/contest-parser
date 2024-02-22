@@ -1,7 +1,8 @@
 import chalk from "chalk";
+import { chromium } from "playwright-core";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
-import { chromium } from "playwright";
+import Logger from "js-logger";
 let _browser = undefined;
 let config = {
     wait: 100,
@@ -67,6 +68,7 @@ export async function waitForPageToLoad(page, loadingPhrases, wait) {
             lastLogTime = Date.now();
         }
     }
+    Logger.debug(`Scraped ${content}`);
     return { content, title, startTime };
 }
 //# sourceMappingURL=playwright-loader.js.map

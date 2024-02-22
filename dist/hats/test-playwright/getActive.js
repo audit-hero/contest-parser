@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js";
 import anyDate from "any-date-parser";
 import { waitForPageToLoad } from "../../web-load/playwright-loader.js";
