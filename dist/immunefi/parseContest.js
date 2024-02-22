@@ -8,7 +8,7 @@ export const parseContest = async (contest) => {
 };
 let downloadContestAsMd = async (contest) => {
     let url = `https://immunefi.com/bounty/${contest.id}`;
-    let md = (await scrape(url, [], 3000)).content;
+    let md = (await scrape(url, [])).content;
     return md;
 };
 export const parseMd = (mdContest, md) => {

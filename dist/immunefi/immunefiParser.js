@@ -23,6 +23,6 @@ export const getActiveContests = async () => {
     });
 };
 const getHtmlAsMd = async () => {
-    return (await scrape(listUrl, [], 3000)).content;
+    return (await scrape(listUrl, [])).content;
 };
 //# sourceMappingURL=immunefiParser.js.map

@@ -5,19 +5,18 @@ import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { chromium } from "playwright"
 
 let _browser: BrowserContext | undefined = undefined
-const browser = async () => {
-  if (_browser) return _browser
-  let browser = await chromium.launch({ headless: true })
-  return await browser.newContext()
-}
 
 let config = {
-  wait: 3000,
-  browser,
+  wait: 100,
+  browser: async () => {
+    if (_browser) return _browser
+    let browser = await chromium.launch({ headless: true })
+    return await browser.newContext()
+  },
 }
 
 export type Config = {
-  wait?: number
+  wait: number
   browser: () => BrowserContext
 }
 
@@ -41,8 +40,7 @@ let activeCount = 0
 
 export let scrape = async (
   url: string,
-  loadingPhrases: string[] = ["Loading.."],
-  wait?: number
+  loadingPhrases: string[] = ["Loading.."]
 ): Promise<ScrapeResult> => {
   // return from the server, but run evaluate again until have some content
   console.log(chalk.green(`Scraping ${url}...`))
@@ -61,7 +59,7 @@ export let scrape = async (
   let { content, title, startTime } = await waitForPageToLoad(
     page,
     loadingPhrases,
-    wait
+    config.wait
   )
 
   if (contentTooShort(content) || isNotFoundPage(content, title)) {

@@ -3,15 +3,14 @@ import { NodeHtmlMarkdown } from "node-html-markdown";
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
 import { chromium } from "playwright";
 let _browser = undefined;
-const browser = async () => {
-    if (_browser)
-        return _browser;
-    let browser = await chromium.launch({ headless: true });
-    return await browser.newContext();
-};
 let config = {
-    wait: 3000,
-    browser,
+    wait: 100,
+    browser: async () => {
+        if (_browser)
+            return _browser;
+        let browser = await chromium.launch({ headless: true });
+        return await browser.newContext();
+    },
 };
 export let setPlaywrightConfig = (config) => {
     if (config.wait)
@@ -25,7 +24,7 @@ export const closeBrowser = () => {
 };
 let lastLogTime = 0;
 let activeCount = 0;
-export let scrape = async (url, loadingPhrases = ["Loading.."], wait) => {
+export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
     // return from the server, but run evaluate again until have some content
     console.log(chalk.green(`Scraping ${url}...`));
     let page = await (await config.browser()).newPage();
@@ -37,7 +36,7 @@ export let scrape = async (url, loadingPhrases = ["Loading.."], wait) => {
     }
     activeCount++;
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 });
-    let { content, title, startTime } = await waitForPageToLoad(page, loadingPhrases, wait);
+    let { content, title, startTime } = await waitForPageToLoad(page, loadingPhrases, config.wait);
     if (contentTooShort(content) || isNotFoundPage(content, title)) {
         console.log(chalk.red(`Failed to scrape ${url} after ${Date.now() - startTime}ms`));
         return { content: "", title: "", url: url };
