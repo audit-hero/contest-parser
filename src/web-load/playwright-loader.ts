@@ -1,17 +1,17 @@
 import chalk from "chalk"
-import { Browser, Page } from "playwright"
+import { Browser, BrowserContext, Page } from "playwright"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { chromium } from "playwright"
 
-let _browser: Browser | undefined = undefined
+let _browser: BrowserContext | undefined = undefined
 const browser = async () => {
   if (_browser) return _browser
-  _browser = await chromium.launch({ headless: true })
-  return _browser
+  let browser = await chromium.launch({ headless: true })
+  return await browser.newContext()
 }
 
-export let overridePlaywrightBrowser = (b: () => Browser) => {
+export let overridePlaywrightBrowser = (b: () => BrowserContext) => {
   _browser = b()
 }
 

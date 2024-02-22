@@ -1,5 +1,5 @@
-import { Browser, Page } from "playwright";
-export declare let overridePlaywrightBrowser: (b: () => Browser) => void;
+import { BrowserContext, Page } from "playwright";
+export declare let overridePlaywrightBrowser: (b: () => BrowserContext) => void;
 export type ScrapeResult = {
     content: string;
     title: string;

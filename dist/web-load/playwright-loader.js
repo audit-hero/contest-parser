@@ -6,8 +6,8 @@ let _browser = undefined;
 const browser = async () => {
     if (_browser)
         return _browser;
-    _browser = await chromium.launch({ headless: true });
-    return _browser;
+    let browser = await chromium.launch({ headless: true });
+    return await browser.newContext();
 };
 export let overridePlaywrightBrowser = (b) => {
     _browser = b();
