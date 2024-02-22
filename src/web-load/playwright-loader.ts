@@ -11,6 +11,10 @@ const browser = async () => {
   return _browser
 }
 
+export let overridePlaywrightBrowser = (b: () => Browser) => {
+  _browser = b()
+}
+
 export type ScrapeResult = {
   content: string
   title: string
@@ -33,7 +37,7 @@ export let scrape = async (
   console.log(chalk.green(`Scraping ${url}...`))
 
   let page = await (await browser()).newPage()
-  
+
   if (activeCount > 25) {
     console.log(chalk.magenta(`waiting...`))
     while (activeCount > 25) {
@@ -77,7 +81,7 @@ export async function waitForPageToLoad(
     (contentTooShort(content) ||
       isNotFoundPage(content, title) ||
       loading(content, loadingPhrases) ||
-      (wait && (Date.now() - startTime) < wait)) &&
+      (wait && Date.now() - startTime < wait)) &&
     Date.now() - startTime < 150000
   ) {
     new Promise((resolve) => setTimeout(resolve, 500))
