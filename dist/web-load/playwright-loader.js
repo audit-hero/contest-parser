@@ -11,7 +11,7 @@ const browser = async () => {
 };
 let config = {
     wait: 3000,
-    browser
+    browser,
 };
 export let setPlaywrightConfig = (config) => {
     if (config.wait)
@@ -28,7 +28,7 @@ let activeCount = 0;
 export let scrape = async (url, loadingPhrases = ["Loading.."], wait) => {
     // return from the server, but run evaluate again until have some content
     console.log(chalk.green(`Scraping ${url}...`));
-    let page = await (await browser()).newPage();
+    let page = await (await config.browser()).newPage();
     if (activeCount > 25) {
         console.log(chalk.magenta(`waiting...`));
         while (activeCount > 25) {

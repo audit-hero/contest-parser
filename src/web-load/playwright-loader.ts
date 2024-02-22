@@ -13,7 +13,7 @@ const browser = async () => {
 
 let config = {
   wait: 3000,
-  browser
+  browser,
 }
 
 export type Config = {
@@ -21,9 +21,7 @@ export type Config = {
   browser: () => BrowserContext
 }
 
-export let setPlaywrightConfig = (
-  config: Partial<Config>
-) => {
+export let setPlaywrightConfig = (config: Partial<Config>) => {
   if (config.wait) config.wait = config.wait
   if (config.browser) config.browser = config.browser
 }
@@ -49,7 +47,7 @@ export let scrape = async (
   // return from the server, but run evaluate again until have some content
   console.log(chalk.green(`Scraping ${url}...`))
 
-  let page = await (await browser()).newPage()
+  let page = await (await config.browser()).newPage()
 
   if (activeCount > 25) {
     console.log(chalk.magenta(`waiting...`))
