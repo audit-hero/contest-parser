@@ -29,11 +29,11 @@ export let scrape = async (
   loadingPhrases: string[] = ["Loading.."],
   wait?: number
 ): Promise<ScrapeResult> => {
-  let page = await (await browser()).newPage()
-
   // return from the server, but run evaluate again until have some content
   console.log(chalk.green(`Scraping ${url}...`))
 
+  let page = await (await browser()).newPage()
+  
   if (activeCount > 25) {
     console.log(chalk.magenta(`waiting...`))
     while (activeCount > 25) {
