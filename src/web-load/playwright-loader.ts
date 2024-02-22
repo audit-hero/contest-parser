@@ -11,8 +11,21 @@ const browser = async () => {
   return await browser.newContext()
 }
 
-export let overridePlaywrightBrowser = (b: () => BrowserContext) => {
-  _browser = b()
+let config = {
+  wait: 3000,
+  browser
+}
+
+export type Config = {
+  wait?: number
+  browser: () => BrowserContext
+}
+
+export let setPlaywrightConfig = (
+  config: Partial<Config>
+) => {
+  if (config.wait) config.wait = config.wait
+  if (config.browser) config.browser = config.browser
 }
 
 export type ScrapeResult = {

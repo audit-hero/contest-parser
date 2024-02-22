@@ -1,5 +1,9 @@
 import { BrowserContext, Page } from "playwright";
-export declare let overridePlaywrightBrowser: (b: () => BrowserContext) => void;
+export type Config = {
+    wait?: number;
+    browser: () => BrowserContext;
+};
+export declare let setPlaywrightConfig: (config: Partial<Config>) => void;
 export type ScrapeResult = {
     content: string;
     title: string;

@@ -3,7 +3,7 @@ export * from "./codehawks/codehawksParser.js";
 export * from "./hats/hats-parser.js";
 export * from "./sherlock/sherlockContestParser.js";
 export { setLogLevel } from "./config.js";
-export { overridePlaywrightBrowser } from "./web-load/playwright-loader.js";
+export { setPlaywrightConfig } from "./web-load/playwright-loader.js";
 export * from "./cantina/cantinaParser.js";
 export * from "./immunefi/immunefiParser.js";
 //# sourceMappingURL=index.js.map

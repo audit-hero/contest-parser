@@ -9,8 +9,15 @@ const browser = async () => {
     let browser = await chromium.launch({ headless: true });
     return await browser.newContext();
 };
-export let overridePlaywrightBrowser = (b) => {
-    _browser = b();
+let config = {
+    wait: 3000,
+    browser
+};
+export let setPlaywrightConfig = (config) => {
+    if (config.wait)
+        config.wait = config.wait;
+    if (config.browser)
+        config.browser = config.browser;
 };
 export const closeBrowser = () => {
     if (_browser)
