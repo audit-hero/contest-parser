@@ -1,9 +1,9 @@
 import { BrowserContext, Page } from "playwright";
 export type Config = {
     wait: number;
-    browser: () => BrowserContext;
+    browser: () => Promise<BrowserContext>;
 };
-export declare let setPlaywrightConfig: (config: Partial<Config>) => void;
+export declare let setPlaywrightConfig: (config_: Partial<Config>) => void;
 export type ScrapeResult = {
     content: string;
     title: string;

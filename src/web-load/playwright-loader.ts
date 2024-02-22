@@ -1,12 +1,12 @@
 import chalk from "chalk"
-import { Browser, BrowserContext, Page } from "playwright"
+import { BrowserContext, Page } from "playwright"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { chromium } from "playwright"
 
 let _browser: BrowserContext | undefined = undefined
 
-let config = {
+let config: Config = {
   wait: 100,
   browser: async () => {
     if (_browser) return _browser
@@ -17,12 +17,11 @@ let config = {
 
 export type Config = {
   wait: number
-  browser: () => BrowserContext
+  browser: () => Promise<BrowserContext>
 }
 
-export let setPlaywrightConfig = (config: Partial<Config>) => {
-  if (config.wait) config.wait = config.wait
-  if (config.browser) config.browser = config.browser
+export let setPlaywrightConfig = (config_: Partial<Config>) => {
+  config = { ...config, ...config_ }
 }
 
 export type ScrapeResult = {

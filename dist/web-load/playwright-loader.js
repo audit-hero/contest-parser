@@ -12,11 +12,8 @@ let config = {
         return await browser.newContext();
     },
 };
-export let setPlaywrightConfig = (config) => {
-    if (config.wait)
-        config.wait = config.wait;
-    if (config.browser)
-        config.browser = config.browser;
+export let setPlaywrightConfig = (config_) => {
+    config = { ...config, ...config_ };
 };
 export const closeBrowser = () => {
     if (_browser)
