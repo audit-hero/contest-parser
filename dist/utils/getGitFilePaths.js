@@ -25,7 +25,8 @@ export const getGitFilePaths = async ({ url, includeGlobs, ignoreGlobs = [], }) 
     if (url.endsWith("/"))
         url = url.slice(0, -1);
     let repoName = url.split("/").pop();
-    Logger.info(`cloning ${repoName}`);
+    url = gitConvertHttpsToSsh(url);
+    Logger.info(`cloning ${repoName}: ${url}`);
     let dir = process.env.LAMBDA_TASK_ROOT
         ? `/tmp/${repoName}`
         : `${workingDir()}/tmp/${repoName}`;
@@ -41,5 +42,13 @@ export const getGitFilePaths = async ({ url, includeGlobs, ignoreGlobs = [], }) 
         .flat();
     files = files.filter((path) => !ignoredFiles.includes(path));
     return files;
+};
+let gitConvertHttpsToSsh = (url) => {
+    let match = url.match(/https:\/\/github.com\/(.*)/);
+    if (match) {
+        let [_, repo] = match;
+        return `git@github.com:${repo}`;
+    }
+    return url;
 };
 //# sourceMappingURL=getGitFilePaths.js.map
