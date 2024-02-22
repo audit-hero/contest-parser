@@ -26,6 +26,10 @@ export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
     // return from the server, but run evaluate again until have some content
     console.log(chalk.green(`Scraping ${url}...`));
     let page = await (await config.browser()).newPage();
+    let consoleLog = "";
+    page.on("console", (msg) => {
+        consoleLog += msg.text();
+    });
     if (activeCount > 25) {
         console.log(chalk.magenta(`waiting...`));
         while (activeCount > 25) {
@@ -39,6 +43,8 @@ export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
         console.log(chalk.red(`Failed to scrape ${url} after ${Date.now() - startTime}ms`));
         return { content: "", title: "", url: url };
     }
+    Logger.trace(`Console: ${consoleLog}`);
+    Logger.debug(`Scraped: ${content}`);
     activeCount--;
     return { content, title, url };
 };

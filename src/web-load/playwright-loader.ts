@@ -46,6 +46,11 @@ export let scrape = async (
 
   let page = await (await config.browser()).newPage()
 
+  let consoleLog = ""
+  page.on("console", (msg) => {
+    consoleLog += msg.text()
+  })
+
   if (activeCount > 25) {
     console.log(chalk.magenta(`waiting...`))
     while (activeCount > 25) {
@@ -67,6 +72,9 @@ export let scrape = async (
     )
     return { content: "", title: "", url: url }
   }
+
+  Logger.trace(`Console: ${consoleLog}`)
+  Logger.debug(`Scraped: ${content}`)
 
   activeCount--
   return { content, title, url }
