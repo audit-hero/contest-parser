@@ -16,6 +16,7 @@ it("parses modules", () => {
     let contestMd = fs.readFileSync("src/immunefi/test/eBTC.md").toString();
     let contest = parseMd(mdContest, contestMd);
     expect(contest.modules.length).toBe(12);
+    expect(contest.pk).toBe("2024-02-ebtc-boost");
     expect(contest.modules[0].url).toBe("https://github.com/ebtc-protocol/ebtc/blob/release-0.7/packages/contracts/contracts/ActivePool.sol");
     expect(contest.modules[0].name).toBe("ActivePool.sol");
 });

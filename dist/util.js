@@ -34,6 +34,13 @@ export const getContestStatus = (dates) => {
     else
         return "active";
 };
+export let addYearAndMonthToContestName = (name, startDate) => {
+    if (name.match(/^\d{4}-\d{2}-/))
+        return name;
+    let startYear = new Date(startDate * 1000).getFullYear();
+    let startMonth = new Date(startDate * 1000).getMonth() + 1;
+    return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`;
+};
 export const getMdHeading = (line, headings) => {
     let pattern = /^(#{1,6})\s+(.+)$/g;
     let match = pattern.exec(line);
