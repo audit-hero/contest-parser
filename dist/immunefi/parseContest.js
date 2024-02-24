@@ -9,6 +9,8 @@ export const parseContest = async (contest) => {
 let downloadContestAsMd = async (contest) => {
     let url = `https://immunefi.com/bounty/${contest.id}`;
     let md = (await scrape(url, [])).content;
+    if (md.match(/\n#\s/))
+        md = md.split(/\n#\s/)[1];
     return md;
 };
 export const parseMd = (mdContest, md) => {
@@ -64,8 +66,8 @@ const findModules = (contest, lines, active) => {
     let modules = [];
     for (let i = modulesStart; i < modulesEnd; ++i) {
         let line = lines[i];
-        let isGithubUrl = line.startsWith("* [https://github.com/");
-        if (!isGithubUrl)
+        let isUrl = line.startsWith("* [https://");
+        if (!isUrl)
             continue;
         let url = line
             .replace("* [", "")

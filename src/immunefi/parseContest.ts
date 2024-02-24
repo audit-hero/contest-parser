@@ -14,6 +14,8 @@ export const parseContest = async (
 let downloadContestAsMd = async (contest: MdContest): Promise<string> => {
   let url = `https://immunefi.com/bounty/${contest.id}`
   let md = (await scrape(url, [])).content
+  if (md.match(/\n#\s/)) md = md.split(/\n#\s/)[1]
+
   return md
 }
 
@@ -88,9 +90,9 @@ const findModules = (
   let modules = [] as ContestModule[]
   for (let i = modulesStart; i < modulesEnd; ++i) {
     let line = lines[i]
-    let isGithubUrl = line.startsWith("* [https://github.com/")
+    let isUrl = line.startsWith("* [https://")
 
-    if (!isGithubUrl) continue
+    if (!isUrl) continue
 
     let url = line
       .replace("* [", "")

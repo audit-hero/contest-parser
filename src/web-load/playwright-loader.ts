@@ -7,7 +7,7 @@ import Logger from "js-logger"
 let _browser: BrowserContext | undefined = undefined
 
 let config: Config = {
-  wait: 100,
+  wait: 1000,
   browser: async () => {
     if (_browser) return _browser
     let browser = await chromium.launch({ headless: true })
