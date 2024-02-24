@@ -8,13 +8,17 @@ export const parseMd = (md: string): MdContest[] => {
   let results = [] as MdContest[]
 
   let name: string = ""
+  let nameHashCount = 10
   let status = "unknown" as MdStatus
+
   for (let i = 0; i < lines.length; ++i) {
     let line = lines[i]
     let lineStatus = getStatus(line)
     if (lineStatus) status = lineStatus
 
-    if (name === "" && line.match(/^#{1,3} /)) {
+    let lineHashMatch= line.match(/^#{1,3} /)
+    if (lineHashMatch && lineHashMatch[0].length < nameHashCount) {
+      nameHashCount = line.match(/^#{1,3} /)![0].length
       name = truncateLongContestName(
         line
           .replace(/^#{1,3} /, "")
@@ -43,6 +47,7 @@ export const parseMd = (md: string): MdContest[] => {
 
       name = ""
       status = "unknown"
+      nameHashCount = 10
     }
   }
 

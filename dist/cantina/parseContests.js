@@ -5,13 +5,16 @@ export const parseMd = (md) => {
     let lines = md.split("\n");
     let results = [];
     let name = "";
+    let nameHashCount = 10;
     let status = "unknown";
     for (let i = 0; i < lines.length; ++i) {
         let line = lines[i];
         let lineStatus = getStatus(line);
         if (lineStatus)
             status = lineStatus;
-        if (name === "" && line.match(/^#{1,3} /)) {
+        let lineHashMatch = line.match(/^#{1,3} /);
+        if (lineHashMatch && lineHashMatch[0].length < nameHashCount) {
+            nameHashCount = line.match(/^#{1,3} /)[0].length;
             name = truncateLongContestName(line
                 .replace(/^#{1,3} /, "")
                 .toLowerCase()
@@ -35,6 +38,7 @@ export const parseMd = (md) => {
             results.push({ name, id, start_date, end_date, prize, status });
             name = "";
             status = "unknown";
+            nameHashCount = 10;
         }
     }
     return results;
