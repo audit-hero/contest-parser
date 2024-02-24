@@ -5,7 +5,7 @@ import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
 import Logger from "js-logger";
 let _browser = undefined;
 let config = {
-    wait: 1000,
+    wait: 2000,
     browser: async () => {
         if (_browser)
             return _browser;
