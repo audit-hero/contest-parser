@@ -54,9 +54,9 @@ let mdStatusToStatus = (status) => {
         case "live":
             return "active";
         case "appeal review":
-            return "judging";
+        case "appeals review":
         case "appeal period":
-            return "judging";
+        case "appeals period":
         case "judging period":
             return "judging";
         case "completed":
