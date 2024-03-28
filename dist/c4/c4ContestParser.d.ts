@@ -1,4 +1,4 @@
-import { C4Contest } from "../types";
+import { C4Contest } from "../types.js";
 import { ContestWithModules } from "ah-shared";
 import { Result } from "ah-shared";
 export declare const parseActiveC4Contests: (existingContests: ContestWithModules[]) => Promise<ContestWithModules[]>;

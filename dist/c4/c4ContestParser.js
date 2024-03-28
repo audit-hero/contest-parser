@@ -1,6 +1,6 @@
 import axios from "axios";
 import log from "js-logger";
-import { findTags } from "../util";
+import { findTags } from "../util.js";
 import { sentryError } from "ah-shared";
 import { getTimestamp, findModules, getHmAwards, truncateLongNames, } from "./parse-utils.js";
 export const parseActiveC4Contests = async (existingContests) => {
