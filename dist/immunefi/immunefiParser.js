@@ -1,7 +1,7 @@
 import { parseContest } from "./parseContest.js";
 import { scrape } from "../web-load/playwright-loader.js";
 import * as list from "./parseContests.js";
-let listUrl = "https://immunefi.com/explore/";
+let listUrl = "https://immunefi.com/boost/";
 // this returns all from the cantina web site
 export const parseActiveImmunefiContests = async (existingContests) => {
     let active = await getActiveContests();

@@ -3,7 +3,7 @@ import anyDate from "any-date-parser"
 import { MdContest, MdStatus, statuses } from "./types.js"
 
 export const parseMd = (md: string): MdContest[] => {
-  let boosts = md.split("## Boosts")[1].split(/\n#{1,3} /)[0]
+  let boosts = md.split(/\n#{1,6}.*Boost/)[1].split(/\n#{1,3} /)[0]
   let lines = boosts.split("\n")
 
   let results = [] as MdContest[]
