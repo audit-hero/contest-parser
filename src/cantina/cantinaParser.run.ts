@@ -1,8 +1,6 @@
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 import { parseActiveCantinaContests } from "./cantinaParser.js"
 import fs from "fs"
-
-Logger.useDefaults()
 
 let res = await parseActiveCantinaContests([])
 

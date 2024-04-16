@@ -1,4 +1,4 @@
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 
 export let moduleExtensions = [
   ".sol", ".go", ".rs", "cairo"
@@ -156,7 +156,7 @@ export let workingDir = () => {
 }
 
 export const logTrace = (msg: () => string) => {
-  Logger.getLevel() === Logger.TRACE && Logger.debug(msg())
+  Logger.trace(msg())
 }
 
 export let truncateLongContestName = (name: string) => {

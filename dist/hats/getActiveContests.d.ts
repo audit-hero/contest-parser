@@ -1,4 +1,4 @@
-import { Project } from "./types";
+import { Project } from "./types.js";
 export declare const getActiveContests: () => Promise<Project[]>;
 export declare const getAllProjects: () => Promise<any[]>;
 export declare const filterProjectActiveOrInFuture: (projets: Project[]) => Project[];

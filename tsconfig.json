@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
+    "target": "esnext",
+    "module": "NodeNext",
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "declaration": true,
   },
   "exclude": [

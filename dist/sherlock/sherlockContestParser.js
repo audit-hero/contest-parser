@@ -1,7 +1,7 @@
 import axios from "axios";
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 import { sentryError } from "ah-shared";
-import { getRepoNameFromUrl, findTags } from "../util";
+import { getRepoNameFromUrl, findTags } from "../util.js";
 import { findModules } from "./modules.js";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {

@@ -1,4 +1,4 @@
-import { getActive } from "./getActive";
+import { getActive } from "./getActive.js";
 export const parseActiveHatsContests = async (existingContests) => {
     let active = await getActive();
     active = active.filter((it) => {

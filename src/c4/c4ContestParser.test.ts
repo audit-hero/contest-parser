@@ -1,6 +1,6 @@
 import { afterEach, beforeEach } from "node:test"
 import { C4Contest } from "../types.js"
-import { parseC4Contest, parseMd } from "./c4ContestParser"
+import { parseC4Contest, parseMd } from "./c4ContestParser.js"
 import { it, describe, expect, vi } from "vitest"
 import fs from "fs"
 import { getTimestamp, findModules, getHmAwards } from "./parse-utils.js"

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { chromium } from "playwright-core";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 let _browser = undefined;
 let config = {
     wait: 2000,

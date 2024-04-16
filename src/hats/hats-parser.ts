@@ -1,6 +1,6 @@
-import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util"
-import Logger from "js-logger"
-import { Project, Projects } from "./types"
+import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util.js"
+import { Logger } from "jst-logger"
+import { Project } from "./types.js"
 import {
   Result,
   sentryError,
@@ -8,7 +8,7 @@ import {
   ContestModule,
 } from "ah-shared"
 import { getModules } from "./hats-parser.modules.js"
-import { getActiveContests } from "./getActiveContests"
+import { getActiveContests } from "./getActiveContests.js"
 
 export const parseActiveHatsContests = async (
   existingContests: ContestWithModules[]

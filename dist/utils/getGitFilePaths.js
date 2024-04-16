@@ -1,8 +1,8 @@
 import { glob } from "glob";
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 import { workingDir, moduleExtensions } from "../util.js";
 import fs from "fs";
-import git from "simple-git";
+import { simpleGit } from "simple-git";
 export let cryptoIncludeGlobs = moduleExtensions.map((it) => `**/*${it}`);
 let ignoredScopeFolders = [
     "test",
@@ -32,7 +32,7 @@ export const getGitFilePaths = async ({ url, includeGlobs, ignoreGlobs = [], }) 
         : `${workingDir()}/tmp/${repoName}`;
     if (fs.existsSync(dir))
         fs.rmSync(dir, { recursive: true });
-    await git().clone(url, dir, ["--depth", "1"]);
+    await simpleGit().clone(url, dir, ["--depth", "1"]);
     let files = [];
     includeGlobs.forEach((includeGlob) => {
         files.push(...glob.sync(`${dir}/${includeGlob}`).map((it) => it.replace(dir, "")));

@@ -1,8 +1,5 @@
-import Logger from "js-logger";
 import fs from "fs"
 import { parseActiveHatsContests } from "./hats-parser.js";
-
-Logger.useDefaults()
 
 let res = await parseActiveHatsContests([])
 

@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { BrowserContext, Page, chromium } from "playwright-core"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 
 let _browser: BrowserContext | undefined = undefined
 

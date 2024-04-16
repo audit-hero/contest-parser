@@ -1,6 +1,6 @@
 import { afterEach } from "node:test"
 import { SherlockContest } from "../types.js"
-import { parseSherlockContest } from "./sherlockContestParser"
+import { parseSherlockContest } from "./sherlockContestParser.js"
 import { it, vi, describe, expect } from "vitest"
 
 describe("", () => {

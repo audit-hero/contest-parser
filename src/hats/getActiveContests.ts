@@ -1,4 +1,4 @@
-import { Project } from "./types"
+import { Project } from "./types.js"
 
 export const getActiveContests = async (): Promise<Project[]> => {
   let allProjects = await getAllProjects()

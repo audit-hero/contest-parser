@@ -1,7 +1,7 @@
 // general module parser from a tree. finds the files that end with .sol, and their directory paths
 //  according to character count before the directories.
 
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 
 /**
  * 

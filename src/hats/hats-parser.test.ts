@@ -1,9 +1,9 @@
 import { it, describe, afterEach, expect, vi } from "vitest"
 
 import fs from "fs-extra"
-import { parseContests } from "./hats-parser"
-import { getActiveContests } from "./getActiveContests"
-import { workingDir } from "../util"
+import { parseContests } from "./hats-parser.js"
+import { getActiveContests } from "./getActiveContests.js"
+import { workingDir } from "../util.js"
 import { ContestWithModules } from "ah-shared"
 import { getModules } from "./hats-parser.modules.js"
 
@@ -121,7 +121,7 @@ describe("", () => {
 
     vi.mock("simple-git", () => {
       return {
-        default: () => ({
+        simpleGit: () => ({
           clone: () => {
             // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
             fs.mkdirSync(`./tmp/v3-core`, { recursive: true })

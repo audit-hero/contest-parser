@@ -1,5 +1,5 @@
 import fs from "fs"
-import { parseMd } from "./parseContests"
+import { parseMd } from "./parseContests.js"
 import { vi, it, expect } from "vitest"
 
 it("parses status", async () => {

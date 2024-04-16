@@ -2,7 +2,7 @@ import { ignoredScopeFiles } from "../util.js";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
 import { cryptoIgnoreGlobs, cryptoIncludeGlobs, getGitFilePaths, } from "../utils/getGitFilePaths.js";
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 export const getModules = async (contest, name) => {
     let jobs = contest.scope.reposInformation.map((it) => getModulesRepo(contest.scope.reposInformation, it, contest, name));
     let res = await Promise.all(jobs);

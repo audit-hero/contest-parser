@@ -1,4 +1,4 @@
-import { ILogLevel } from "js-logger";
+import { LogLevel } from "jst-logger";
 export declare const githubParams: {
     method: string;
     headers: {
@@ -6,4 +6,4 @@ export declare const githubParams: {
         Authorization: string;
     };
 };
-export declare const setLogLevel: (level: ILogLevel) => void;
+export declare const setLogLevel: (level: LogLevel) => void;

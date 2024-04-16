@@ -1,8 +1,8 @@
 import axios from "axios"
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 import { sentryError, Result } from "ah-shared"
 import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
-import { getRepoNameFromUrl, findTags } from "../util"
+import { getRepoNameFromUrl, findTags } from "../util.js"
 import { SherlockContest } from "../types.js"
 import { findModules } from "./modules.js"
 

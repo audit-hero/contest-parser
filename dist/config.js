@@ -1,4 +1,4 @@
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 export const githubParams = {
     method: "GET",
     headers: {
@@ -7,8 +7,6 @@ export const githubParams = {
     }
 };
 export const setLogLevel = (level) => {
-    Logger.useDefaults({
-        defaultLevel: level
-    });
+    Logger.setLevel(level);
 };
 //# sourceMappingURL=config.js.map

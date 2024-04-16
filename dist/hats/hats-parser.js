@@ -1,8 +1,8 @@
-import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util";
-import Logger from "js-logger";
+import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util.js";
+import { Logger } from "jst-logger";
 import { sentryError, } from "ah-shared";
 import { getModules } from "./hats-parser.modules.js";
-import { getActiveContests } from "./getActiveContests";
+import { getActiveContests } from "./getActiveContests.js";
 export const parseActiveHatsContests = async (existingContests) => {
     let active = await getActiveContests();
     let contests = await parseContests(active, existingContests);

@@ -1,4 +1,4 @@
-import Logger, { ILogLevel } from "js-logger"
+import { Logger, LogLevel } from "jst-logger"
 
 export const githubParams = {
   method: "GET",
@@ -8,8 +8,6 @@ export const githubParams = {
   }
 }
 
-export const setLogLevel = (level: ILogLevel) => {
-  Logger.useDefaults({
-    defaultLevel: level
-  })
+export const setLogLevel = (level: LogLevel) => {
+  Logger.setLevel(level)
 }

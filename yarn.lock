@@ -980,11 +980,11 @@ __metadata:
     fp-ts: "npm:^2.16.2"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^10.3.10"
-    js-logger: "npm:^1.6.1"
+    jst-logger: tonisives/jst-logger
     node-html-markdown: "npm:^1.3.0"
-    parse-url: "npm:^9.0.1"
+    parse-url: "npm:^9.2.0"
     playwright-core: "npm:^1.41.2"
-    simple-git: "npm:^3.22.0"
+    simple-git: "npm:^3.24.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.3.3"
     vitest: "npm:^1.2.2"
@@ -1699,13 +1699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-logger@npm:^1.6.1":
-  version: 1.6.1
-  resolution: "js-logger@npm:1.6.1"
-  checksum: e443e997790cac7de039382ab8f46e284db855090e244cc7b95e7755bc2b0eb793f9f9bd901b80c1677cecaad155dd3a376a534674e7b2f57982581b703e9534
-  languageName: node
-  linkType: hard
-
 "jsonc-parser@npm:^3.2.0":
   version: 3.2.0
   resolution: "jsonc-parser@npm:3.2.0"
@@ -1723,6 +1716,13 @@ __metadata:
     graceful-fs:
       optional: true
   checksum: 4f95b5e8a5622b1e9e8f33c96b7ef3158122f595998114d1e7f03985649ea99cb3cd99ce1ed1831ae94c8c8543ab45ebd044207612f31a56fd08462140e46865
+  languageName: node
+  linkType: hard
+
+jst-logger@tonisives/jst-logger:
+  version: 0
+  resolution: "jst-logger@https://github.com/tonisives/jst-logger.git#commit=bfcaa3db98b53230c40c542c2bbb2a9b7a0eeb44"
+  checksum: b399c26079311879883dc6c46a2e010c6143d9422657875bf2776ec6c88845ccef700bf185eff8f6163719be3689e523290d0ac55d6df02ddf694c1a362afd7c
   languageName: node
   linkType: hard
 
@@ -2137,13 +2137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse-url@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "parse-url@npm:9.0.1"
+"parse-url@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "parse-url@npm:9.2.0"
   dependencies:
     "@types/parse-path": "npm:^7.0.0"
     parse-path: "npm:^7.0.0"
-  checksum: 1097a1b25ed35c24157f5fcd3c9d23a5c4c3fa0ae203403c897ba58e19cbd755b2bb715e2c48c47e7ad209c413c6a6a8c4f0b005f11b7845c08dfc196503bb7c
+  checksum: b8f56cdb01e76616255dff82544f4b5ab4378f6f4bac8604ed6fde03a75b0f71c547d92688386d8f22f38fad3c928c075abf69458677c6185da76c841bfd7a93
   languageName: node
   linkType: hard
 
@@ -2431,14 +2431,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"simple-git@npm:^3.22.0":
-  version: 3.22.0
-  resolution: "simple-git@npm:3.22.0"
+"simple-git@npm:^3.24.0":
+  version: 3.24.0
+  resolution: "simple-git@npm:3.24.0"
   dependencies:
     "@kwsites/file-exists": "npm:^1.1.1"
     "@kwsites/promise-deferred": "npm:^1.1.1"
     debug: "npm:^4.3.4"
-  checksum: cc12f7563e4de82a48c1b2517d5471f699b4e12ff25843d230854b6d8d567ca8ee9d6e6b40aa6aae214e956040563902c9a406e798df03b435fe863b829d0cc5
+  checksum: 4329e5be1a7af1ebb476354ed6edf6d2828dc221e15d22ce3e5e8028f537d5e9ac059d813911516f78e22dfa2ee4db4c8cf30bf912bd284e530b733bd6b5c3a0
   languageName: node
   linkType: hard
 

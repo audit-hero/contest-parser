@@ -1,4 +1,4 @@
-import { getAllContests } from "./getActive";
+import { getAllContests } from "./getActive.js";
 import { parseContest } from "./parseContest.js";
 // this returns all from the cantina web site
 export const parseActiveCantinaContests = async (existingContests) => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import log from "js-logger";
+import { Logger } from "jst-logger";
 import { findTags } from "../util.js";
 import { sentryError } from "ah-shared";
 import { getTimestamp, findModules, getHmAwards, truncateLongNames, } from "./parse-utils.js";
@@ -13,7 +13,7 @@ export const parseC4Contests = (contests, existingContests) => {
     for (let i = 0; i < contests.length; ++i) {
         let contestExists = existingContests.find((it) => it.pk === contests[i].trimmedSlug);
         if (contestExists && contestExists.modules.length > 0) {
-            log.info(`contest ${contests[i].title} already exists, skipping`);
+            Logger.info(`contest ${contests[i].title} already exists, skipping`);
             continue;
         }
         let contest = parseC4Contest(contests[i])
@@ -56,7 +56,7 @@ export const getActiveC4Contests = async () => {
     return activeContests;
 };
 export const parseC4Contest = async (contest) => {
-    log.info(`start parsing ${contest.title}`);
+    Logger.info(`start parsing ${contest.title}`);
     let url = `https://code4rena.com/contests/${contest.slug}`;
     // try to get the raw README.md from either main or master branch
     // input: https://github.com/code-423n4/2022-09-quickswap

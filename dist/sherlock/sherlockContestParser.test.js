@@ -1,5 +1,5 @@
 import { afterEach } from "node:test";
-import { parseSherlockContest } from "./sherlockContestParser";
+import { parseSherlockContest } from "./sherlockContestParser.js";
 import { it, vi, describe, expect } from "vitest";
 describe("", () => {
     afterEach(() => {

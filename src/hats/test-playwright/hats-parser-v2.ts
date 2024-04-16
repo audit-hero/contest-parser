@@ -1,5 +1,5 @@
 import { ContestWithModules } from "ah-shared"
-import { getActive } from "./getActive"
+import { getActive } from "./getActive.js"
 
 export const parseActiveHatsContests = async (
   existingContests: ContestWithModules[]

@@ -1,7 +1,7 @@
 import { ContestModule } from "ah-shared"
 import { C4Contest } from "../types.js"
 import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js"
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 import { string } from "fp-ts"
 import parseUrl from "parse-url"
 

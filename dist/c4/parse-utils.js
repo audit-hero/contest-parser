@@ -1,5 +1,5 @@
 import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js";
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 import parseUrl from "parse-url";
 export const getHmAwards = (contest, lines) => {
     if (contest.hm_award_pool)

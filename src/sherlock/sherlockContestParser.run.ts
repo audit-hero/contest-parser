@@ -1,8 +1,6 @@
-import Logger from "js-logger";
+import { Logger } from "jst-logger";
 import {  parseActiveSherlockContests } from "./sherlockContestParser.js";
 import fs from "fs"
-
-Logger.useDefaults()
 
 let active = await parseActiveSherlockContests([])
 

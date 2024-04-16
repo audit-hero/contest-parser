@@ -8,7 +8,7 @@ import {
   cryptoIncludeGlobs,
   getGitFilePaths,
 } from "../utils/getGitFilePaths.js"
-import Logger from "js-logger"
+import { Logger } from "jst-logger"
 
 export const getModules = async (
   contest: Project,

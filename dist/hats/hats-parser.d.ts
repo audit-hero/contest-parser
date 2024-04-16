@@ -1,4 +1,4 @@
-import { Project } from "./types";
+import { Project } from "./types.js";
 import { ContestWithModules } from "ah-shared";
 export declare const parseActiveHatsContests: (existingContests: ContestWithModules[]) => Promise<ContestWithModules[]>;
 export declare const parseContests: (contests: Project[], existingContests: ContestWithModules[]) => Promise<(ContestWithModules | undefined)[]>;

@@ -1,5 +1,5 @@
 import axios from "axios"
-import log from "js-logger"
+import { Logger } from "jst-logger"
 import { findTags } from "../util.js"
 import { C4Contest } from "../types.js"
 import { sentryError } from "ah-shared"
@@ -33,7 +33,7 @@ export const parseC4Contests = (
     )
 
     if (contestExists && contestExists.modules.length > 0) {
-      log.info(`contest ${contests[i].title} already exists, skipping`)
+      Logger.info(`contest ${contests[i].title} already exists, skipping`)
       continue
     }
 
@@ -88,7 +88,7 @@ export const getActiveC4Contests = async () => {
 export const parseC4Contest = async (
   contest: C4Contest
 ): Promise<Result<ContestWithModules>> => {
-  log.info(`start parsing ${contest.title}`)
+  Logger.info(`start parsing ${contest.title}`)
 
   let url = `https://code4rena.com/contests/${contest.slug}`
   // try to get the raw README.md from either main or master branch
