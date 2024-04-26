@@ -1,6 +1,7 @@
 export declare let moduleExtensions: string[];
 export declare let docHeadings: string[];
 export declare let ignoredScopeFiles: string[];
+export declare let isIgnoredContestName: (name: string) => boolean;
 export declare const getContestStatus: (dates: {
     startDate: number;
     endDate: number;

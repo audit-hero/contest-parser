@@ -28,6 +28,11 @@ export let ignoredScopeFiles = [
   "hardhat",
 ]
 
+let ignoreContestNames = ["servet test"]
+
+export let isIgnoredContestName = (name: string) =>
+  ignoreContestNames.some((it) => name.toLocaleLowerCase().includes(it))
+
 export const getContestStatus = (dates: {
   startDate: number
   endDate: number

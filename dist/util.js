@@ -23,6 +23,8 @@ export let ignoredScopeFiles = [
     "forge-std",
     "hardhat",
 ];
+let ignoreContestNames = ["servet test"];
+export let isIgnoredContestName = (name) => ignoreContestNames.some((it) => name.toLocaleLowerCase().includes(it));
 export const getContestStatus = (dates) => {
     let now = Date.now() / 1000;
     if (now < dates.startDate)

@@ -1,3 +1,4 @@
+import { isIgnoredContestName } from "../util.js";
 export const getActiveContests = async () => {
     let allProjects = await getAllProjects();
     let projectJobs = allProjects.map((it) => {
@@ -38,6 +39,8 @@ export const getAllProjects = async () => {
 export const filterProjectActiveOrInFuture = (projets) => {
     return projets.filter((it) => {
         if (it === undefined || it["project-metadata"] === undefined)
+            return false;
+        if (isIgnoredContestName(it["project-metadata"].name))
             return false;
         let startTime = it["project-metadata"].starttime;
         let endTime = it["project-metadata"].endtime;
