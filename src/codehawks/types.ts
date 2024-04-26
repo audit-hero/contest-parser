@@ -14,7 +14,9 @@ export type MdStatus =
   | "appeal period"
   | "appeals period"
   | "judging period"
+  | "judging"
   | "completed"
+  | "upcoming"
   | "unknown"
 
 export let statuses = [
@@ -24,5 +26,7 @@ export let statuses = [
   "appeal period",
   "appeals period",
   "judging period",
+  "judging",
   "completed",
+  "upcoming"
 ] as MdStatus[]

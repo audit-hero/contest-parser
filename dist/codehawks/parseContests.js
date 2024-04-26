@@ -23,16 +23,26 @@ export const parseMd = (md) => {
         }
         if (name !== "" && line.startsWith("[view](")) {
             let id = line.replace("[view](contests/", "").replace(")", "");
-            let dateLine = lines[i - 4];
-            // note: contest parser parses to more specific date
-            let { start_date, end_date } = getStartEndDate(dateLine);
-            let prize = lines[i - 2].replace(/^#{1,4} /, "");
-            name = getContestName(start_date, name);
-            if (status === "unknown") {
-                sentryError(`unknown contest status for ${name}. Try adding the new status codehawks types`);
+            let prizeLine = i - 1;
+            while (lines[prizeLine].match(/^#{1,4} /) === null) {
+                prizeLine--;
+                if (prizeLine < 0) {
+                    sentryError(`could not find prize line for ${name}. Check md format`);
+                    break;
+                }
             }
-            else {
-                results.push({ name, id, start_date, end_date, prize, status });
+            if (prizeLine > 0) {
+                let dateLine = lines[prizeLine - 2];
+                // note: contest parser parses to more specific date
+                let { start_date, end_date } = getStartEndDate(dateLine);
+                let prize = lines[prizeLine].replace(/^#{1,4} /, "");
+                name = getContestName(start_date, name);
+                if (status === "unknown") {
+                    sentryError(`unknown contest status for ${name}. Try adding the new status codehawks types`);
+                }
+                else {
+                    results.push({ name, id, start_date, end_date, prize, status });
+                }
             }
             name = "";
             status = "unknown";

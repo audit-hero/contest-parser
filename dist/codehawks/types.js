@@ -5,6 +5,8 @@ export let statuses = [
     "appeal period",
     "appeals period",
     "judging period",
+    "judging",
     "completed",
+    "upcoming"
 ];
 //# sourceMappingURL=types.js.map

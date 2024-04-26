@@ -1,6 +1,12 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { findDocUrl, findTags, getAnyDateUTCTimestamp } from "../util.js"
+import {
+  addYearAndMonthToContestName,
+  findDocUrl,
+  findTags,
+  getAnyDateUTCTimestamp,
+  trimContestName,
+} from "../util.js"
 import { HawksMdContest, MdStatus } from "./types.js"
 import { parseTreeModulesV2 } from "../parse-modules.js"
 import anyDate from "any-date-parser"
@@ -35,7 +41,9 @@ export const parseMd = (
   if (start_date) mdContest = updateContestNameDate(mdContest, start_date)
 
   let contest: ContestWithModules = {
-    pk: mdContest.name,
+    pk: trimContestName(
+      addYearAndMonthToContestName(mdContest.name, start_date)
+    ),
     readme: `# ${lines.join("\n")}`,
     start_date: start_date ?? mdContest.start_date,
     end_date: end_date ?? mdContest.end_date,
@@ -73,9 +81,12 @@ let mdStatusToStatus = (status: MdStatus): Status => {
     case "appeal period":
     case "appeals period":
     case "judging period":
+    case "judging":
       return "judging"
     case "completed":
       return "finished"
+    case "upcoming":
+      return "created"
     case "unknown":
       throw new Error(`Unknown status: ${status}`)
   }

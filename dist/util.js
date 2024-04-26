@@ -1,7 +1,5 @@
 import { Logger } from "jst-logger";
-export let moduleExtensions = [
-    ".sol", ".go", ".rs", "cairo"
-];
+export let moduleExtensions = [".sol", ".go", ".rs", "cairo"];
 let ignoreLinkWords = [
     "report",
     "twitter",
@@ -40,6 +38,11 @@ export let addYearAndMonthToContestName = (name, startDate) => {
     let startYear = new Date(startDate * 1000).getFullYear();
     let startMonth = new Date(startDate * 1000).getMonth() + 1;
     return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`;
+};
+export let trimContestName = (contestName) => {
+    return contestName
+        .replace(/[^a-zA-Z0-9-]/g, "") // replace all non-alphanumeric characters with ""
+        .replace(/-{2,4}/g, "-"); // replace all multiple dashes with single dash
 };
 export const getMdHeading = (line, headings) => {
     let pattern = /^(#{1,6})\s+(.+)$/g;

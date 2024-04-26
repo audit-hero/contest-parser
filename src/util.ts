@@ -1,8 +1,6 @@
 import { Logger } from "jst-logger"
 
-export let moduleExtensions = [
-  ".sol", ".go", ".rs", "cairo"
-]
+export let moduleExtensions = [".sol", ".go", ".rs", "cairo"]
 
 let ignoreLinkWords = [
   "report",
@@ -40,14 +38,17 @@ export const getContestStatus = (dates: {
   else return "active"
 }
 
-export let addYearAndMonthToContestName = (
-  name: string,
-  startDate: number
-) => {
+export let addYearAndMonthToContestName = (name: string, startDate: number) => {
   if (name.match(/^\d{4}-\d{2}-/)) return name
   let startYear = new Date(startDate * 1000).getFullYear()
   let startMonth = new Date(startDate * 1000).getMonth() + 1
   return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`
+}
+
+export let trimContestName = (contestName: string) => {
+  return contestName
+    .replace(/[^a-zA-Z0-9-]/g, "") // replace all non-alphanumeric characters with ""
+    .replace(/-{2,4}/g, "-") // replace all multiple dashes with single dash
 }
 
 export const getMdHeading = (line: string, headings: string[]) => {
@@ -182,7 +183,7 @@ export let truncateLongContestName = (name: string) => {
 export const getAnyDateUTCTimestamp = (anyDate: any) => {
   // August 21, 2023
   if (anyDate.year === undefined) anyDate.year = new Date().getFullYear()
-  
+
   if (anyDate.month === undefined || anyDate.day === undefined)
     throw new Error("invalid anydate")
 
@@ -192,7 +193,7 @@ export const getAnyDateUTCTimestamp = (anyDate: any) => {
     anyDate.day,
     anyDate.hour ?? 0,
     anyDate.minute ?? 0,
-    anyDate.second ?? 0,
+    anyDate.second ?? 0
   )
 
   return someDate / 1000
