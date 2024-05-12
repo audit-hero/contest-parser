@@ -1,6 +1,7 @@
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
 import anyDate from "any-date-parser"
 import { MdContest, MdStatus, statuses } from "./types.js"
+import { sentryError } from "ah-shared"
 
 export const parseMd = (md: string): MdContest[] => {
   let lines = md.split("\n")
@@ -16,7 +17,7 @@ export const parseMd = (md: string): MdContest[] => {
     let lineStatus = getStatus(line)
     if (lineStatus) status = lineStatus
 
-    let lineHashMatch= line.match(/^#{1,3} /)
+    let lineHashMatch = line.match(/^#{1,3} /)
     if (lineHashMatch && lineHashMatch[0].length < nameHashCount) {
       nameHashCount = line.match(/^#{1,3} /)![0].length
       name = truncateLongContestName(
@@ -30,20 +31,25 @@ export const parseMd = (md: string): MdContest[] => {
     }
 
     if (name !== "" && line.startsWith("[View competition](")) {
-      let id = line
-        .replace("[View competition](/competitions/", "")
-        .replace(")", "")
-      let dateLine = lines[i - 2]
-      let { start_date, end_date } = getStartEndDate(dateLine)
-      let prize = lines[i - 4]
-      // let startDate = new Date(start_date * 1000)
-      let startYear = new Date(start_date * 1000).getFullYear()
-      let startMonth = new Date(start_date * 1000).getMonth() + 1
-      name = `${startYear}-${startMonth
-        .toString()
-        .padStart(2, "0")}-${name.replace("-competition", "")}`
+      if (status === "unknown") {
+        sentryError(`cantina status is unknown for ${name}`)
+      }
+      else {
+        let id = line
+          .replace("[View competition](/competitions/", "")
+          .replace(")", "")
+        let dateLine = lines[i - 2]
+        let { start_date, end_date } = getStartEndDate(dateLine)
+        let prize = lines[i - 4]
+        // let startDate = new Date(start_date * 1000)
+        let startYear = new Date(start_date * 1000).getFullYear()
+        let startMonth = new Date(start_date * 1000).getMonth() + 1
+        name = `${startYear}-${startMonth
+          .toString()
+          .padStart(2, "0")}-${name.replace("-competition", "")}`
 
-      results.push({ name, id, start_date, end_date, prize, status })
+        results.push({ name, id, start_date, end_date, prize, status })
+      }
 
       name = ""
       status = "unknown"
@@ -59,6 +65,9 @@ let getStatus = (line: string): MdStatus | undefined => {
     .trim()
     .toLowerCase()
     .replace(/^#{1,3} /, "")
+
+  if (line === "escalations ended") line = "ended"
+
   let isSingleWordLine = line.match(/^[a-zA-Z]+$/)
   let isStatusLine =
     isSingleWordLine &&

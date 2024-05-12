@@ -54,7 +54,8 @@ let mdStatusToStatus = (status: MdStatus): Status => {
   if (status === "upcoming") return "created"
   if (status === "judging") return "judging"
   if (status === "escalations") return "judging"
-  if (status === "ended") return "finished"
+  if (status === "ended" || status === "completed") return "finished"
+  
   throw new Error(`Unknown status: ${status}`)
 }
 

@@ -1,6 +1,7 @@
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js";
 import anyDate from "any-date-parser";
 import { statuses } from "./types.js";
+import { sentryError } from "ah-shared";
 export const parseMd = (md) => {
     let lines = md.split("\n");
     let results = [];
@@ -23,19 +24,24 @@ export const parseMd = (md) => {
                 .replace(/-{1,4}/, "-"));
         }
         if (name !== "" && line.startsWith("[View competition](")) {
-            let id = line
-                .replace("[View competition](/competitions/", "")
-                .replace(")", "");
-            let dateLine = lines[i - 2];
-            let { start_date, end_date } = getStartEndDate(dateLine);
-            let prize = lines[i - 4];
-            // let startDate = new Date(start_date * 1000)
-            let startYear = new Date(start_date * 1000).getFullYear();
-            let startMonth = new Date(start_date * 1000).getMonth() + 1;
-            name = `${startYear}-${startMonth
-                .toString()
-                .padStart(2, "0")}-${name.replace("-competition", "")}`;
-            results.push({ name, id, start_date, end_date, prize, status });
+            if (status === "unknown") {
+                sentryError(`cantina status is unknown for ${name}`);
+            }
+            else {
+                let id = line
+                    .replace("[View competition](/competitions/", "")
+                    .replace(")", "");
+                let dateLine = lines[i - 2];
+                let { start_date, end_date } = getStartEndDate(dateLine);
+                let prize = lines[i - 4];
+                // let startDate = new Date(start_date * 1000)
+                let startYear = new Date(start_date * 1000).getFullYear();
+                let startMonth = new Date(start_date * 1000).getMonth() + 1;
+                name = `${startYear}-${startMonth
+                    .toString()
+                    .padStart(2, "0")}-${name.replace("-competition", "")}`;
+                results.push({ name, id, start_date, end_date, prize, status });
+            }
             name = "";
             status = "unknown";
             nameHashCount = 10;
@@ -48,6 +54,8 @@ let getStatus = (line) => {
         .trim()
         .toLowerCase()
         .replace(/^#{1,3} /, "");
+    if (line === "escalations ended")
+        line = "ended";
     let isSingleWordLine = line.match(/^[a-zA-Z]+$/);
     let isStatusLine = isSingleWordLine &&
         statuses.some((it) => it.match(new RegExp(`^${line.trim()}$`)));

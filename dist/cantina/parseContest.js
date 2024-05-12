@@ -45,7 +45,7 @@ let mdStatusToStatus = (status) => {
         return "judging";
     if (status === "escalations")
         return "judging";
-    if (status === "ended")
+    if (status === "ended" || status === "completed")
         return "finished";
     throw new Error(`Unknown status: ${status}`);
 };

@@ -4,5 +4,6 @@ export let statuses = [
     "judging",
     "escalations",
     "ended",
+    "completed",
 ];
 //# sourceMappingURL=types.js.map

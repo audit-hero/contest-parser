@@ -1,4 +1,3 @@
-import { Logger } from "jst-logger"
 import { parseActiveCantinaContests } from "./cantinaParser.js"
 import fs from "fs"
 

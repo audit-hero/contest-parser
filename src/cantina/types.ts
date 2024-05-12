@@ -13,6 +13,7 @@ export type MdStatus = "live" |
   "judging" |
   "escalations" |
   "ended" |
+  "completed" |
   "unknown";
 export let statuses = [
   "live",
@@ -20,4 +21,5 @@ export let statuses = [
   "judging",
   "escalations",
   "ended",
+  "completed",
 ] as MdStatus[];

@@ -6,5 +6,5 @@ export type MdContest = {
     prize: string;
     status: MdStatus;
 };
-export type MdStatus = "live" | "upcoming" | "judging" | "escalations" | "ended" | "unknown";
+export type MdStatus = "live" | "upcoming" | "judging" | "escalations" | "ended" | "completed" | "unknown";
 export declare let statuses: MdStatus[];
