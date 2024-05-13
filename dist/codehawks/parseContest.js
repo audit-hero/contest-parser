@@ -19,9 +19,9 @@ export const parseMd = (mdContest, md) => {
         lines = lines[0].split("\n");
     else
         lines = lines[1].split("\n");
-    let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
-    let modules = findModules(mdContest.name, lines, active);
     let { start_date, end_date } = getStartEndDate(lines);
+    let active = end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
+    let modules = findModules(mdContest.name, lines, active);
     if (start_date)
         mdContest = updateContestNameDate(mdContest, start_date);
     let contest = {
