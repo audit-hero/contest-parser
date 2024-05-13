@@ -5,6 +5,7 @@ import {
   findDocUrl,
   findTags,
   getAnyDateUTCTimestamp,
+  replaceNonTextCharacters,
   trimContestName,
 } from "../util.js"
 import { HawksMdContest, MdStatus } from "./types.js"
@@ -33,18 +34,16 @@ export const parseMd = (
   let lines = md.split("MENU")
   if (lines.length === 1) lines = lines[0].split("\n")
   else lines = lines[1].split("\n")
-  
+
   let { start_date, end_date } = getStartEndDate(lines)
   let active = end_date > Math.floor(Date.now() / 1000) ? 1 : 0
-  
+
   let modules = findModules(mdContest.name, lines, active)
 
   if (start_date) mdContest = updateContestNameDate(mdContest, start_date)
 
   let contest: ContestWithModules = {
-    pk: trimContestName(
-      addYearAndMonthToContestName(mdContest.name, start_date)
-    ),
+    pk: trimContestName(mdContest.name, start_date),
     readme: `# ${lines.join("\n")}`,
     start_date: start_date ?? mdContest.start_date,
     end_date: end_date ?? mdContest.end_date,

@@ -1,5 +1,5 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
-import { addYearAndMonthToContestName, findDocUrl, findTags, getAnyDateUTCTimestamp } from "../util.js"
+import { addYearAndMonthToContestName, findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js"
 import { MdContest, MdStatus, isActive } from "./types.js"
 import { scrape } from "../web-load/playwright-loader.js"
 import anyDate from "any-date-parser"
@@ -31,7 +31,7 @@ export const parseMd = (
   let modules = findModules(mdContest.name, lines, active)
   
   let contest: ContestWithModules = {
-    pk: addYearAndMonthToContestName(mdContest.name, start_date),
+    pk: trimContestName(mdContest.name, start_date),
     readme: `# ${lines.join("\n")}`,
     start_date: start_date,
     end_date: end_date,

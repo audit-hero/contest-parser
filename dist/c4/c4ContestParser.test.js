@@ -19,6 +19,7 @@ describe("", () => {
         sponsor: "Juicebox",
         title: "Juicebox Buyback Delegate",
         slug: "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
+        trimmedSlug: "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
     };
     afterEach(() => { });
     beforeEach(() => {
@@ -58,6 +59,7 @@ describe("", () => {
         start_time: "September 26, 2022 20:00 UTC",
         end_time: "September 29, 2022 20:00 UTC",
         amount: "100$",
+        trimmedSlug: "2022-09-quickswap",
     };
     it("parses correct contracts", () => {
         var md = fs

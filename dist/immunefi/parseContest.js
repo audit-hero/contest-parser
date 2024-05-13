@@ -1,4 +1,4 @@
-import { addYearAndMonthToContestName, findDocUrl, findTags, getAnyDateUTCTimestamp } from "../util.js";
+import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js";
 import { isActive } from "./types.js";
 import { scrape } from "../web-load/playwright-loader.js";
 import anyDate from "any-date-parser";
@@ -19,7 +19,7 @@ export const parseMd = (mdContest, md) => {
     let active = isActive(mdContest.status) ? 1 : 0;
     let modules = findModules(mdContest.name, lines, active);
     let contest = {
-        pk: addYearAndMonthToContestName(mdContest.name, start_date),
+        pk: trimContestName(mdContest.name, start_date),
         readme: `# ${lines.join("\n")}`,
         start_date: start_date,
         end_date: end_date,

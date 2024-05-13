@@ -1,6 +1,6 @@
 import axios from "axios"
 import { Logger } from "jst-logger"
-import { findTags } from "../util.js"
+import { findTags, trimContestName } from "../util.js"
 import { C4Contest } from "../types.js"
 import { sentryError } from "ah-shared"
 import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
@@ -11,6 +11,7 @@ import {
   getHmAwards,
   truncateLongNames,
 } from "./parse-utils.js"
+import { start } from "repl"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
@@ -158,7 +159,7 @@ export const parseMd = (
   return {
     ok: true,
     value: {
-      pk: contest.trimmedSlug,
+      pk: trimContestName(contest.trimmedSlug, start_date),
       sk: "0",
       url: url,
       readme: readme ?? "",

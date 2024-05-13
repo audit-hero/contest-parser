@@ -2,7 +2,7 @@ import axios from "axios"
 import { Logger } from "jst-logger"
 import { sentryError, Result } from "ah-shared"
 import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
-import { getRepoNameFromUrl, findTags } from "../util.js"
+import { getRepoNameFromUrl, findTags, trimContestName } from "../util.js"
 import { SherlockContest } from "../types.js"
 import { findModules } from "./modules.js"
 
@@ -145,7 +145,7 @@ export const parseSherlockContest = async (
   let readmeObj = await getReadmeFromGithub(name)
 
   let nonParsedDetails = {
-    pk: name,
+    pk: trimContestName(name, contest.starts_at),
     sk: "0",
     url: `https://app.sherlock.xyz/audits/contests/${contest.id}`,
     start_date: contest.starts_at,

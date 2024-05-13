@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Logger } from "jst-logger";
 import { sentryError } from "ah-shared";
-import { getRepoNameFromUrl, findTags } from "../util.js";
+import { getRepoNameFromUrl, findTags, trimContestName } from "../util.js";
 import { findModules } from "./modules.js";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {
@@ -104,7 +104,7 @@ export const parseSherlockContest = async (contest) => {
     let name = getRepoName(contestDetails);
     let readmeObj = await getReadmeFromGithub(name);
     let nonParsedDetails = {
-        pk: name,
+        pk: trimContestName(name, contest.starts_at),
         sk: "0",
         url: `https://app.sherlock.xyz/audits/contests/${contest.id}`,
         start_date: contest.starts_at,

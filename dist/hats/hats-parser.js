@@ -1,4 +1,4 @@
-import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util.js";
+import { docHeadings, findDocUrl, findTags, getContestStatus, trimContestName, } from "../util.js";
 import { Logger } from "jst-logger";
 import { sentryError, } from "ah-shared";
 import { getModules } from "./hats-parser.modules.js";
@@ -71,7 +71,7 @@ const parseContest = async (contest, name) => {
     if (url.includes(" "))
         url = url = baseUrl;
     let result = {
-        pk: name,
+        pk: trimContestName(name, startDate),
         sk: "0",
         readme: getReadme(contest),
         url: url,

@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown } from "node-html-markdown";
-import { findDocUrl, findTags } from "../util.js";
+import { findDocUrl, findTags, trimContestName } from "../util.js";
 export const parseContest = async (contest) => {
     let md = await downloadContestAsMd(contest);
     return parseMd(contest, md);
@@ -20,7 +20,7 @@ export const parseMd = (mdContest, md) => {
     let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
     let modules = findModules(mdContest.name, lines, active);
     let contest = {
-        pk: mdContest.name,
+        pk: trimContestName(mdContest.name, mdContest.start_date),
         readme: `# ${lines.join("\n")}`,
         start_date: mdContest.start_date,
         end_date: mdContest.end_date,

@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown } from "node-html-markdown";
-import { addYearAndMonthToContestName, findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName, } from "../util.js";
+import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName, } from "../util.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
 import anyDate from "any-date-parser";
 export const parseContest = async (contest) => {
@@ -25,7 +25,7 @@ export const parseMd = (mdContest, md) => {
     if (start_date)
         mdContest = updateContestNameDate(mdContest, start_date);
     let contest = {
-        pk: trimContestName(addYearAndMonthToContestName(mdContest.name, start_date)),
+        pk: trimContestName(mdContest.name, start_date),
         readme: `# ${lines.join("\n")}`,
         start_date: start_date ?? mdContest.start_date,
         end_date: end_date ?? mdContest.end_date,

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Logger } from "jst-logger";
-import { findTags } from "../util.js";
+import { findTags, trimContestName } from "../util.js";
 import { sentryError } from "ah-shared";
 import { getTimestamp, findModules, getHmAwards, truncateLongNames, } from "./parse-utils.js";
 export const parseActiveC4Contests = async (existingContests) => {
@@ -108,7 +108,7 @@ export const parseMd = (url, readme, repo, contest) => {
     return {
         ok: true,
         value: {
-            pk: contest.trimmedSlug,
+            pk: trimContestName(contest.trimmedSlug, start_date),
             sk: "0",
             url: url,
             readme: readme ?? "",

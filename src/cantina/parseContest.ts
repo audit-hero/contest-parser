@@ -1,6 +1,6 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { findDocUrl, findTags } from "../util.js"
+import { findDocUrl, findTags, trimContestName } from "../util.js"
 import { MdContest, MdStatus } from "./types.js"
 
 export const parseContest = async (
@@ -31,7 +31,7 @@ export const parseMd = (
   let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0
   let modules = findModules(mdContest.name, lines, active)
   let contest: ContestWithModules = {
-    pk: mdContest.name,
+    pk: trimContestName(mdContest.name, mdContest.start_date),
     readme: `# ${lines.join("\n")}`,
     start_date: mdContest.start_date,
     end_date: mdContest.end_date,

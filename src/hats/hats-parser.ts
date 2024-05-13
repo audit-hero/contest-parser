@@ -1,4 +1,10 @@
-import { docHeadings, findDocUrl, findTags, getContestStatus } from "../util.js"
+import {
+  docHeadings,
+  findDocUrl,
+  findTags,
+  getContestStatus,
+  trimContestName,
+} from "../util.js"
 import { Logger } from "jst-logger"
 import { Project } from "./types.js"
 import {
@@ -103,7 +109,7 @@ const parseContest = async (
   if (url.includes(" ")) url = url = baseUrl
 
   let result: ContestWithModules = {
-    pk: name,
+    pk: trimContestName(name, startDate),
     sk: "0",
     readme: getReadme(contest),
     url: url,
