@@ -7,7 +7,7 @@ export declare const getContestStatus: (dates: {
     endDate: number;
 }) => Status;
 export declare let trimContestName: (name: string, startDate: number) => string;
-export declare let addYearAndMonthToContestName: (name: string, startDate: number) => string;
+export declare let addYearAndMonthToContestName: (startDate: number) => (name: string) => string;
 export declare let replaceNonTextCharacters: (contestName: string) => string;
 export declare const getMdHeading: (line: string, headings: string[]) => string | undefined;
 export declare const findDocUrl: (line: string, headings: string[]) => string[];

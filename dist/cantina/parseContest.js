@@ -11,6 +11,7 @@ let downloadContestAsMd = async (contest) => {
     return md;
 };
 export const parseMd = (mdContest, md) => {
+    let name = getName(md.split("\n")) ?? mdContest.name;
     // remove header links
     let lines = md.split("\n# ").slice(1).join("").split("\n");
     if (lines.length === 1)
@@ -18,9 +19,9 @@ export const parseMd = (mdContest, md) => {
     if (lines[lines.length - 5].startsWith("You need to be logged in"))
         lines = lines.slice(0, -5);
     let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
-    let modules = findModules(mdContest.name, lines, active);
+    let modules = findModules(name, lines, active);
     let contest = {
-        pk: trimContestName(mdContest.name, mdContest.start_date),
+        pk: trimContestName(name, mdContest.start_date),
         readme: `# ${lines.join("\n")}`,
         start_date: mdContest.start_date,
         end_date: mdContest.end_date,
@@ -35,6 +36,10 @@ export const parseMd = (mdContest, md) => {
         tags: findTags(lines),
     };
     return contest;
+};
+let getName = (lines) => {
+    let name = lines.find((it) => it.match(/^#{1,3} /))?.replace(/^#{1,3} /, "");
+    return name;
 };
 let mdStatusToStatus = (status) => {
     if (status === "live")

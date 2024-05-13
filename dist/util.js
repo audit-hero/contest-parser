@@ -34,8 +34,8 @@ export const getContestStatus = (dates) => {
     else
         return "active";
 };
-export let trimContestName = (name, startDate) => addYearAndMonthToContestName(replaceNonTextCharacters(name), startDate);
-export let addYearAndMonthToContestName = (name, startDate) => {
+export let trimContestName = (name, startDate) => pipe(replaceNonTextCharacters(name), addYearAndMonthToContestName(startDate), toLowerCase, truncateLongContestName);
+export let addYearAndMonthToContestName = (startDate) => (name) => {
     if (name.match(/^\d{4}-\d{2}-/))
         return name;
     let startYear = new Date(startDate * 1000).getFullYear();
@@ -123,6 +123,8 @@ export const getRepoNameFromUrl = (url) => {
 };
 import { githubParams } from "./config.js";
 import { ALL_TAGS } from "ah-shared";
+import { pipe } from "fp-ts/lib/function.js";
+import { toLowerCase } from "fp-ts/lib/string.js";
 export let workingDir = () => {
     let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`;
     return workingDir;

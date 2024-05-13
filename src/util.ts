@@ -44,14 +44,20 @@ export const getContestStatus = (dates: {
 }
 
 export let trimContestName = (name: string, startDate: number) =>
-  addYearAndMonthToContestName(replaceNonTextCharacters(name), startDate)
+  pipe(
+    replaceNonTextCharacters(name),
+    addYearAndMonthToContestName(startDate),
+    toLowerCase,
+    truncateLongContestName
+  )
 
-export let addYearAndMonthToContestName = (name: string, startDate: number) => {
-  if (name.match(/^\d{4}-\d{2}-/)) return name
-  let startYear = new Date(startDate * 1000).getFullYear()
-  let startMonth = new Date(startDate * 1000).getMonth() + 1
-  return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`
-}
+export let addYearAndMonthToContestName =
+  (startDate: number) => (name: string) => {
+    if (name.match(/^\d{4}-\d{2}-/)) return name
+    let startYear = new Date(startDate * 1000).getFullYear()
+    let startMonth = new Date(startDate * 1000).getMonth() + 1
+    return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`
+  }
 
 export let replaceNonTextCharacters = (contestName: string) => {
   return contestName
@@ -158,6 +164,8 @@ export const getRepoNameFromUrl = (url: string) => {
 import { githubParams } from "./config.js"
 import { Tag, ALL_TAGS, Status } from "ah-shared"
 import { Repo } from "ah-shared"
+import { pipe } from "fp-ts/lib/function.js"
+import { toLowerCase } from "fp-ts/lib/string.js"
 
 export let workingDir = () => {
   let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`
