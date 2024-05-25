@@ -116,14 +116,23 @@ const findModules = (
 ): ContestModule[] => {
   let modulesStart = getModulesStartIndex(lines)
 
+  let noTreeAfterThisLine = (lines: string[], index: number) => {
+    for (let i = index; i < lines.length; ++i) {
+      if (lines[i].includes("```tree")) return false
+    }
+    return true
+  }
+
   let modulesEnd = lines.findIndex((it, index) => {
     return (
       index > modulesStart &&
       ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
         (it.includes("# ") && it.toLowerCase().includes("summary")) ||
-        it.match(/^#{1,4} /))
+        it.match(/^#{1,4} /)) &&
+      noTreeAfterThisLine(lines, index)
     )
   })
+
   if (modulesEnd === -1) modulesEnd = lines.length
   if (modulesStart === -1) return []
   modulesStart += 1
@@ -141,7 +150,7 @@ const findModules = (
   if (repos.length === 0) {
     addMainRepo(lines, repos)
   }
-
+  
   const regex = /```[\s\S]*?```/g
   const blocks = scope.match(regex)
   let blockModules =

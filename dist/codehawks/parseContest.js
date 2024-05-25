@@ -79,11 +79,19 @@ let getModulesStartIndex = (lines) => {
 };
 const findModules = (contest, lines, active) => {
     let modulesStart = getModulesStartIndex(lines);
+    let noTreeAfterThisLine = (lines, index) => {
+        for (let i = index; i < lines.length; ++i) {
+            if (lines[i].includes("```tree"))
+                return false;
+        }
+        return true;
+    };
     let modulesEnd = lines.findIndex((it, index) => {
         return (index > modulesStart &&
             ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
                 (it.includes("# ") && it.toLowerCase().includes("summary")) ||
-                it.match(/^#{1,4} /)));
+                it.match(/^#{1,4} /)) &&
+            noTreeAfterThisLine(lines, index));
     });
     if (modulesEnd === -1)
         modulesEnd = lines.length;
