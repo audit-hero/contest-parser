@@ -37,7 +37,7 @@ export const getGitFilePaths = async ({
 }: Input): Promise<string[]> => {
   if (url.endsWith("/")) url = url.slice(0, -1)
   let repoName = url.split("/").pop()
-  url = gitConvertHttpsToSsh(url)
+  // url = gitConvertHttpsToSsh(url)
 
   Logger.info(`cloning ${repoName}: ${url}`)
 
@@ -67,6 +67,7 @@ export const getGitFilePaths = async ({
   return files
 }
 
+// doesn't work in lambda
 let gitConvertHttpsToSsh = (url: string) => {
   let match = url.match(/https:\/\/github.com\/(.*)/)
   if (match) {
