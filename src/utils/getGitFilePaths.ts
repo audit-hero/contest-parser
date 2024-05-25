@@ -2,7 +2,7 @@ import { glob } from "glob"
 import { Logger } from "jst-logger"
 import { workingDir, moduleExtensions } from "../util.js"
 import fs from "fs"
-import {simpleGit} from "simple-git"
+import { execSync } from "child_process"
 
 export let cryptoIncludeGlobs = moduleExtensions.map((it) => `**/*${it}`)
 
@@ -46,7 +46,10 @@ export const getGitFilePaths = async ({
     : `${workingDir()}/tmp/${repoName}`
   if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true })
 
-  await simpleGit().clone(url, dir, ["--depth", "1"])
+  execSync(`git clone ${url} ${dir} --depth 1`, {
+    encoding: "utf8",
+    stdio: "inherit",
+  })
 
   let files = [] as string[]
 
@@ -55,7 +58,7 @@ export const getGitFilePaths = async ({
       ...glob.sync(`${dir}/${includeGlob}`).map((it) => it.replace(dir, ""))
     )
   })
-  
+
   let ignoredFiles = ignoreGlobs
     .map((it) => glob.sync(`${dir}/${it}`).map((it) => it.replace(dir, "")))
     .flat()
@@ -64,7 +67,7 @@ export const getGitFilePaths = async ({
   return files
 }
 
-let gitConvertHttpsToSsh = (url:string) => {
+let gitConvertHttpsToSsh = (url: string) => {
   let match = url.match(/https:\/\/github.com\/(.*)/)
   if (match) {
     let [_, repo] = match

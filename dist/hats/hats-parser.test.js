@@ -89,17 +89,31 @@ describe("", () => {
                 },
             });
         });
-        vi.mock("simple-git", () => {
+        // execSync
+        vi.mock("child_process", () => {
             return {
-                simpleGit: () => ({
-                    clone: () => {
-                        // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
+                execSync: (cmd) => {
+                    if (cmd.includes("git clone")) {
                         fs.mkdirSync(`./tmp/v3-core`, { recursive: true });
                         fs.copySync(`./src/hats/test/stakewise-repo/`, `./tmp/v3-core`);
-                    },
-                }),
+                    }
+                },
             };
         });
+        // vi.mock("simple-git", () => {
+        //   return {
+        //     simpleGit: () => ({
+        //       clone: () => {
+        //         // copy recursive from ./src/hats/test/stakewise-repo/ to ./tmp/
+        //         fs.mkdirSync(`./tmp/v3-core`, { recursive: true })
+        //         fs.copySync(
+        //           `./src/hats/test/stakewise-repo/`,
+        //           `./tmp/v3-core`
+        //         )
+        //       },
+        //     }),
+        //   }
+        // })
     };
 });
 //# sourceMappingURL=hats-parser.test.js.map
