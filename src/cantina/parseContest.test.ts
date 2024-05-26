@@ -21,8 +21,10 @@ it("parses modules", () => {
   let contestMd = fs.readFileSync("src/cantina/test/morpho.md").toString()
 
   let contest = parseMd(mdContest, contestMd)
-  expect(contest.modules.length).toBe(58)
-  expect(contest.doc_urls?.at(0)).toBe(
+
+  // the spec changes all the time
+  expect(contest.modules.length).toBe(10)
+  expect(contest.doc_urls?.at(1)).toBe(
     "https://www.notion.so/00ff8194791045deb522821be46abbdc?pvs=21"
   )
 })

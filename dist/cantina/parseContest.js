@@ -13,13 +13,9 @@ let downloadContestAsMd = async (contest) => {
 export const parseMd = (mdContest, md) => {
     let name = getName(md.split("\n")) ?? mdContest.name;
     // remove header links
-    let lines = md.split("\n# ").slice(1).join("").split("\n");
-    if (lines.length === 1)
-        lines = md.split("\n## ").slice(1).join("").split("\n");
-    if (lines[lines.length - 5].startsWith("You need to be logged in"))
-        lines = lines.slice(0, -5);
+    let lines = md.split("\n");
     let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
-    let modules = findModules(name, lines, active);
+    let modules = findModules(name, lines, mdContest.start_date, active);
     let contest = {
         pk: trimContestName(name, mdContest.start_date),
         readme: `# ${lines.join("\n")}`,
@@ -61,13 +57,19 @@ let getModulesStartIndex = (lines) => {
     if (modulesStart === -1) {
         modulesStart = lines.findIndex((it) => it.includes("# ") && it.toLowerCase().includes(" contracts"));
     }
-    return modulesStart;
+    let hashCount = lines[modulesStart].match(/^#+/)?.[0].length ?? 0;
+    return {
+        modulesStart,
+        hashCount,
+    };
 };
-const findModules = (contest, lines, active) => {
-    let modulesStart = getModulesStartIndex(lines);
-    let modulesEnd = lines.findIndex((it) => {
-        return ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
-            (it.includes("# ") && it.toLowerCase().includes("summary")));
+const findModules = (contest, lines, startDate, active) => {
+    let { modulesStart, hashCount } = getModulesStartIndex(lines);
+    let modulesEnd = lines.findIndex((it, index) => {
+        return (it.match(/^#+/)?.[0].length === hashCount &&
+            (it.toLowerCase().includes("out of scope") ||
+                it.toLowerCase().includes("summary") ||
+                index > modulesStart + 5));
     });
     if (modulesEnd === -1)
         modulesEnd = lines.length;
@@ -83,6 +85,7 @@ const findModules = (contest, lines, active) => {
             currentRepo = line
                 .split("](")
                 .pop()
+                .trim()
                 .slice(0, -1)
                 .replace("/commit/", "/tree/");
         }
@@ -92,7 +95,7 @@ const findModules = (contest, lines, active) => {
         let path = line.split("|")[1].trim().replace("./", "").replace("\\_", "_");
         let module = {
             name: path.split("/").pop(),
-            contest: contest,
+            contest: trimContestName(contest, startDate),
             active: active,
             path,
             url: `${currentRepo}/${path}`,
