@@ -126,6 +126,9 @@ const findModuleFromTable = (
 
       let { path, url } = getPathAndUrl(lineSplit, referenceLinks)
       if (path == "") return undefined // can be a table header, eg Contracts(13)
+      if (url == "") {
+        url = `https://github.com/code-423n4/${repo}/tree/main/${path}`
+      }
 
       let name = path.split("/").pop()!!
 
@@ -174,13 +177,20 @@ const getPathAndUrl = (
       url = bySplit.url
       path = bySplit.path
       break
-    } else {
-      let referenceLink = matchReferenceLink(pathAndUrl, referenceLinks)
-      if (referenceLink) {
-        url = referenceLink
-        path = pathAndUrl
-        break
-      }
+    }
+
+    let referenceLink = matchReferenceLink(pathAndUrl, referenceLinks)
+    if (referenceLink) {
+      url = referenceLink
+      path = pathAndUrl
+      break
+    }
+
+    let byNoUrl = getModulePathOnly(pathAndUrl)
+    if (byNoUrl) {
+      url = ""
+      path = byNoUrl.path
+      break
     }
   }
 
@@ -190,8 +200,9 @@ const getPathAndUrl = (
 
 const isValidUrl = (url: string) => {
   try {
-    if (moduleExtensions.filter((it) => url.endsWith(it)).length === 0) return false
-    
+    if (moduleExtensions.filter((it) => url.endsWith(it)).length === 0)
+      return false
+
     parseUrl(url)
   } catch (e) {
     return false
@@ -286,6 +297,20 @@ const getModulePathAndUrlBySplit = (
   } catch (e) {
     return undefined
   }
+}
+
+const getModulePathOnly = (
+  tableRow: string
+):
+  | {
+      path: string
+    }
+  | undefined => {
+  try {
+    let path = tableRow.trim().match(/.*\.[a-z0-9]+$/g)![0]
+
+    if (path) return { path }
+  } catch (e) {}
 }
 
 const findModuleSloc = (line: string, repo: string) => {

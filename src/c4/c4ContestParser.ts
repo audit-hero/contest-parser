@@ -11,7 +11,6 @@ import {
   getHmAwards,
   truncateLongNames,
 } from "./parse-utils.js"
-import { start } from "repl"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
@@ -34,7 +33,7 @@ export const parseC4Contests = (
     )
 
     if (contestExists && contestExists.modules.length > 0) {
-      Logger.info(`contest ${contests[i].title} already exists, skipping`)
+      Logger.info(`${contests[i].title} already exists, skipping`)
       continue
     }
 
@@ -89,8 +88,8 @@ export const getActiveC4Contests = async () => {
 export const parseC4Contest = async (
   contest: C4Contest
 ): Promise<Result<ContestWithModules>> => {
-  Logger.info(`start parsing ${contest.title}`)
-
+  Logger.info(`start parsing ${contest.slug}`)
+  
   let url = `https://code4rena.com/contests/${contest.slug}`
   // try to get the raw README.md from either main or master branch
   // input: https://github.com/code-423n4/2022-09-quickswap
