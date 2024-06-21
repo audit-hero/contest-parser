@@ -28,12 +28,12 @@ export const getHmAwards = (contest, lines) => {
 };
 const notInScopeHeadingLine = (line) => {
     let lowerCaseLine = line.toLowerCase();
-    return (lowerCaseLine.includes("not in scope") ||
-        lowerCaseLine.includes("out of scope"));
+    return lowerCaseLine.match(/#{1,6}.*(not in scope|out of scope)/g);
 };
 const inScopeHeadingLine = (line) => {
     let lowerCaseLine = line.toLowerCase();
-    return (lowerCaseLine.includes("scope") && !notInScopeHeadingLine(lowerCaseLine));
+    return (lowerCaseLine.match(/#{1,6}.*scope/g) &&
+        !notInScopeHeadingLine(lowerCaseLine));
 };
 export const findModules = (repo, lines, moduleFindWay) => {
     let inScopeHeading = false;
@@ -56,6 +56,8 @@ export const findModules = (repo, lines, moduleFindWay) => {
         }
         if (notInScopeHeadingLine(line)) {
             inScopeHeading = false;
+            if (modules.length > 0)
+                break;
         }
         if (inScopeHeading) {
             if (moduleFindWay == 0) {

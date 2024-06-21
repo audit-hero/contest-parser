@@ -37,16 +37,14 @@ export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
 
 const notInScopeHeadingLine = (line: string) => {
   let lowerCaseLine = line.toLowerCase()
-  return (
-    lowerCaseLine.includes("not in scope") ||
-    lowerCaseLine.includes("out of scope")
-  )
+  return lowerCaseLine.match(/#{1,6}.*(not in scope|out of scope)/g)
 }
 
 const inScopeHeadingLine = (line: string) => {
   let lowerCaseLine = line.toLowerCase()
   return (
-    lowerCaseLine.includes("scope") && !notInScopeHeadingLine(lowerCaseLine)
+    lowerCaseLine.match(/#{1,6}.*scope/g) &&
+    !notInScopeHeadingLine(lowerCaseLine)
   )
 }
 
@@ -81,6 +79,7 @@ export const findModules = (
 
     if (notInScopeHeadingLine(line)) {
       inScopeHeading = false
+      if (modules.length > 0) break
     }
 
     if (inScopeHeading) {

@@ -31,7 +31,7 @@ describe("", () => {
             throw new Error("failed to parse contest");
         else {
             expect(parsed.value).toBeTruthy();
-            expect(parsed.value.doc_urls).toHaveLength(9);
+            expect(parsed.value.doc_urls).toHaveLength(8);
         }
     });
     it("parses docs", async () => {
@@ -118,6 +118,20 @@ describe("", () => {
             modules.forEach((m) => {
                 expect(m.name.endsWith(".sol")).toBeTruthy();
                 expect(m.path.endsWith(".sol")).toBeTruthy();
+            });
+        }
+    });
+    it("parses vultising - no tests or mocks", async () => {
+        let md = fs.readFileSync(`./src/c4/test/2024-06-vultisig.md`).toString();
+        let parsed = parseMd("url", md, "repo", contest);
+        if (!parsed.ok)
+            throw new Error("failed to parse contest");
+        else {
+            let modules = parsed.value.modules;
+            expect(modules.length).toBe(22);
+            modules.forEach((m) => {
+                expect(m.name.includes("Test")).toBeFalsy();
+                expect(m.name.includes("Mock")).toBeFalsy();
             });
         }
     });
