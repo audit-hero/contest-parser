@@ -1,4 +1,4 @@
-import { findDocUrl, getMdHeading } from "../util.js";
+import { findDocUrl, getMdHeading, moduleExtensions } from "../util.js";
 export const findModules = ({ lines, contest, name, repos, readmeObj, }) => {
     let afterInScope = false;
     let headings = [];
@@ -33,10 +33,11 @@ export const findModules = ({ lines, contest, name, repos, readmeObj, }) => {
 };
 const findModuleSloc = (line, contest, contestName, repos, baseUrl) => {
     try {
-        let includesSol = line.includes(".sol");
-        if (includesSol) {
-            let lineSplit = line.split(".sol").map((it) => it.trim());
-            let path = lineSplit[0] + ".sol";
+        let includesExtension = moduleExtensions.some((it) => line.includes(it));
+        if (includesExtension) {
+            let extension = moduleExtensions.find((it) => line.includes(it));
+            let lineSplit = line.split(extension).map((it) => it.trim());
+            let path = lineSplit[0] + extension;
             path = path.replace("- [", "");
             path = path.replace("- ", "");
             path = path.replace("`", "");

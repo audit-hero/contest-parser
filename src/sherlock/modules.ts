@@ -1,5 +1,5 @@
 import { ContestModule } from "ah-shared"
-import { findDocUrl, getMdHeading } from "../util.js"
+import { findDocUrl, getMdHeading, moduleExtensions } from "../util.js"
 import { SherlockContest } from "../types.js"
 
 export const findModules = ({
@@ -73,11 +73,14 @@ const findModuleSloc = (
   baseUrl: string
 ): ModuleOrRepo => {
   try {
-    let includesSol = line.includes(".sol")
+    
+    let includesExtension = moduleExtensions.some((it) => line.includes(it))
 
-    if (includesSol) {
-      let lineSplit: string[] = line.split(".sol").map((it) => it.trim())
-      let path = lineSplit[0] + ".sol"
+    if (includesExtension) {
+      let extension = moduleExtensions.find((it) => line.includes(it))!!
+      
+      let lineSplit: string[] = line.split(extension).map((it) => it.trim())
+      let path = lineSplit[0] + extension
       path = path.replace("- [", "")
       path = path.replace("- ", "")
       path = path.replace("`", "")
