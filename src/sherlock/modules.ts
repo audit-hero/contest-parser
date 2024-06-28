@@ -72,8 +72,7 @@ const findModuleSloc = (
   repos: string[],
   baseUrl: string
 ): ModuleOrRepo => {
-  try {
-    
+  try {    
     let includesExtension = moduleExtensions.some((it) => line.includes(it))
 
     if (includesExtension) {
