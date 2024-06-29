@@ -1,5 +1,5 @@
 import { getAnyDateUTCTimestamp } from "../util.js"
-import anyDate from "any-date-parser"
+
 import { MdContest, MdStatus, statuses } from "./types.js"
 
 export const parseMd = (md: string): MdContest[] => {
@@ -68,8 +68,11 @@ const getStartEndDate = (
 
   // their end date is 8pm UTC
   let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00"
-  let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr))
+  let start_date = getAnyDateUTCTimestamp(startDateStr)
   let endDateStr = dateLine.split(" - ")[1] + "T20:00+00:00"
-  let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateStr))
+  let end_date = getAnyDateUTCTimestamp(endDateStr)
+  if (!start_date || !end_date) {
+    throw new Error(`could not parse date from ${dateLine}`)
+  }
   return { start_date, end_date }
 }

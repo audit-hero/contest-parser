@@ -1,5 +1,4 @@
 export interface C4Contest {
-  repo: string
   slug: string;
   trimmedSlug: string;
 }

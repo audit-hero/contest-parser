@@ -197,23 +197,31 @@ export let truncateLongContestName = (name: string) => {
   return trimmedSlug
 }
 
-export const getAnyDateUTCTimestamp = (anyDate: any) => {
-  // August 21, 2023
-  if (anyDate.year === undefined) anyDate.year = new Date().getFullYear()
+import anyDateParser from "any-date-parser"
 
-  if (anyDate.month === undefined || anyDate.day === undefined)
-    throw new Error("invalid anydate")
+export const getAnyDateUTCTimestamp = (someStringDate: string) => {
+  try {
+    let anyDate = anyDateParser.attempt(someStringDate)
+    // August 21, 2023
+    if (anyDate.year === undefined) anyDate.year = new Date().getFullYear()
 
-  var someDate = Date.UTC(
-    anyDate.year,
-    anyDate.month - 1,
-    anyDate.day,
-    anyDate.hour ?? 0,
-    anyDate.minute ?? 0,
-    anyDate.second ?? 0
-  )
+    if (anyDate.month === undefined || anyDate.day === undefined)
+      throw new Error("invalid anydate")
 
-  return someDate / 1000
+    var someDate = Date.UTC(
+      anyDate.year,
+      anyDate.month - 1,
+      anyDate.day,
+      anyDate.hour ?? 0,
+      anyDate.minute ?? 0,
+      anyDate.second ?? 0
+    )
+
+    return someDate / 1000
+  } catch (e) {
+    Logger.error(`error in getAnyDateUTCTimestamp ${e}`)
+    return undefined
+  }
 }
 
 export let getHtmlAsMd = async (url: string) => {

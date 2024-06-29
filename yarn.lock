@@ -968,6 +968,7 @@ __metadata:
     node-html-markdown: "npm:^1.3.0"
     parse-url: "npm:^9.2.0"
     playwright-core: "npm:^1.41.2"
+    ti-fptsu: "tonisives/ti-fptsu#f1422b6821deba84622dcbb4ed1d027e35ec5fcf"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.3.3"
     vitest: "npm:^1.2.2"
@@ -2557,6 +2558,18 @@ jst-logger@tonisives/jst-logger:
   dependencies:
     chalk: "npm:^5.3.0"
   checksum: 746787e3daaf79129f7e99e1eb383787da66f63460c3b1e04a3a2f4d2e295ced52a4cee8dc1c739e2f5df4f8540da0f5e3295de5dd96b59ae94e295aeef2f40c
+  languageName: node
+  linkType: hard
+
+"ti-fptsu@tonisives/ti-fptsu#f1422b6821deba84622dcbb4ed1d027e35ec5fcf":
+  version: 0.0.0
+  resolution: "ti-fptsu@https://github.com/tonisives/ti-fptsu.git#commit=f1422b6821deba84622dcbb4ed1d027e35ec5fcf"
+  dependencies:
+    chalk: "npm:^5.3.0"
+  peerDependencies:
+    fp-ts: "*"
+    logging-ts: "*"
+  checksum: 0fb0de424672710c119a3ce0c513306d8e26fc64b53f3a233fe8e3a842190f8a69bc2c39786b90d01a4e1942d9dff4ec222e8b318e8b2e77ed58ba3c114d99d0
   languageName: node
   linkType: hard
 

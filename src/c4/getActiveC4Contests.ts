@@ -83,6 +83,5 @@ let parseSingleContest = (md: string): C4Contest => {
   return {
     slug: slug,
     trimmedSlug: slug,
-    repo: `https://github.com/code-423n4/${slug}`,
   }
 }

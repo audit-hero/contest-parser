@@ -1,19 +1,18 @@
-import { ContestModule } from "ah-shared"
+import { ContestModule, ContestWithModules, Result } from "ah-shared"
 import { C4Contest } from "../types.js"
 import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js"
 import { Logger } from "jst-logger"
-import { string } from "fp-ts"
 import parseUrl from "parse-url"
+import { TE, pipe } from "ti-fptsu/lib"
 
-export const getHmAwards = (contest: C4Contest, lines: string[]): string => {
-  if (contest.hm_award_pool) return contest.hm_award_pool.toString()
-  let hmAwards = contest.amount
+export const getHmAwards = (bulletPoints: string[]): string => {
+  let hmAwards = ""
 
-  let until = lines.length * 0.3
-  if (until < 10) until = lines.length
+  let until = bulletPoints.length * 0.3
+  if (until < 10) until = bulletPoints.length
   // modules
-  for (let i = 0; i < lines.length; ++i) {
-    let line = lines[i]
+  for (let i = 0; i < bulletPoints.length; ++i) {
+    let line = bulletPoints[i]
 
     let trimmed = line.replace(/\\|\//g, "").toLowerCase()
 
@@ -342,3 +341,23 @@ const findModuleSloc = (line: string, repo: string) => {
 
   return module
 }
+
+export let convertToResult =
+  (contest: C4Contest) => (res: TE.TaskEither<Error, ContestWithModules>) =>
+    pipe(
+      res,
+      TE.fold(
+        (err) => {
+          Logger.info(`failed to parse ${contest.slug} ${err.message}`)
+          return TE.right({
+            ok: false,
+            error: err,
+          } as Result<ContestWithModules>)
+        },
+        (it) => {
+          Logger.info(`parsed ${contest.slug}`)
+          return TE.right({ ok: true, value: it } as Result<ContestWithModules>)
+        }
+      ),
+      TE.toUnion
+    )

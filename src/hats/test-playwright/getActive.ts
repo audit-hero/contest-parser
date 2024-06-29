@@ -1,6 +1,5 @@
 import { Browser, chromium } from "playwright-core"
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js"
-import anyDate from "any-date-parser"
 import { waitForPageToLoad } from "../../web-load/playwright-loader.js"
 
 export const getActive = async (): Promise<MdContest[]> => {
@@ -99,10 +98,11 @@ const getStartEndDate = (
   start_date: number
   end_date: number
 } => {
-  let start_date = getAnyDateUTCTimestamp(
-    anyDate.attempt(dateLine.split(" - ")[0])
-  )
-  let end_date = getAnyDateUTCTimestamp(anyDate.attempt(dateLine.split(" - ")[1]))
+  let start_date = getAnyDateUTCTimestamp(dateLine.split(" - ")[0])
+  let end_date = getAnyDateUTCTimestamp(dateLine.split(" - ")[1])
+  if (!start_date || !end_date) {
+    throw new Error(`Could not parse start and end date from ${dateLine}`)
+  }
 
   return { start_date, end_date }
 }

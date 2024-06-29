@@ -1,8 +1,7 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
-import { addYearAndMonthToContestName, findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js"
+import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js"
 import { MdContest, MdStatus, isActive } from "./types.js"
 import { scrape } from "../web-load/playwright-loader.js"
-import anyDate from "any-date-parser"
 
 export const parseContest = async (
   contest: MdContest
@@ -139,8 +138,8 @@ function getStartEndDate(lines: string[]): { start_date: any; end_date: any } {
   let endLine = lines.findIndex((it) => it.startsWith(endPrefix))
   let endDateLine = lines[endLine + 2]
 
-  let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateLine))
-  let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateLine))
+  let start_date = getAnyDateUTCTimestamp(startDateLine)
+  let end_date = getAnyDateUTCTimestamp(endDateLine)
 
   return { start_date, end_date }
 }

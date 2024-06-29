@@ -10,7 +10,6 @@ import {
 } from "../util.js"
 import { HawksMdContest, MdStatus } from "./types.js"
 import { parseTreeModulesV2 } from "../parse-modules.js"
-import anyDate from "any-date-parser"
 
 export const parseContest = async (
   contest: HawksMdContest
@@ -150,7 +149,7 @@ const findModules = (
   if (repos.length === 0) {
     addMainRepo(lines, repos)
   }
-  
+
   const regex = /```[\s\S]*?```/g
   const blocks = scope.match(regex)
   let blockModules =
@@ -208,21 +207,21 @@ let getStartEndDate = (lines: string[]) => {
     let startDate = line.match(/Start Date /)
 
     if (startDate) {
-      let date = anyDate.attempt(
+      let date = getAnyDateUTCTimestamp(
         line.replace("Start Date ", "").replaceAll(/(\(|\))/g, "")
       )
-      if (date.invalid) continue
-      start_date = getAnyDateUTCTimestamp(date)
+      if (!date) continue
+      start_date = date
       continue
     }
 
     let endDate = line.match(/End Date /)
     if (endDate) {
-      let date = anyDate.attempt(
+      let date = getAnyDateUTCTimestamp(
         line.replace("End Date ", "").replaceAll(/(\(|\))/g, "")
       )
-      if (date.invalid) continue
-      end_date = getAnyDateUTCTimestamp(date)
+      if (!date) continue
+      end_date = date
       continue
     }
   }

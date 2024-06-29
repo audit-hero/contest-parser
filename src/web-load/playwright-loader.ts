@@ -4,7 +4,7 @@ import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { Logger } from "jst-logger"
 
-let _browser: BrowserContext | undefined = undefined
+let _browser: BrowserContext | undefined
 
 let config: Config = {
   wait: 2000,
@@ -31,7 +31,7 @@ export type ScrapeResult = {
 }
 
 export const closeBrowser = () => {
-  if (_browser) _browser.close()
+  _browser?.close()
 }
 
 let lastLogTime = 0

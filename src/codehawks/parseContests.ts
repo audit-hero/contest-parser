@@ -1,5 +1,5 @@
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
-import anyDate from "any-date-parser"
+
 import { HawksMdContest, MdStatus, statuses } from "./types.js"
 import { sentryError } from "ah-shared"
 
@@ -13,14 +13,14 @@ export const parseMd = (md: string): HawksMdContest[] => {
   for (let i = 0; i < lines.length; ++i) {
     let line = lines[i]
     let lineStatus = getStatus(line)
-    
+
     if (lineStatus) status = lineStatus
 
     if (line.match(/^#{1,4} /) && !line.match(/\$/)) {
       name = truncateLongContestName(
         line
           .trim()
-          .replace(/^#{1,4} /, "") 
+          .replace(/^#{1,4} /, "")
           .toLowerCase()
           .replace(/( |\.)/g, "-")
           .replace("\\", "")
@@ -41,7 +41,7 @@ export const parseMd = (md: string): HawksMdContest[] => {
 
       if (prizeLine > 0) {
         let dateLine = lines[prizeLine - 2]
-        
+
         // note: contest parser parses to more specific date
         let { start_date, end_date } = getStartEndDate(dateLine)
         let prize = lines[prizeLine].replace(/^#{1,4} /, "")
@@ -104,8 +104,12 @@ const getStartEndDate = (
 
   // their end date is 8pm UTC
   let startDateStr = split[0] + "T12:00+00:00"
-  let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateStr))
+  let start_date = getAnyDateUTCTimestamp(startDateStr)
   let endDateStr = split[1] + "T12:00+00:00"
-  let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateStr))
+  let end_date = getAnyDateUTCTimestamp(endDateStr)
+
+  if (!start_date || !end_date)
+    throw new Error(`could not parse date from ${dateLine}`)
+
   return { start_date, end_date }
 }
