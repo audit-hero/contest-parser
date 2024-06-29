@@ -125,6 +125,7 @@ import { githubParams } from "./config.js";
 import { ALL_TAGS } from "ah-shared";
 import { pipe } from "fp-ts/lib/function.js";
 import { toLowerCase } from "fp-ts/lib/string.js";
+import { NodeHtmlMarkdown } from "node-html-markdown";
 export let workingDir = () => {
     let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`;
     return workingDir;
@@ -148,13 +149,33 @@ export let truncateLongContestName = (name) => {
     }
     return trimmedSlug;
 };
-export const getAnyDateUTCTimestamp = (anyDate) => {
-    // August 21, 2023
-    if (anyDate.year === undefined)
-        anyDate.year = new Date().getFullYear();
-    if (anyDate.month === undefined || anyDate.day === undefined)
-        throw new Error("invalid anydate");
-    var someDate = Date.UTC(anyDate.year, anyDate.month - 1, anyDate.day, anyDate.hour ?? 0, anyDate.minute ?? 0, anyDate.second ?? 0);
-    return someDate / 1000;
+import anyDateParser from "any-date-parser";
+export const getAnyDateUTCTimestamp = (someStringDate) => {
+    try {
+        let anyDate = anyDateParser.attempt(someStringDate);
+        // August 21, 2023
+        if (anyDate.year === undefined)
+            anyDate.year = new Date().getFullYear();
+        if (anyDate.month === undefined || anyDate.day === undefined)
+            throw new Error("invalid anydate");
+        var someDate = Date.UTC(anyDate.year, anyDate.month - 1, anyDate.day, anyDate.hour ?? 0, anyDate.minute ?? 0, anyDate.second ?? 0);
+        return someDate / 1000;
+    }
+    catch (e) {
+        Logger.error(`error in getAnyDateUTCTimestamp ${e}`);
+        return undefined;
+    }
+};
+export let getHtmlAsMd = async (url) => {
+    let contests = await fetch(url)
+        .then((it) => {
+        return it.text();
+    })
+        .catch((e) => {
+        console.log(`error ${e}`);
+        throw Error("can't get html as md");
+    });
+    let parsed = NodeHtmlMarkdown.translate(contests);
+    return parsed;
 };
 //# sourceMappingURL=util.js.map

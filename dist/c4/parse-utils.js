@@ -1,16 +1,15 @@
 import { getMdHeading, findDocUrl, moduleExtensions } from "../util.js";
 import { Logger } from "jst-logger";
 import parseUrl from "parse-url";
-export const getHmAwards = (contest, lines) => {
-    if (contest.hm_award_pool)
-        return contest.hm_award_pool.toString();
-    let hmAwards = contest.amount;
-    let until = lines.length * 0.3;
+import { TE, pipe } from "ti-fptsu/lib";
+export const getHmAwards = (bulletPoints) => {
+    let hmAwards = "";
+    let until = bulletPoints.length * 0.3;
     if (until < 10)
-        until = lines.length;
+        until = bulletPoints.length;
     // modules
-    for (let i = 0; i < lines.length; ++i) {
-        let line = lines[i];
+    for (let i = 0; i < bulletPoints.length; ++i) {
+        let line = bulletPoints[i];
         let trimmed = line.replace(/\\|\//g, "").toLowerCase();
         if ((trimmed.includes("hm") ||
             (trimmed.includes("high") && trimmed.includes("medium"))) &&
@@ -217,6 +216,7 @@ export let truncateLongNames = (contests) => {
         }
         contest.trimmedSlug = trimmedSlug;
     }
+    return contests;
 };
 const getModulePathAndUrlBySplit = (pathAndUrl) => {
     try {
@@ -268,4 +268,14 @@ const findModuleSloc = (line, repo) => {
     }
     return module;
 };
+export let convertToResult = (contest) => (res) => pipe(res, TE.fold((err) => {
+    Logger.info(`failed to parse ${contest.slug} ${err.message}`);
+    return TE.right({
+        ok: false,
+        error: err,
+    });
+}, (it) => {
+    Logger.info(`parsed ${contest.slug}`);
+    return TE.right({ ok: true, value: it });
+}), TE.toUnion);
 //# sourceMappingURL=parse-utils.js.map

@@ -11,7 +11,6 @@ import * as E from "fp-ts/lib/Either.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
 import { NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js"
 import * as O from "fp-ts/lib/Option.js"
-import { log } from "ti-fptsu/log"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]

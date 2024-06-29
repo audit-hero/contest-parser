@@ -1,7 +1,6 @@
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName, } from "../util.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
-import anyDate from "any-date-parser";
 export const parseContest = async (contest) => {
     let md = await downloadContestAsMd(contest);
     return parseMd(contest, md);
@@ -153,18 +152,18 @@ let getStartEndDate = (lines) => {
             break;
         let startDate = line.match(/Start Date /);
         if (startDate) {
-            let date = anyDate.attempt(line.replace("Start Date ", "").replaceAll(/(\(|\))/g, ""));
-            if (date.invalid)
+            let date = getAnyDateUTCTimestamp(line.replace("Start Date ", "").replaceAll(/(\(|\))/g, ""));
+            if (!date)
                 continue;
-            start_date = getAnyDateUTCTimestamp(date);
+            start_date = date;
             continue;
         }
         let endDate = line.match(/End Date /);
         if (endDate) {
-            let date = anyDate.attempt(line.replace("End Date ", "").replaceAll(/(\(|\))/g, ""));
-            if (date.invalid)
+            let date = getAnyDateUTCTimestamp(line.replace("End Date ", "").replaceAll(/(\(|\))/g, ""));
+            if (!date)
                 continue;
-            end_date = getAnyDateUTCTimestamp(date);
+            end_date = date;
             continue;
         }
     }

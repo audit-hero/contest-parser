@@ -1,7 +1,6 @@
 import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js";
 import { isActive } from "./types.js";
 import { scrape } from "../web-load/playwright-loader.js";
-import anyDate from "any-date-parser";
 export const parseContest = async (contest) => {
     let md = await downloadContestAsMd(contest);
     return parseMd(contest, md);
@@ -102,8 +101,8 @@ function getStartEndDate(lines) {
     let startDateLine = lines[startLine + 2];
     let endLine = lines.findIndex((it) => it.startsWith(endPrefix));
     let endDateLine = lines[endLine + 2];
-    let start_date = getAnyDateUTCTimestamp(anyDate.attempt(startDateLine));
-    let end_date = getAnyDateUTCTimestamp(anyDate.attempt(endDateLine));
+    let start_date = getAnyDateUTCTimestamp(startDateLine);
+    let end_date = getAnyDateUTCTimestamp(endDateLine);
     return { start_date, end_date };
 }
 //# sourceMappingURL=parseContest.js.map

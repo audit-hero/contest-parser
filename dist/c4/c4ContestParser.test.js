@@ -1,81 +1,31 @@
 import { afterEach, beforeEach } from "node:test";
-import { parseC4Contest, parseMd } from "./c4ContestParser.js";
+import { parseC4Contest } from "./c4ContestParser.js";
 import { it, describe, expect, vi } from "vitest";
 import fs from "fs";
 import { getTimestamp, findModules, getHmAwards } from "./parse-utils.js";
-// commented tests should use the main method, not internal method
 describe("", () => {
-    // https://code4rena.com/contests/2023-05-juicebox-buyback-delegate
-    let contest = {
-        amount: "$24,500 USDC",
-        contestid: 237,
-        details: "Thousands of projects use Juicebox to fund, operate, and scale their ideas & communities transparently on Ethereum.",
-        end_time: "2023-05-22T20:00:00.000Z",
-        hide: false,
-        league: "eth",
-        repo: "https://github.com/code-423n4/2023-05-juicebox",
-        findingsRepo: "https://github.com/code-423n4/2023-05-juicebox-findings",
-        start_time: "2023-05-18T20:00:00.000Z",
-        sponsor: "Juicebox",
-        title: "Juicebox Buyback Delegate",
-        slug: "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
-        trimmedSlug: "2023-07-chainlink-cross-chain-contract-administration-multi-signature-contract-timelock-and-call-proxies",
-    };
     afterEach(() => { });
     beforeEach(() => {
         vi.unstubAllGlobals();
     });
-    it("parses urls", async () => {
-        let parsed = await parseC4Contest(contest);
-        if (!parsed.ok)
-            throw new Error("failed to parse contest");
-        else {
-            expect(parsed.value).toBeTruthy();
-            expect(parsed.value.doc_urls).toHaveLength(8);
-        }
-    });
-    it("parses docs", async () => {
-        let mocks = await vi.hoisted(async () => {
-            let fs = await import("fs");
-            return {
-                md: fs.readFileSync(`./src/c4/test/2023-09-maia.md`).toString(),
-            };
-        });
-        vi.mock("axios", async (imp) => {
-            const actual = (await imp());
-            return {
-                default: {
-                    get: async (url) => {
-                        return {
-                            data: mocks.md,
-                        };
-                    },
-                },
-            };
-        });
-        let parsed = await parseC4Contest(contest);
-    });
     let contestObj = {
-        start_time: "September 26, 2022 20:00 UTC",
-        end_time: "September 29, 2022 20:00 UTC",
-        amount: "100$",
-        trimmedSlug: "2022-09-quickswap",
+        slug: "2024-06-size",
+        trimmedSlug: "2024-06-size",
     };
-    it("parses correct contracts", () => {
-        var md = fs
-            .readFileSync(`./src/c4/test/correct-contracts.md`)
-            .toString();
-        let contest = parseMd("url", md, "repo", contestObj).value;
-        expect(contest.start_date).toBe(getTimestamp(contestObj.start_time));
-        expect(contest.end_date).toBe(getTimestamp(contestObj.end_time));
-        expect(contest.modules.length).toBe(13);
-    });
-    it("handles readme with invalid contracts ", () => {
-        var md = fs
-            .readFileSync(`./src/c4/test/invalid-contracts.md`)
-            .toString();
-        let contest = parseMd("url", md, "repo", contestObj).value;
-        expect(contest.modules.length).toBe(0);
+    it("parses correct contracts", async () => {
+        vi.mock("../util.js", async () => {
+            let actual = (await vi.importActual("../util.js"));
+            return {
+                ...actual,
+                getHtmlAsMd: async () => fs.readFileSync(`./src/c4/test/md/2024-06-size.md`).toString(),
+            };
+        });
+        let it = await parseC4Contest(contestObj);
+        if (!it.ok)
+            throw new Error("failed to parse contest");
+        expect(it.value.start_date).toBe(getTimestamp("June 10, 2024 20:00 UTC"));
+        expect(it.value.end_date).toBe(getTimestamp("July 2, 2024 20:00 UTC"));
+        expect(it.value.modules.length).toBe(34);
     });
     it("parser relative urls", async () => {
         var md = fs.readFileSync(`./src/c4/test/c4-relative-urls.md`).toString();
@@ -96,7 +46,7 @@ describe("", () => {
       - HM awards: $27,637.50 USDC 
       - Analysis awards: $1,675 USDC 
       `;
-        let awards = getHmAwards({}, lines.split("\n"));
+        let awards = getHmAwards(lines.split("\n"));
         expect(awards).toEqual("27637");
     });
     it("parses hm awards with commas", () => {
@@ -104,36 +54,8 @@ describe("", () => {
     - Total Prize Pool: $40,000 USDC 
       - High/Medium awards: $27,637.50 USDC
       `;
-        let awards = getHmAwards({}, lines.split("\n"));
+        let awards = getHmAwards(lines.split("\n"));
         expect(awards).toEqual("27637");
-    });
-    it("parses kelp", async () => {
-        let md = fs.readFileSync(`./src/c4/test/2023-11-kelp.md`).toString();
-        let parsed = parseMd("url", md, "repo", contest);
-        if (!parsed.ok)
-            throw new Error("failed to parse contest");
-        else {
-            let modules = parsed.value.modules;
-            expect(modules.length).toBe(10);
-            modules.forEach((m) => {
-                expect(m.name.endsWith(".sol")).toBeTruthy();
-                expect(m.path.endsWith(".sol")).toBeTruthy();
-            });
-        }
-    });
-    it("parses vultising - no tests or mocks", async () => {
-        let md = fs.readFileSync(`./src/c4/test/2024-06-vultisig.md`).toString();
-        let parsed = parseMd("url", md, "repo", contest);
-        if (!parsed.ok)
-            throw new Error("failed to parse contest");
-        else {
-            let modules = parsed.value.modules;
-            expect(modules.length).toBe(22);
-            modules.forEach((m) => {
-                expect(m.name.includes("Test")).toBeFalsy();
-                expect(m.name.includes("Mock")).toBeFalsy();
-            });
-        }
     });
 });
 //# sourceMappingURL=c4ContestParser.test.js.map

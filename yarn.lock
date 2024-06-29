@@ -961,7 +961,7 @@ __metadata:
     axios: "npm:^1.6.7"
     chalk: "npm:^5.3.0"
     esbuild: "npm:^0.20.0"
-    fp-ts: "npm:^2.16.2"
+    fp-ts: "npm:^2.16.6"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^10.3.10"
     jst-logger: tonisives/jst-logger
@@ -1372,10 +1372,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:^2.16.2":
-  version: 2.16.2
-  resolution: "fp-ts@npm:2.16.2"
-  checksum: 58b57b7e8cf7856de354d2e5855e1c0dee00ae719d5de739a60f201c7b31c2f6a501d333dfb875199a8649b29cfbe9fa6979df3e8aef87ef7b151179c2b59f6e
+"fp-ts@npm:^2.16.6":
+  version: 2.16.6
+  resolution: "fp-ts@npm:2.16.6"
+  checksum: 2c02d72f5716ab4ada556d1954fa3e1d449df2cd0d91c4597723221a2ce9027d99f423cc8172e5d1ea449a869d32fa8d3f6c2943e23a15d54e744a056c820c03
   languageName: node
   linkType: hard
 

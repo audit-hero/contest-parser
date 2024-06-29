@@ -3,7 +3,7 @@ import { chromium } from "playwright-core";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
 import { Logger } from "jst-logger";
-let _browser = undefined;
+let _browser;
 let config = {
     wait: 2000,
     browser: async () => {
@@ -17,8 +17,7 @@ export let setPlaywrightConfig = (config_) => {
     config = { ...config, ...config_ };
 };
 export const closeBrowser = () => {
-    if (_browser)
-        _browser.close();
+    _browser?.close();
 };
 let lastLogTime = 0;
 let activeCount = 0;

@@ -1,4 +1,5 @@
 export * from "./c4/c4ContestParser.js";
+export * from "./c4/getActiveC4Contests.js";
 export * from "./codehawks/codehawksParser.js";
 export * from "./hats/hats-parser.js";
 export * from "./sherlock/sherlockContestParser.js";
