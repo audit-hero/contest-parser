@@ -1,5 +1,5 @@
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { MdContest } from "./types.js"
+import { MdContest } from "../types.js"
 import { parseMd } from "./parseContests.js"
 
 export const getAllContests = async (): Promise<MdContest[]> => {

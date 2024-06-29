@@ -1,7 +1,7 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { findDocUrl, findTags, trimContestName } from "../util.js"
-import { MdContest, MdStatus } from "./types.js"
+import { findDocUrl, findTags, trimContestName } from "../../util.js"
+import { MdContest, MdStatus } from "../types.js"
 
 export const parseContest = async (
   contest: MdContest

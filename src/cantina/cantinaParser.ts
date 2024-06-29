@@ -1,6 +1,6 @@
 import { ContestWithModules } from "ah-shared"
-import { getActiveContests } from "./getActive.js"
-import { parseContest } from "./parseContest.js"
+import { getActiveContests } from "./list/getActive.js"
+import { parseContest } from "./contest/parseContest.js"
 import { Logger } from "jst-logger"
 
 // this returns all from the cantina web site

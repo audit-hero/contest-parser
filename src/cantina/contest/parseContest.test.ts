@@ -1,6 +1,6 @@
 import { vi, it, expect, afterEach } from "vitest"
-import { getAllContests } from "./getActive.js"
-import { MdContest } from "./types.js"
+import { getAllContests } from "../list/getActive.js"
+import { MdContest } from "../types.js"
 import { parseMd } from "./parseContest.js"
 import fs from "fs"
 

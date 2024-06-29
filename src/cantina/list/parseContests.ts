@@ -1,6 +1,6 @@
-import { getAnyDateUTCTimestamp, truncateLongContestName } from "../util.js"
+import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js"
 
-import { MdContest, MdStatus, statuses } from "./types.js"
+import { MdContest, MdStatus, statuses } from "../types.js"
 import { sentryError } from "ah-shared"
 
 export const parseMd = (md: string): MdContest[] => {
