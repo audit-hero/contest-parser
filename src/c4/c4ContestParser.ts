@@ -5,20 +5,35 @@ import { C4Contest } from "../types.js"
 import { sentryError } from "ah-shared"
 import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
 import { Result } from "ah-shared"
-import {
-  getTimestamp,
-  findModules,
-  getHmAwards,
-  truncateLongNames,
-} from "./parse-utils.js"
+import { getTimestamp, findModules, getHmAwards } from "./parse-utils.js"
+import { getActiveC4Contests } from "./getActiveC4Contests.js"
+import { pipe } from "fp-ts/lib/function.js"
+import * as E from "fp-ts/lib/Either.js"
+import * as TE from "fp-ts/lib/TaskEither.js"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveC4Contests()
 
-  let res = await Promise.all(parseC4Contests(active, existingContests))
-  return res.filter((it) => it !== undefined) as ContestWithModules[]
+  let res = await pipe(
+    active,
+    TE.fromEither,
+    TE.chain((it) =>
+      TE.tryCatch(
+        () => Promise.all(parseC4Contests(it, existingContests)),
+        E.toError
+      )
+    ),
+    TE.map((it) => it.filter((it) => it !== undefined) as ContestWithModules[]),
+    TE.mapLeft((it) => {
+      sentryError("error parsing c4 contests", it)
+      return it
+    }),
+    TE.toUnion
+  )()
+
+  return res instanceof Error ? [] : res
 }
 
 export const parseC4Contests = (
@@ -57,40 +72,12 @@ export const parseC4Contests = (
   return jobs
 }
 
-export const getActiveC4Contests = async () => {
-  let contests: C4Contest[] = await axios
-    .get("https://code4rena.com/contests", { headers: { rsc: 1 } })
-    .catch((e) => {
-      console.log(`error ${e}`)
-      throw Error("can't fetch code4rena")
-    })
-    .then((it) => {
-      let contests = it.data
-        .split(`contests\":`)[1]
-        .split('}],"coreAppPage"')[0]
-      let contestsJson = JSON.parse(contests)
-      return contestsJson
-    })
-
-  let currentDate = Date.now()
-  if (!contests) return []
-
-  let activeContests = contests.filter((it) => {
-    let endDate = new Date(it.end_time).getTime()
-    return endDate > currentDate
-  })
-
-  truncateLongNames(activeContests)
-
-  return activeContests
-}
-
 export const parseC4Contest = async (
   contest: C4Contest
 ): Promise<Result<ContestWithModules>> => {
   Logger.info(`start parsing ${contest.slug}`)
-  
-  let url = `https://code4rena.com/contests/${contest.slug}`
+
+  let url = `https://code4rena.com/audits/${contest.slug}`
   // try to get the raw README.md from either main or master branch
   // input: https://github.com/code-423n4/2022-09-quickswap
   let githubLink = contest.repo

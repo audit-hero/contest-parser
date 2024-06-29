@@ -166,6 +166,7 @@ import { Tag, ALL_TAGS, Status } from "ah-shared"
 import { Repo } from "ah-shared"
 import { pipe } from "fp-ts/lib/function.js"
 import { toLowerCase } from "fp-ts/lib/string.js"
+import { NodeHtmlMarkdown } from "node-html-markdown"
 
 export let workingDir = () => {
   let workingDir = `/${import.meta.url.split("/").slice(3, -2).join("/")}`
@@ -213,4 +214,18 @@ export const getAnyDateUTCTimestamp = (anyDate: any) => {
   )
 
   return someDate / 1000
+}
+
+export let getHtmlAsMd = async (url: string) => {
+  let contests: string = await fetch(url)
+    .then((it) => {
+      return it.text()
+    })
+    .catch((e) => {
+      console.log(`error ${e}`)
+      throw Error("can't get html as md")
+    })
+
+  let parsed = NodeHtmlMarkdown.translate(contests)
+  return parsed
 }

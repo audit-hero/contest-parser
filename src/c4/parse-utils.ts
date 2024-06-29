@@ -273,6 +273,8 @@ export let truncateLongNames = (contests: C4Contest[]) => {
 
     contest.trimmedSlug = trimmedSlug
   }
+
+  return contests
 }
 
 const getModulePathAndUrlBySplit = (
