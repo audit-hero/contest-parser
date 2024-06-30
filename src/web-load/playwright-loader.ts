@@ -24,7 +24,7 @@ export type ScrapeResult = {
 }
 
 export const closeBrowser = () => {
-  config.browser
+  config.browser.close()
 }
 
 let lastLogTime = 0

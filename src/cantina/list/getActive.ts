@@ -23,7 +23,7 @@ let getCompetitions = async () => {
   })
 
   let competitions = nextData.props.pageProps.competitions as CantinaContest[]
-  page.close()
+  // page.close()
   
   return competitions
 }

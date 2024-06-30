@@ -8,7 +8,7 @@ export let setPlaywrightConfig = (config_) => {
     config = { ...config, ...config_ };
 };
 export const closeBrowser = () => {
-    config.browser;
+    config.browser.close();
 };
 let lastLogTime = 0;
 let activeCount = 0;

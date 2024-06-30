@@ -14,7 +14,7 @@ let getCompetitions = async () => {
         return props;
     });
     let competitions = nextData.props.pageProps.competitions;
-    page.close();
+    // page.close()
     return competitions;
 };
 export const getActiveContests = async () => {
