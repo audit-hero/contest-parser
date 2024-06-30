@@ -15,6 +15,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.16",
     "esbuild": "^0.20.0",
+    "playwright": "^1.45.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
