@@ -1,47 +1,46 @@
-import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js";
+import { findDocUrl, findTags, trimContestName } from "../util.js";
 import { isActive } from "./types.js";
 import { scrape } from "../web-load/playwright-loader.js";
 export const parseContest = async (contest) => {
-    let md = await downloadContestAsMd(contest);
-    return parseMd(contest, md);
+    // can get more info from contest sub page later
+    // let md = await downloadContestAsMd(contest)
+    return parseMd(contest);
 };
 let downloadContestAsMd = async (contest) => {
-    let url = `https://immunefi.com/bounty/${contest.id}`;
+    let url = `https://immunefi.com/boost/${contest.id}`;
     let md = (await scrape(url, [])).content;
     if (md.match(/\n#\s/))
         md = md.split(/\n#\s/)[1];
     return md;
 };
-export const parseMd = (mdContest, md) => {
-    let lines = md.split("\n");
-    let { start_date, end_date } = getStartEndDate(lines);
-    let active = isActive(mdContest.status) ? 1 : 0;
-    let modules = findModules(mdContest.name, lines, active);
+export const parseMd = (mdContest) => {
+    let { start_date, end_date } = getStartEndDate(mdContest);
+    let active = isActive(mdContest) ? 1 : 0;
+    let modules = [];
     let contest = {
-        pk: trimContestName(mdContest.name, start_date),
-        readme: `# ${lines.join("\n")}`,
+        pk: trimContestName(mdContest.id, start_date),
+        readme: mdContest.boostedIntroStartingIn,
         start_date: start_date,
         end_date: end_date,
         platform: "immunefi",
         sk: "0",
-        url: `https://immunefi.com/bounty/${mdContest.id}`,
+        url: `https://immunefi.com/boost/${mdContest.id}`,
         active: active,
-        status: mdStatusToStatus(mdContest.status),
+        status: mdStatusToStatus({ start_date, end_date }),
         modules: modules,
-        doc_urls: findDocUrls(lines),
-        prize: mdContest.prize,
-        tags: findTags(lines),
+        doc_urls: [],
+        prize: `${mdContest.rewardsPool} ${mdContest.rewardsToken}`,
+        tags: findTags(mdContest.boostedIntroStartingIn.split("\n")),
     };
     return contest;
 };
-let mdStatusToStatus = (status) => {
-    if (status === "live")
-        return "active";
-    if (status === "starting in")
+let mdStatusToStatus = ({ start_date, end_date, }) => {
+    let date = new Date().getTime() / 1000;
+    if (date < start_date)
         return "created";
-    if (status === "finished")
-        return "finished";
-    throw new Error(`Unknown status: ${status}`);
+    if (date < end_date)
+        return "active";
+    return "finished";
 };
 let getModulesStartIndex = (lines) => {
     let modulesStart = lines.findIndex((it) => it.includes("# ") &&
@@ -94,15 +93,9 @@ const findDocUrls = (lines) => {
     }
     return docUrls;
 };
-function getStartEndDate(lines) {
-    let startPrefix = ["Started", "Starts"];
-    let endPrefix = "Ends";
-    let startLine = lines.findIndex((it) => startPrefix.some((prefix) => it.startsWith(prefix)));
-    let startDateLine = lines[startLine + 2];
-    let endLine = lines.findIndex((it) => it.startsWith(endPrefix));
-    let endDateLine = lines[endLine + 2];
-    let start_date = getAnyDateUTCTimestamp(startDateLine);
-    let end_date = getAnyDateUTCTimestamp(endDateLine);
+function getStartEndDate(contest) {
+    let start_date = new Date(contest.launchDate).getTime() / 1000;
+    let end_date = new Date(contest.endDate).getTime() / 1000;
     return { start_date, end_date };
 }
 //# sourceMappingURL=parseContest.js.map

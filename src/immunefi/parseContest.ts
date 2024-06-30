@@ -1,58 +1,60 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
-import { findDocUrl, findTags, getAnyDateUTCTimestamp, trimContestName } from "../util.js"
-import { MdContest, MdStatus, isActive } from "./types.js"
+import { findDocUrl, findTags, trimContestName } from "../util.js"
+import { ImmunefiContest, isActive } from "./types.js"
 import { scrape } from "../web-load/playwright-loader.js"
 
 export const parseContest = async (
-  contest: MdContest
+  contest: ImmunefiContest
 ): Promise<ContestWithModules> => {
-  let md = await downloadContestAsMd(contest)
-  return parseMd(contest, md)
+  // can get more info from contest sub page later
+  // let md = await downloadContestAsMd(contest)
+  return parseMd(contest)
 }
 
-let downloadContestAsMd = async (contest: MdContest): Promise<string> => {
-  let url = `https://immunefi.com/bounty/${contest.id}`
+let downloadContestAsMd = async (contest: ImmunefiContest): Promise<string> => {
+  let url = `https://immunefi.com/boost/${contest.id}`
   let md = (await scrape(url, [])).content
   if (md.match(/\n#\s/)) md = md.split(/\n#\s/)[1]
 
   return md
 }
 
-export const parseMd = (
-  mdContest: MdContest,
-  md: string
-): ContestWithModules => {
-  let lines = md.split("\n")
+export const parseMd = (mdContest: ImmunefiContest): ContestWithModules => {
+  let { start_date, end_date } = getStartEndDate(mdContest)
 
-  let { start_date, end_date } = getStartEndDate(lines)
+  let active = isActive(mdContest) ? 1 : 0
+  let modules = [] as ContestModule[]
 
-  let active = isActive(mdContest.status) ? 1 : 0
-  let modules = findModules(mdContest.name, lines, active)
-  
   let contest: ContestWithModules = {
-    pk: trimContestName(mdContest.name, start_date),
-    readme: `# ${lines.join("\n")}`,
+    pk: trimContestName(mdContest.id, start_date),
+    readme: mdContest.boostedIntroStartingIn,
     start_date: start_date,
     end_date: end_date,
     platform: "immunefi",
     sk: "0",
-    url: `https://immunefi.com/bounty/${mdContest.id}`,
+    url: `https://immunefi.com/boost/${mdContest.id}`,
     active: active,
-    status: mdStatusToStatus(mdContest.status),
+    status: mdStatusToStatus({ start_date, end_date }),
     modules: modules,
-    doc_urls: findDocUrls(lines),
-    prize: mdContest.prize,
-    tags: findTags(lines),
+    doc_urls: [],
+    prize: `${mdContest.rewardsPool} ${mdContest.rewardsToken}`,
+    tags: findTags(mdContest.boostedIntroStartingIn.split("\n")),
   }
 
   return contest
 }
 
-let mdStatusToStatus = (status: MdStatus): Status => {
-  if (status === "live") return "active"
-  if (status === "starting in") return "created"
-  if (status === "finished") return "finished"
-  throw new Error(`Unknown status: ${status}`)
+let mdStatusToStatus = ({
+  start_date,
+  end_date,
+}: {
+  start_date: number
+  end_date: number
+}): Status => {
+  let date = new Date().getTime() / 1000
+  if (date < start_date) return "created"
+  if (date < end_date) return "active"
+  return "finished"
 }
 
 let getModulesStartIndex = (lines: string[]) => {
@@ -126,20 +128,13 @@ const findDocUrls = (lines: string[]) => {
 
   return docUrls
 }
-function getStartEndDate(lines: string[]): { start_date: any; end_date: any } {
-  let startPrefix = ["Started", "Starts"]
-  let endPrefix = "Ends"
 
-  let startLine = lines.findIndex((it) =>
-    startPrefix.some((prefix) => it.startsWith(prefix))
-  )
-  let startDateLine = lines[startLine + 2]
-
-  let endLine = lines.findIndex((it) => it.startsWith(endPrefix))
-  let endDateLine = lines[endLine + 2]
-
-  let start_date = getAnyDateUTCTimestamp(startDateLine)
-  let end_date = getAnyDateUTCTimestamp(endDateLine)
+function getStartEndDate(contest: ImmunefiContest): {
+  start_date: number
+  end_date: number
+} {
+  let start_date = new Date(contest.launchDate).getTime() / 1000
+  let end_date = new Date(contest.endDate).getTime() / 1000
 
   return { start_date, end_date }
 }

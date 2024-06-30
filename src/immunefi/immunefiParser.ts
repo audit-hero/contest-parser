@@ -1,8 +1,8 @@
 import { ContestWithModules } from "ah-shared"
 import { parseContest } from "./parseContest.js"
 import { scrape } from "../web-load/playwright-loader.js"
-import { MdContest } from "./types.js"
-import * as list from "./parseContests.js"
+import { ImmunefiContest, isActive, toId } from "./types.js"
+import { loadNextProps } from "../web-load/load-next-props.js"
 
 let listUrl = "https://immunefi.com/boost/"
 
@@ -13,7 +13,7 @@ export const parseActiveImmunefiContests = async (
   let active = await getActiveContests()
 
   active = active.filter((it) => {
-    let existing = existingContests.find((existing) => existing.pk === it.name)
+    let existing = existingContests.find((existing) => existing.pk === toId(it))
     return !existing || existing.modules?.length === 0
   })
 
@@ -22,17 +22,12 @@ export const parseActiveImmunefiContests = async (
   return contests
 }
 
-export const getAllContests = async (): Promise<MdContest[]> => {
-  let md = await getHtmlAsMd()
-  return list.parseMd(md)
-}
+export const getAllContests = async (): Promise<ImmunefiContest[]> =>
+  (await loadNextProps("https://immunefi.com/boost/")).bounties
 
 export const getActiveContests = async () => {
   let allContests = await getAllContests()
-
-  return allContests.filter((it) => {
-    return it.status === "live" || it.status === "starting in"
-  })
+  return allContests.filter(isActive)
 }
 
 const getHtmlAsMd = async () => {

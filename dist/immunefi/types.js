@@ -1,5 +1,9 @@
-export let statuses = ["live", "starting in", "finished"];
-export let isActive = (status) => {
-    return status === "live" || status === "starting in";
+import { trimContestName } from "../util.js";
+export let isActive = (contest) => {
+    return (new Date(contest.launchDate) < new Date() &&
+        new Date(contest.endDate) > new Date());
+};
+export let toId = (contest) => {
+    return trimContestName(contest.id, new Date(contest.launchDate).getTime() / 1000);
 };
 //# sourceMappingURL=types.js.map
