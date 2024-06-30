@@ -14,7 +14,8 @@ let getCompetitions = async () => {
         return props;
     });
     let competitions = nextData.props.pageProps.competitions;
-    // page.close()
+    // this makes lambda fail with `Target page, context or browser has been closed`
+    // page.close() 
     return competitions;
 };
 export const getActiveContests = async () => {

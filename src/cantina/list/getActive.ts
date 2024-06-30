@@ -23,7 +23,9 @@ let getCompetitions = async () => {
   })
 
   let competitions = nextData.props.pageProps.competitions as CantinaContest[]
-  // page.close()
+  
+  // this makes lambda fail with `Target page, context or browser has been closed`
+  // page.close() 
   
   return competitions
 }
