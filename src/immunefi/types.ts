@@ -2,7 +2,6 @@ import { trimContestName } from "../util.js"
 
 export let isActive = (contest: ImmunefiContest) => {
   return (
-    new Date(contest.launchDate) < new Date() &&
     new Date(contest.endDate) > new Date()
   )
 }
