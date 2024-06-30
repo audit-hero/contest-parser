@@ -67,14 +67,15 @@ export let scrape = async (
   )
 
   if (contentTooShort(content) || isNotFoundPage(content, title)) {
-    console.log(
+    Logger.error(
       chalk.red(`Failed to scrape ${url} after ${Date.now() - startTime}ms`)
     )
     return { content: "", title: "", url: url }
   }
 
+  Logger.debug(`Scraped ${content.slice(0, 100)}...`)
   Logger.trace(`Console: ${consoleLog}`)
-  Logger.debug(`Scraped: ${content}`)
+  Logger.trace(`Scraped: ${content}`)
 
   activeCount--
   return { content, title, url }
