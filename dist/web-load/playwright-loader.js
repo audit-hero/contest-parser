@@ -1,37 +1,26 @@
 import chalk from "chalk";
-import { chromium } from "playwright-core";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js";
 import { Logger } from "jst-logger";
-// always use this browser, it is set via setPlaywrightConfig from ah-parsers
-// to the lambda variant
-let _browser;
-let config = {
-    wait: 2000,
-    browser: async () => {
-        if (_browser)
-            return _browser;
-        let browser = await chromium.launch({ headless: true });
-        return await browser.newContext();
-    },
-};
+// set the browser via setPlaywrightConfig
+let config;
 export let setPlaywrightConfig = (config_) => {
     config = { ...config, ...config_ };
 };
 export const closeBrowser = () => {
-    _browser?.close();
+    config.browser;
 };
 let lastLogTime = 0;
 let activeCount = 0;
 // remember to close the page when done. but not browser
 export let newPage = async () => {
-    let page = await (await config.browser()).newPage();
+    let page = await config.browser.newPage();
     return page;
 };
 export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
     // return from the server, but run evaluate again until have some content
     console.log(chalk.green(`Scraping ${url}...`));
-    let page = await (await config.browser()).newPage();
+    let page = await config.browser.newPage();
     let consoleLog = "";
     page.on("console", (msg) => {
         consoleLog += msg.text();
@@ -81,6 +70,8 @@ export async function waitForPageToLoad(page, loadingPhrases, wait) {
             lastLogTime = Date.now();
         }
     }
+    lastLogTime = 0;
+    activeCount = 0;
     Logger.debug(`Scraped ${content}`);
     return { content, title, startTime };
 }

@@ -1,7 +1,7 @@
 import { BrowserContext, Page } from "playwright-core";
 export type Config = {
     wait: number;
-    browser: () => Promise<BrowserContext>;
+    browser: BrowserContext;
 };
 export declare let setPlaywrightConfig: (config_: Partial<Config>) => void;
 export type ScrapeResult = {

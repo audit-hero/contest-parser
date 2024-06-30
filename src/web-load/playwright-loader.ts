@@ -4,23 +4,13 @@ import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { Logger } from "jst-logger"
 
-// always use this browser, it is set via setPlaywrightConfig from ah-parsers
-// to the lambda variant
+// set the browser via setPlaywrightConfig
 
-let _browser: BrowserContext | undefined
-
-let config: Config = {
-  wait: 2000,
-  browser: async () => {
-    if (_browser) return _browser
-    let browser = await chromium.launch({ headless: true })
-    return await browser.newContext()
-  },
-}
+let config: Config
 
 export type Config = {
   wait: number
-  browser: () => Promise<BrowserContext>
+  browser: BrowserContext
 }
 
 export let setPlaywrightConfig = (config_: Partial<Config>) => {
@@ -34,7 +24,7 @@ export type ScrapeResult = {
 }
 
 export const closeBrowser = () => {
-  _browser?.close()
+  config.browser
 }
 
 let lastLogTime = 0
@@ -42,7 +32,7 @@ let activeCount = 0
 
 // remember to close the page when done. but not browser
 export let newPage = async () => {
-  let page = await (await config.browser()).newPage()
+  let page = await config.browser.newPage()
   return page
 }
 
@@ -53,7 +43,7 @@ export let scrape = async (
   // return from the server, but run evaluate again until have some content
   console.log(chalk.green(`Scraping ${url}...`))
 
-  let page = await (await config.browser()).newPage()
+  let page = await config.browser.newPage()
 
   let consoleLog = ""
   page.on("console", (msg) => {
@@ -132,6 +122,9 @@ export async function waitForPageToLoad(
       lastLogTime = Date.now()
     }
   }
+
+  lastLogTime = 0
+  activeCount = 0
 
   Logger.debug(`Scraped ${content}`)
   return { content, title, startTime }
