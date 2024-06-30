@@ -1,1 +1,1 @@
-{"version":3,"file":"types.js","sourceRoot":"","sources":["../../src/cantina/types.ts"],"names":[],"mappings":"AAiBA,MAAM,CAAC,IAAI,QAAQ,GAAG;IACpB,MAAM;IACN,UAAU;IACV,SAAS;IACT,aAAa;IACb,OAAO;IACP,WAAW;CACE,CAAC"}
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../../src/cantina/types.ts"],"names":[],"mappings":"AAQE,MAAM,CAAC,IAAI,QAAQ,GAAG;IACtB,MAAM;IACN,SAAS;IACT,UAAU;IACV,aAAa;IACb,mBAAmB;CACD,CAAA"}

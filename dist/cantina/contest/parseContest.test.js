@@ -8,9 +8,12 @@ it("parses modules", () => {
     let mdContest = {
         id: "8409a0ce-6c21-4cc9-8ef2-bd77ce7425af",
         name: "morpho-metamorpho-and-periphery",
-        start_date: 1637059200000,
-        end_date: 1638864000000,
-        prize: "$100,000 USDC",
+        timeframe: {
+            start: "2021-11-16T00:00:00Z",
+            end: "2021-12-07T00:00:00Z",
+        },
+        totalRewardPot: "100000",
+        currencyCode: "USDC",
         status: "live",
     };
     let contestMd = fs.readFileSync("src/cantina/test/morpho.md").toString();

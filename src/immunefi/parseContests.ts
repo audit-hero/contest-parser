@@ -55,24 +55,3 @@ let getStatus = (line: string): MdStatus | undefined => {
 
   return status
 }
-
-// the date is 8pm UTC
-const getStartEndDate = (
-  dateLine: string
-): {
-  start_date: number
-  end_date: number
-} => {
-  dateLine = dateLine.replace(`\\-`, "-")
-  dateLine = dateLine.replaceAll("UTC", "")
-
-  // their end date is 8pm UTC
-  let startDateStr = dateLine.split(" - ")[0] + "T20:00+00:00"
-  let start_date = getAnyDateUTCTimestamp(startDateStr)
-  let endDateStr = dateLine.split(" - ")[1] + "T20:00+00:00"
-  let end_date = getAnyDateUTCTimestamp(endDateStr)
-  if (!start_date || !end_date) {
-    throw new Error(`could not parse date from ${dateLine}`)
-  }
-  return { start_date, end_date }
-}

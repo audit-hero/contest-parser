@@ -1,6 +1,6 @@
 import { vi, it, expect, afterEach } from "vitest"
 import { getAllContests } from "../list/getActive.js"
-import { MdContest } from "../types.js"
+import { CantinaContest } from "../types.js"
 import { parseMd } from "./parseContest.js"
 import fs from "fs"
 
@@ -9,14 +9,17 @@ afterEach(() => {
 })
 
 it("parses modules", () => {
-  let mdContest: MdContest = {
+  let mdContest: CantinaContest = {
     id: "8409a0ce-6c21-4cc9-8ef2-bd77ce7425af",
     name: "morpho-metamorpho-and-periphery",
-    start_date: 1637059200000,
-    end_date: 1638864000000,
-    prize: "$100,000 USDC",
+    timeframe: {
+      start: "2021-11-16T00:00:00Z",
+      end: "2021-12-07T00:00:00Z",
+    },
+    totalRewardPot: "100000",
+    currencyCode: "USDC",
     status: "live",
-  }
+  } as CantinaContest
 
   let contestMd = fs.readFileSync("src/cantina/test/morpho.md").toString()
 

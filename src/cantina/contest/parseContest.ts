@@ -1,16 +1,16 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { findDocUrl, findTags, trimContestName } from "../../util.js"
-import { MdContest, MdStatus } from "../types.js"
+import { CantinaContest, CantinaStatus } from "../types.js"
 
 export const parseContest = async (
-  contest: MdContest
+  contest: CantinaContest
 ): Promise<ContestWithModules> => {
   let md = await downloadContestAsMd(contest)
   return parseMd(contest, md)
 }
 
-let downloadContestAsMd = async (contest: MdContest): Promise<string> => {
+let downloadContestAsMd = async (contest: CantinaContest): Promise<string> => {
   let url = `https://cantina.xyz/competitions/${contest.id}`
   let html = await fetch(url).then((it) => it.text())
   let md = NodeHtmlMarkdown.translate(html)
@@ -18,42 +18,47 @@ let downloadContestAsMd = async (contest: MdContest): Promise<string> => {
 }
 
 export const parseMd = (
-  mdContest: MdContest,
+  contest: CantinaContest,
   md: string
 ): ContestWithModules => {
-  let name = getName(md.split("\n")) ?? mdContest.name
-
-  // remove header links
+  let name = contest.name
   let lines = md.split("\n")
 
-  let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0
-  let modules = findModules(name, lines, mdContest.start_date, active)
+  let startDate = new Date(contest.timeframe.start).getTime() / 1000
+  let active = contest.status === "live" ? 1 : 0
+  let modules = findModules(name, lines, startDate, active)
 
-  let contest: ContestWithModules = {
-    pk: trimContestName(name, mdContest.start_date),
-    readme: `# ${lines.join("\n")}`,
-    start_date: mdContest.start_date,
-    end_date: mdContest.end_date,
+  let result: ContestWithModules = {
+    pk: trimContestName(name, startDate),
+    readme: trimPageToMd(lines.join("\n"), contest),
+    start_date: startDate,
+    end_date: new Date(contest.timeframe.end).getTime() / 1000,
     platform: "cantina",
     sk: "0",
-    url: `https://cantina.xyz/competitions/${mdContest.id}`,
+    url: `https://cantina.xyz/competitions/${contest.id}`,
     active: active,
-    status: mdStatusToStatus(mdContest.status),
+    status: mdStatusToStatus(contest.status),
     modules: modules,
     doc_urls: findDocUrls(lines),
-    prize: mdContest.prize,
+    prize: `${contest.totalRewardPot} ${contest.currencyCode}`,
     tags: findTags(lines),
+    repo_urls: [contest.gitRepoUrl],
   }
 
-  return contest
+  return result
 }
 
-let getName = (lines: string[]) => {
-  let name = lines.find((it) => it.match(/^#{1,3} /))?.replace(/^#{1,3} /, "")
-  return name
+let trimPageToMd = (page: string, contest: CantinaContest) => {
+  let start = contest.name
+  let end = "You need to be logged in as a researcher in order to join."
+
+  let split = page.split("\n")
+  let startIndex = split.findIndex((it) => it.includes(start))
+  let endIndex = split.findIndex((it) => it.includes(end))
+  return split.slice(startIndex, endIndex).join("\n")
 }
 
-let mdStatusToStatus = (status: MdStatus): Status => {
+let mdStatusToStatus = (status: CantinaStatus): Status => {
   if (status === "live") return "active"
   if (status === "upcoming") return "created"
   if (status === "judging") return "judging"

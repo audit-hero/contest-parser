@@ -1,3 +1,3 @@
-import { MdContest } from "../types.js";
-export declare const getAllContests: () => Promise<MdContest[]>;
-export declare const getActiveContests: () => Promise<MdContest[]>;
+import { CantinaContest } from "../types.js";
+export declare const getAllContests: () => Promise<CantinaContest[]>;
+export declare const getActiveContests: () => Promise<CantinaContest[]>;

@@ -10,32 +10,37 @@ let downloadContestAsMd = async (contest) => {
     let md = NodeHtmlMarkdown.translate(html);
     return md;
 };
-export const parseMd = (mdContest, md) => {
-    let name = getName(md.split("\n")) ?? mdContest.name;
-    // remove header links
+export const parseMd = (contest, md) => {
+    let name = contest.name;
     let lines = md.split("\n");
-    let active = mdContest.end_date > Math.floor(Date.now() / 1000) ? 1 : 0;
-    let modules = findModules(name, lines, mdContest.start_date, active);
-    let contest = {
-        pk: trimContestName(name, mdContest.start_date),
-        readme: `# ${lines.join("\n")}`,
-        start_date: mdContest.start_date,
-        end_date: mdContest.end_date,
+    let startDate = new Date(contest.timeframe.start).getTime() / 1000;
+    let active = contest.status === "live" ? 1 : 0;
+    let modules = findModules(name, lines, startDate, active);
+    let result = {
+        pk: trimContestName(name, startDate),
+        readme: trimPageToMd(lines.join("\n"), contest),
+        start_date: startDate,
+        end_date: new Date(contest.timeframe.end).getTime() / 1000,
         platform: "cantina",
         sk: "0",
-        url: `https://cantina.xyz/competitions/${mdContest.id}`,
+        url: `https://cantina.xyz/competitions/${contest.id}`,
         active: active,
-        status: mdStatusToStatus(mdContest.status),
+        status: mdStatusToStatus(contest.status),
         modules: modules,
         doc_urls: findDocUrls(lines),
-        prize: mdContest.prize,
+        prize: `${contest.totalRewardPot} ${contest.currencyCode}`,
         tags: findTags(lines),
+        repo_urls: [contest.gitRepoUrl],
     };
-    return contest;
+    return result;
 };
-let getName = (lines) => {
-    let name = lines.find((it) => it.match(/^#{1,3} /))?.replace(/^#{1,3} /, "");
-    return name;
+let trimPageToMd = (page, contest) => {
+    let start = contest.name;
+    let end = "You need to be logged in as a researcher in order to join.";
+    let split = page.split("\n");
+    let startIndex = split.findIndex((it) => it.includes(start));
+    let endIndex = split.findIndex((it) => it.includes(end));
+    return split.slice(startIndex, endIndex).join("\n");
 };
 let mdStatusToStatus = (status) => {
     if (status === "live")

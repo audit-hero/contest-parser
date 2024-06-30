@@ -4,3 +4,5 @@ import fs from "fs"
 let res = await parseActiveCantinaContests([])
 
 fs.writeFileSync("cantinaContests.json", JSON.stringify(res, null, 2))
+
+process.exit(0)

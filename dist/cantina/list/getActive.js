@@ -1,26 +1,30 @@
-import { NodeHtmlMarkdown } from "node-html-markdown";
-import { parseMd } from "./parseContests.js";
+import { chromium } from "playwright-core";
 export const getAllContests = async () => {
-    let md = await getHtmlAsMd();
-    return parseMd(md);
+    let competitions = await getCompetitions();
+    return competitions;
+};
+let _browser = undefined;
+const browser = async () => {
+    if (_browser)
+        return _browser;
+    _browser = await chromium.launch({ headless: true });
+    return _browser;
+};
+let getCompetitions = async () => {
+    let page = await (await browser()).newPage();
+    await page.goto("https://cantina.xyz/competitions", {
+        waitUntil: "domcontentloaded",
+        timeout: 120000,
+    });
+    let nextData = await page.evaluate(async () => {
+        let props = JSON.parse(document.querySelector("#__NEXT_DATA__")?.textContent ?? "");
+        return props;
+    });
+    let competitions = nextData.props.pageProps.competitions;
+    return competitions;
 };
 export const getActiveContests = async () => {
     let allContests = await getAllContests();
-    let epochSeconds = Math.floor(Date.now() / 1000);
-    return allContests.filter((it) => {
-        return it.start_date <= epochSeconds && it.end_date >= epochSeconds;
-    });
-};
-const getHtmlAsMd = async () => {
-    let contests = await fetch("https://cantina.xyz/competitions")
-        .then((it) => {
-        return it.text();
-    })
-        .catch((e) => {
-        console.log(`error ${e}`);
-        throw Error("can't fetch cantina contests");
-    });
-    let parsed = NodeHtmlMarkdown.translate(contests);
-    return parsed;
+    return allContests.filter((it) => it.status === "live");
 };
 //# sourceMappingURL=getActive.js.map
