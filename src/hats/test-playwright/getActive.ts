@@ -1,6 +1,5 @@
-import { Browser, chromium } from "playwright-core"
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js"
-import { waitForPageToLoad } from "../../web-load/playwright-loader.js"
+import { newPage, waitForPageToLoad } from "../../web-load/playwright-loader.js"
 
 export const getActive = async (): Promise<MdContest[]> => {
   let contestUrls = await getContestUrls()
@@ -17,17 +16,10 @@ export type MdContest = {
   prize: string
 }
 
-let _browser: Browser | undefined = undefined
-const browser = async () => {
-  if (_browser) return _browser
-  _browser = await chromium.launch({ headless: true })
-  return _browser
-}
-
 export const getContestUrls = async (
   loadingPhrases: string[] = ["Loading.."]
 ): Promise<string[]> => {
-  let page = await (await browser()).newPage()
+  let page = await newPage()
 
   await page.goto("https://app.hats.finance/bug-bounties", {
     waitUntil: "domcontentloaded",
@@ -57,6 +49,7 @@ export const getContestUrls = async (
     return urls
   })
 
+  page.close()
   return urls
 }
 

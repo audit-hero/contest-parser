@@ -1,20 +1,13 @@
+import { newPage } from "../../web-load/playwright-loader.js"
 import { CantinaContest } from "../types.js"
-import { Browser, chromium } from "playwright-core"
 
 export const getAllContests = async (): Promise<CantinaContest[]> => {
   let competitions = await getCompetitions()
   return competitions
 }
 
-let _browser: Browser | undefined = undefined
-const browser = async () => {
-  if (_browser) return _browser
-  _browser = await chromium.launch({ headless: true })
-  return _browser
-}
-
 let getCompetitions = async () => {
-  let page = await (await browser()).newPage()
+  let page = await newPage()
 
   await page.goto("https://cantina.xyz/competitions", {
     waitUntil: "domcontentloaded",
@@ -30,6 +23,8 @@ let getCompetitions = async () => {
   })
 
   let competitions = nextData.props.pageProps.competitions as CantinaContest[]
+  page.close()
+  
   return competitions
 }
 

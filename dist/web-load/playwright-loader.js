@@ -21,6 +21,11 @@ export const closeBrowser = () => {
 };
 let lastLogTime = 0;
 let activeCount = 0;
+// remember to close the page when done. but not browser
+export let newPage = async () => {
+    let page = await (await config.browser()).newPage();
+    return page;
+};
 export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
     // return from the server, but run evaluate again until have some content
     console.log(chalk.green(`Scraping ${url}...`));

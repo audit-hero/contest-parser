@@ -1,20 +1,12 @@
-import { chromium } from "playwright-core";
 import { getAnyDateUTCTimestamp, truncateLongContestName } from "../../util.js";
-import { waitForPageToLoad } from "../../web-load/playwright-loader.js";
+import { newPage, waitForPageToLoad } from "../../web-load/playwright-loader.js";
 export const getActive = async () => {
     let contestUrls = await getContestUrls();
     // return getActiveContests(md)
     return [];
 };
-let _browser = undefined;
-const browser = async () => {
-    if (_browser)
-        return _browser;
-    _browser = await chromium.launch({ headless: true });
-    return _browser;
-};
 export const getContestUrls = async (loadingPhrases = ["Loading.."]) => {
-    let page = await (await browser()).newPage();
+    let page = await newPage();
     await page.goto("https://app.hats.finance/bug-bounties", {
         waitUntil: "domcontentloaded",
         timeout: 120000,
@@ -35,6 +27,7 @@ export const getContestUrls = async (loadingPhrases = ["Loading.."]) => {
         }
         return urls;
     });
+    page.close();
     return urls;
 };
 export const getActiveContests = (md) => {

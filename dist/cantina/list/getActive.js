@@ -1,17 +1,10 @@
-import { chromium } from "playwright-core";
+import { newPage } from "../../web-load/playwright-loader.js";
 export const getAllContests = async () => {
     let competitions = await getCompetitions();
     return competitions;
 };
-let _browser = undefined;
-const browser = async () => {
-    if (_browser)
-        return _browser;
-    _browser = await chromium.launch({ headless: true });
-    return _browser;
-};
 let getCompetitions = async () => {
-    let page = await (await browser()).newPage();
+    let page = await newPage();
     await page.goto("https://cantina.xyz/competitions", {
         waitUntil: "domcontentloaded",
         timeout: 120000,
@@ -21,6 +14,7 @@ let getCompetitions = async () => {
         return props;
     });
     let competitions = nextData.props.pageProps.competitions;
+    page.close();
     return competitions;
 };
 export const getActiveContests = async () => {
