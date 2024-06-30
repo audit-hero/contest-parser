@@ -4,6 +4,9 @@ import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { Logger } from "jst-logger"
 
+// always use this browser, it is set via setPlaywrightConfig from ah-parsers
+// to the lambda variant
+
 let _browser: BrowserContext | undefined
 
 let config: Config = {

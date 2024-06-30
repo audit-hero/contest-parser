@@ -30,7 +30,7 @@
     "jst-logger": "tonisives/jst-logger",
     "node-html-markdown": "^1.3.0",
     "parse-url": "^9.2.0",
-    "playwright-core": "^1.41.2",
+    "playwright-core": "^1.45.0",
     "ti-fptsu": "tonisives/ti-fptsu#f1422b6821deba84622dcbb4ed1d027e35ec5fcf"
   }
 }
