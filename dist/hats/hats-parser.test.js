@@ -1,7 +1,7 @@
 import { it, describe, afterEach, expect, vi } from "vitest";
 import fs from "fs-extra";
 import { parseContests } from "./hats-parser.js";
-import { getActiveContests } from "./getActiveContests.js";
+import { getActiveContests, hats_urls } from "./getActiveContests.js";
 import { workingDir } from "../util.js";
 import { getModules } from "./hats-parser.modules.js";
 describe("", () => {
@@ -77,7 +77,7 @@ describe("", () => {
             return Promise.resolve({
                 ok: myUrls.some((it) => url.includes(it)),
                 json: () => {
-                    if (url == "https://api.thegraph.com/subgraphs/name/hats-finance/hats") {
+                    if (url === hats_urls[0]) {
                         return Promise.resolve(JSON.parse(repos));
                     }
                     else if (myUrls.some((it) => url.includes(it))) {
