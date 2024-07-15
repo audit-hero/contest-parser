@@ -3,6 +3,7 @@ import { Logger } from "jst-logger";
 import { sentryError } from "ah-shared";
 import { getRepoNameFromUrl, findTags, trimContestName } from "../util.js";
 import { findModules } from "./modules.js";
+import chalk from "chalk";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {
     let active = await getActiveSherlockContests();
@@ -14,15 +15,15 @@ export const parseSherlockContests = (contests, existingContests) => {
     for (let i = 0; i < contests.length; ++i) {
         let contestExists = existingContests.find((it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name));
         if (contestExists && contestExists.modules?.length > 0) {
-            Logger.info(`contest ${contests[i].title} already exists, skipping`);
+            Logger.info(chalk.yellow(`contest ${contests[i].title} already exists, skipping`));
             continue;
         }
         else {
             if (contests[i].ends_at < Date.now() / 1000) {
-                Logger.info(`contest ${contests[i].title} has already ended, skipping`);
+                Logger.info(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`));
                 continue;
             }
-            Logger.info(`contest ${contests[i].title} doesn't exist, parsing`);
+            Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`));
         }
         let contest = parseSherlockContest(contests[i])
             .then((it) => {
@@ -116,10 +117,10 @@ export const parseSherlockContest = async (contest) => {
     };
     if (!readmeObj) {
         let now = Math.floor(Date.now() / 1000);
-        if (contest.starts_at < now) {
+        if (contest.ends_at < now) {
             return {
                 ok: false,
-                error: `no readme found for ${contest}`,
+                error: `already ended ${contest}`,
             };
         }
         else {
