@@ -7,4 +7,5 @@ export { setLogLevel } from "./config.js";
 export { setPlaywrightConfig } from "./web-load/playwright-loader.js";
 export * from "./cantina/cantinaParser.js";
 export * from "./immunefi/immunefiParser.js";
+export * from "./version.js";
 //# sourceMappingURL=index.js.map

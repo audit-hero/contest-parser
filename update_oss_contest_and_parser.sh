@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+sh ./scripts/set-version.sh
 bash ~/.ssh/switch-github-user.sh slightscan
 cd /Users/tonis/workspace/js/audit-hero/oss/contest 
 gpsa
