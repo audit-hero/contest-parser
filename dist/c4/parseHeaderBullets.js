@@ -1,8 +1,7 @@
+import { NO_START_END } from "../errors.js";
 import { getAnyDateUTCTimestamp } from "../util.js";
 import { getHmAwards } from "./parse-utils.js";
 import { E, O, pipe } from "ti-fptsu/lib";
-export let NO_START_END = "no start/end time found";
-export let NO_REPO_FOUND = "no repo found"; // normal that private contests don't have a repo
 export let parseHeaderBullets = (md) => {
     let bullets = getHeaderBullets(md);
     return pipe(getStartEndTime(bullets), E.map((it) => ({

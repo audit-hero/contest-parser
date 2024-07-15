@@ -9,9 +9,9 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
-import { NO_REPO_FOUND, NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js"
+import { parseHeaderBullets } from "./parseHeaderBullets.js"
 import * as O from "fp-ts/lib/Option.js"
-import { trim } from "fp-ts/lib/string.js"
+import { NO_START_END, NO_REPO_FOUND } from "../errors.js"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[],

@@ -6,8 +6,9 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
-import { NO_REPO_FOUND, NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js";
+import { parseHeaderBullets } from "./parseHeaderBullets.js";
 import * as O from "fp-ts/lib/Option.js";
+import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
 export const parseActiveC4Contests = async (existingContests) => {
     let active = await getActiveC4Contests();
     let res = await pipe(active, TE.fromEither, TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {

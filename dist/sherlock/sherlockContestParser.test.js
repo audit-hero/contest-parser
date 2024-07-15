@@ -8,6 +8,7 @@ describe("", () => {
     // https://code4rena.com/contests/2023-05-juicebox-buyback-delegate
     let contest = {
         "calc_completed": false,
+        "description": "The Index Coop builds decentralized structured products that make crypto simple, accessible, and secure",
         "ends_at": 1686754800,
         "escalation_started_at": null,
         "id": 81,

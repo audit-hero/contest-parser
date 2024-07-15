@@ -10,7 +10,7 @@ export type SherlockContest = Record<string, any> & {
     short_description: string;
     description?: string;
     starts_at: number;
-    template_repo_name: string;
+    template_repo_name?: string;
     status: "FINISHED" | "CREATED" | "RUNNING" | "JUDGING" | "SHERLOCK_JUDGING" | "ESCALATING";
     title: string;
     calc_completed: boolean;

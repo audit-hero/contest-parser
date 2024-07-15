@@ -2,7 +2,7 @@ import axios from "axios"
 import { Logger } from "jst-logger"
 import { sentryError, Result } from "ah-shared"
 import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
-import { getRepoNameFromUrl, findTags, trimContestName } from "../util.js"
+import { findTags, trimContestName } from "../util.js"
 import { SherlockContest } from "../types.js"
 import { findModules } from "./modules.js"
 import chalk from "chalk"
@@ -24,38 +24,62 @@ export const parseSherlockContests = (
   let jobs = [] as Promise<ContestWithModules | undefined>[]
 
   for (let i = 0; i < contests.length; ++i) {
-    let contestExists = existingContests.find(
-      (it) => it.pk === getRepoNameFromUrl(contests[i].template_repo_name),
-    )
+    let job = downloadDetails(contests[i]).then(async (details) => {
+      let name = getRepoName(details)
 
-    if (contestExists && contestExists.modules?.length > 0) {
-      Logger.info(chalk.yellow(`contest ${contests[i].title} already exists, skipping`))
-      continue
-    } else {
-      if (contests[i].ends_at < Date.now() / 1000) {
-        Logger.info(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`))
-        continue
-      }
-      Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`))
-    }
-
-    let contest = parseSherlockContest(contests[i])
-      .then((it) => {
-        if (!it.ok) {
-          sentryError(it.error, `failed to parse sherlock contest ${contests[i].title}`, "daily")
-        } else {
-          return it.value
-        }
-      })
-      .catch((e) => {
-        sentryError(e, `failed to parse sherlock contest ${contests[i].title}`, "daily")
+      let contestExists = existingContests.find((it) => it.pk === name)
+      if (contestExists && contestExists.modules?.length > 0) {
+        Logger.debug(chalk.yellow(`contest ${name} already exists, skipping`))
         return undefined
-      })
+      }
 
-    jobs.push(contest)
+      if (contestExists && contestExists.modules?.length > 0) {
+        Logger.debug(chalk.yellow(`contest ${contests[i].title} already exists, skipping`))
+        return undefined
+      } else {
+        if (contests[i].ends_at < Date.now() / 1000) {
+          Logger.debug(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`))
+          return undefined
+        }
+        Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`))
+      }
+
+      let contest = parseSherlockContest(details)
+        .then((it) => {
+          if (!it.ok) {
+            sentryError(it.error, `failed to parse sherlock contest ${contests[i].title}`, "daily")
+          } else {
+            return it.value
+          }
+        })
+        .catch((e) => {
+          sentryError(e, `failed to parse sherlock contest ${contests[i].title}`, "daily")
+          return undefined
+        })
+
+      return contest
+    })
+
+    jobs.push(job)
   }
 
   return jobs
+}
+
+let downloadDetails = async (contest: SherlockContest) => {
+  // let githubLink = contest.repo
+  let jsonUrl = `${sherlockContestsUrl}/${contest.id}`
+  let contestDetails = await axios
+    .get(jsonUrl, { headers: { "Content-Type": "application/json" } })
+    .catch((e) => {
+      console.log(`error ${e}`)
+      return undefined
+    })
+    .then((it) => {
+      return it?.data as Required<SherlockContest>
+    })
+
+  return contestDetails
 }
 
 export const getActiveSherlockContests = async (): Promise<SherlockContest[]> => {
@@ -117,22 +141,9 @@ const getReadmeFromGithub = async (contest: string) => {
 }
 
 export const parseSherlockContest = async (
-  contest: SherlockContest,
+  contest: Required<SherlockContest>,
 ): Promise<Result<ContestWithModules>> => {
-  // let githubLink = contest.repo
-  let jsonUrl = `${sherlockContestsUrl}/${contest.id}`
-  let contestDetails = await axios
-    .get(jsonUrl, { headers: { "Content-Type": "application/json" } })
-    .catch((e) => {
-      console.log(`error ${e}`)
-      return undefined
-    })
-    .then((it) => {
-      return it?.data as SherlockContest
-    })
-
-  let name = getRepoName(contestDetails)
-
+  let name = getRepoName(contest)
   let readmeObj = await getReadmeFromGithub(name)
 
   let nonParsedDetails = {
@@ -208,7 +219,7 @@ export const parseSherlockContest = async (
   }
 }
 
-const getRepoName = (contest: SherlockContest) => {
+const getRepoName = (contest: Required<SherlockContest>) => {
   let split = contest.template_repo_name.split("/")
   if (split[split.length - 1] === "") split.pop()
   let name = split.pop()!!
