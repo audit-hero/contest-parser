@@ -3,6 +3,8 @@ import { getHmAwards } from "./parse-utils.js"
 import { E, O, pipe } from "ti-fptsu/lib"
 
 export let NO_START_END = "no start/end time found"
+export let NO_REPO_FOUND = "no repo found" // normal that private contests don't have a repo
+
 
 export let parseHeaderBullets = (md: string) => {
   let bullets = getHeaderBullets(md)

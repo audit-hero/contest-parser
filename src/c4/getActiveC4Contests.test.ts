@@ -14,7 +14,7 @@ it("should get active c4 contests", async () => {
     () => getActiveC4Contests(),
     TE.mapBoth(
       (err) => expect(err).toBe(null),
-      (it) => expect(it.length).toBe(4)
+      (it) => expect(it.length).toBe(7)
     )
   )()
 

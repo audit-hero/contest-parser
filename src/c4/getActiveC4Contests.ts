@@ -9,34 +9,54 @@ export const getActiveC4Contests = async () => {
   let md = await getHtmlAsMd("https://code4rena.com/audits#active-audits")
 
   let contests = pipe(
-    parseMd(md),
-    E.map((it) => truncateLongNames(it))
+    E.Do,
+    E.bind("active", () => parseMdActiveContest(md)),
+    E.bind("upcoming", () => parseMdUpcomingContests(md)),
+    E.bind("all", ({ active, upcoming }) => E.right([...active, ...upcoming])),
+    E.map(({ all }) => truncateLongNames(all)),
   )
 
   return contests
 }
 
-let parseMd = (md: string): E.Either<Error, C4Contest[]> =>
+let parseMdActiveContest = (md: string): E.Either<Error, C4Contest[]> =>
   pipe(
     E.Do,
     E.bind("start", () =>
       pipe(
         O.fromNullable(md.match(/^#{1,3} .*(A|a)ctive/m)?.index),
-        E.fromOption(() => "no active contests found")
-      )
+        E.fromOption(() => "no active contests found"),
+      ),
     ),
     E.bind("end", ({ start }) =>
       pipe(
         O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length),
         E.fromOption(() => "no end found"),
-        E.map(
-          (hashCount) =>
-            start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)
-        )
-      )
+        E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)),
+      ),
     ),
     E.map(({ start, end }) => parseActive(md, { start, end })),
-    E.mapLeft((it) => new Error(it))
+    E.mapLeft((it) => new Error(it)),
+  )
+
+let parseMdUpcomingContests = (md: string): E.Either<Error, C4Contest[]> =>
+  pipe(
+    E.Do,
+    E.bind("start", () =>
+      pipe(
+        O.fromNullable(md.match(/^#{1,3} .*(U|u)pcoming/m)?.index),
+        E.fromOption(() => "no active contests found"),
+      ),
+    ),
+    E.bind("end", ({ start }) =>
+      pipe(
+        O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length),
+        E.fromOption(() => "no end found"),
+        E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)),
+      ),
+    ),
+    E.map(({ start, end }) => parseActive(md, { start, end })),
+    E.mapLeft((it) => new Error(it)),
   )
 
 // prettier-ignore
@@ -68,17 +88,12 @@ let findLowestHashCount = (md: string) => {
   return Math.min(...hashCounts)
 }
 
-let splitContests = (md: string, hashCount: number) =>
-  md.split(`${"#".repeat(hashCount)}`)
+let splitContests = (md: string, hashCount: number) => md.split(`${"#".repeat(hashCount)}`)
 
 let parseSingleContest = (md: string): C4Contest => {
   // [View audit](/audits/2024-06-ebtc-zap-router#top)
   let linkIndex = md.match(/^\[.*\]\(\/audits\//g)?.index
-  let slug = md
-    .slice(linkIndex)
-    .split("\n")[0]
-    .split("audits/")[1]
-    .split("#")[0]
+  let slug = md.slice(linkIndex).split("\n")[0].split("audits/")[1].split("#")[0]
 
   return {
     slug: slug,

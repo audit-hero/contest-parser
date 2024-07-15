@@ -6,7 +6,7 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
-import { NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js";
+import { NO_REPO_FOUND, NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js";
 import * as O from "fp-ts/lib/Option.js";
 export const parseActiveC4Contests = async (existingContests) => {
     let active = await getActiveC4Contests();
@@ -27,7 +27,7 @@ export const parseC4Contests = (contests, existingContests) => {
         let contest = parseC4Contest(contests[i])
             .then((it) => {
             if (!it.ok) {
-                if (it.error.message !== NO_START_END)
+                if (it.error.message !== NO_START_END && it.error.message !== NO_REPO_FOUND)
                     sentryError(it.error, `failed to parse c4 contest ${contests[i].slug}`);
             }
             else
@@ -42,7 +42,7 @@ export const parseC4Contests = (contests, existingContests) => {
     return jobs;
 };
 export const parseC4Contest = async (contest) => await pipe(() => Logger.info(`start parsing ${contest.slug}`), () => parseC4ContestEither(contest), convertToResult(contest))();
-let parseC4ContestEither = (contest) => pipe(TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError), TE.chain((fullPageMd) => pipe(E.Do, E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))), E.bind("repo", () => getRepo(fullPageMd)), E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)), TE.fromEither)));
+let parseC4ContestEither = (contest) => pipe(TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError), TE.chain((fullPageMd) => pipe(E.Do, E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))), E.bind("repo", () => getRepo(fullPageMd, contest.trimmedSlug)), E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)), TE.fromEither)));
 let trimPageToMd = (md) => {
     let end = "* An open organization\n* [";
     let startIndex = md.match(/^#.*audit details.*/m)?.index ?? 0;
@@ -83,8 +83,11 @@ contestMd) => pipe(E.Do, E.apS("bulletPoints", parseHeaderBullets(contestMd)), E
         tags: tags,
     });
 }));
-let getRepo = (md) => {
+let getRepo = (md, trimmedSlug) => {
     // [![edit](/icon/GitHub/16.svg)View Repo](https://github.com/code-423n4/2024-06-size) [Submit finding](/audits/2024-06-size/submit)
-    return pipe(O.fromNullable(md.match(/View Repo\]\((.*?)\)/)), O.chain((it) => O.fromNullable(it.at(1))), E.fromOption(() => new Error("no repo found")));
+    return pipe(O.fromNullable(md.match(/View Repo\]\((.*?)\)/)), O.chain((it) => O.fromNullable(it.at(1))), E.fromOption(() => {
+        Logger.debug(`no repo found in readme for ${trimmedSlug}`);
+        return new Error(NO_REPO_FOUND);
+    }));
 };
 //# sourceMappingURL=c4ContestParser.js.map

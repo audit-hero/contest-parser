@@ -9,11 +9,12 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
-import { NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js"
+import { NO_REPO_FOUND, NO_START_END, parseHeaderBullets } from "./parseHeaderBullets.js"
 import * as O from "fp-ts/lib/Option.js"
+import { trim } from "fp-ts/lib/string.js"
 
 export const parseActiveC4Contests = async (
-  existingContests: ContestWithModules[]
+  existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveC4Contests()
 
@@ -21,32 +22,24 @@ export const parseActiveC4Contests = async (
     active,
     TE.fromEither,
     TE.chain((it) =>
-      TE.tryCatch(
-        () => Promise.all(parseC4Contests(it, existingContests)),
-        E.toError
-      )
+      TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError),
     ),
     TE.map((it) => it.filter((it) => it !== undefined) as ContestWithModules[]),
     TE.mapLeft((it) => {
       sentryError("error parsing c4 contests", it)
       return it
     }),
-    TE.toUnion
+    TE.toUnion,
   )()
 
   return res instanceof Error ? [] : res
 }
 
-export const parseC4Contests = (
-  contests: C4Contest[],
-  existingContests: ContestWithModules[]
-) => {
+export const parseC4Contests = (contests: C4Contest[], existingContests: ContestWithModules[]) => {
   let jobs = [] as Promise<ContestWithModules | undefined>[]
 
   for (let i = 0; i < contests.length; ++i) {
-    let contestExists = existingContests.find(
-      (it) => it.pk === contests[i].trimmedSlug
-    )
+    let contestExists = existingContests.find((it) => it.pk === contests[i].trimmedSlug)
 
     if (contestExists && contestExists.modules.length > 0) {
       Logger.info(`${contests[i].slug} already exists, skipping`)
@@ -56,11 +49,8 @@ export const parseC4Contests = (
     let contest = parseC4Contest(contests[i])
       .then((it) => {
         if (!it.ok) {
-          if (it.error.message !== NO_START_END)
-            sentryError(
-              it.error,
-              `failed to parse c4 contest ${contests[i].slug}`
-            )
+          if (it.error.message !== NO_START_END && it.error.message !== NO_REPO_FOUND)
+            sentryError(it.error, `failed to parse c4 contest ${contests[i].slug}`)
         } else return it.value
       })
       .catch((err) => {
@@ -74,30 +64,25 @@ export const parseC4Contests = (
   return jobs
 }
 
-export const parseC4Contest = async (
-  contest: C4Contest
-): Promise<Result<ContestWithModules>> =>
+export const parseC4Contest = async (contest: C4Contest): Promise<Result<ContestWithModules>> =>
   await pipe(
     () => Logger.info(`start parsing ${contest.slug}`),
     () => parseC4ContestEither(contest),
-    convertToResult(contest)
+    convertToResult(contest),
   )()
 
 let parseC4ContestEither = (contest: C4Contest) =>
   pipe(
-    TE.tryCatch(
-      () => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`),
-      E.toError
-    ),
+    TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError),
     TE.chain((fullPageMd) =>
       pipe(
         E.Do,
         E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))),
-        E.bind("repo", () => getRepo(fullPageMd)),
+        E.bind("repo", () => getRepo(fullPageMd, contest.trimmedSlug)),
         E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)),
-        TE.fromEither
-      )
-    )
+        TE.fromEither,
+      ),
+    ),
   )
 
 let trimPageToMd = (md: string) => {
@@ -112,7 +97,7 @@ export const parseMd = (
   contest: C4Contest,
   repo: string,
   // starting from "audit details"
-  contestMd: string
+  contestMd: string,
 ): E.Either<Error, ContestWithModules> =>
   pipe(
     E.Do,
@@ -151,14 +136,17 @@ export const parseMd = (
         repo_urls: [repo],
         tags: tags,
       })
-    })
+    }),
   )
 
-let getRepo = (md: string) => {
+let getRepo = (md: string, trimmedSlug: string) => {
   // [![edit](/icon/GitHub/16.svg)View Repo](https://github.com/code-423n4/2024-06-size) [Submit finding](/audits/2024-06-size/submit)
   return pipe(
     O.fromNullable(md.match(/View Repo\]\((.*?)\)/)),
     O.chain((it) => O.fromNullable(it.at(1))),
-    E.fromOption(() => new Error("no repo found"))
+    E.fromOption(() => {
+      Logger.debug(`no repo found in readme for ${trimmedSlug}`)
+      return new Error(NO_REPO_FOUND)
+    }),
   )
 }
