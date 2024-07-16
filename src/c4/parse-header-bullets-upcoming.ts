@@ -3,7 +3,7 @@ import { getAnyDateUTCTimestamp } from "../util.js"
 import { getHmAwards } from "./parse-utils.js"
 import { E, O, pipe } from "ti-fptsu/lib"
 
-export let parseActiveContestBullets = (md: string) => {
+export let parseBulletsUpcoming = (md: string) => {
   let bullets = getHeaderBullets(md)
 
   return pipe(

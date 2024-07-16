@@ -6,7 +6,7 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
-import { parseActiveContestBullets } from "./parseHeaderBullets.js";
+import { parseBulletsActive } from "./parse-header-bullets-active.js";
 import * as O from "fp-ts/lib/Option.js";
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
 export const parseActiveC4Contests = async (existingContests) => {
@@ -55,7 +55,7 @@ export const parseMd = (contest,
 // undefined for upcoming contests
 repo, 
 // starting from "audit details"
-contestMd) => pipe(E.Do, E.apS("bulletPoints", parseActiveContestBullets(contestMd)), E.chain(({ bulletPoints }) => {
+contestMd) => pipe(E.Do, E.apS("bulletPoints", parseBulletsActive(contestMd)), E.chain(({ bulletPoints }) => {
     let { hmAwards, start: start_date, end: end_date } = bulletPoints;
     let repo_urls = repo ? [repo] : [];
     let tags = [];
