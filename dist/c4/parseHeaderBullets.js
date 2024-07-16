@@ -2,7 +2,7 @@ import { NO_START_END } from "../errors.js";
 import { getAnyDateUTCTimestamp } from "../util.js";
 import { getHmAwards } from "./parse-utils.js";
 import { E, O, pipe } from "ti-fptsu/lib";
-export let parseHeaderBullets = (md) => {
+export let parseActiveContestBullets = (md) => {
     let bullets = getHeaderBullets(md);
     return pipe(getStartEndTime(bullets), E.map((it) => ({
         hmAwards: getHmAwards(bullets),
@@ -26,7 +26,7 @@ let getHeaderBullets = (md) => {
         .findIndex((it) => !it.trim().startsWith("*"));
     return split.slice(firstBullet, firstBullet + lastBullet);
 };
-let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"];
+export let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"];
 export let trimContestAmount = (amount) => {
     amount = amount.replace("$$", "$").replace(" in ", " ");
     if (usdCoins.some((it) => amount.includes(it))) {

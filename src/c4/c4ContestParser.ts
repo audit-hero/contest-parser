@@ -9,7 +9,7 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
-import { parseHeaderBullets } from "./parseHeaderBullets.js"
+import { parseActiveContestBullets } from "./parseHeaderBullets.js"
 import * as O from "fp-ts/lib/Option.js"
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js"
 
@@ -95,24 +95,27 @@ let trimPageToMd = (md: string) => {
 
 export const parseMd = (
   contest: C4Contest,
-  repo: string,
+  // undefined for upcoming contests
+  repo: string | undefined,
   // starting from "audit details"
   contestMd: string,
 ): E.Either<Error, ContestWithModules> =>
   pipe(
     E.Do,
-    E.apS("bulletPoints", parseHeaderBullets(contestMd)),
+    E.apS("bulletPoints", parseActiveContestBullets(contestMd)),
     E.chain(({ bulletPoints }) => {
       let { hmAwards, start: start_date, end: end_date } = bulletPoints
+      let repo_urls = repo ? [repo] : []
 
       let tags = [] as Tag[]
       let modules = [] as ContestModule[]
       let docUrls = [] as string[]
       let lines = contestMd.split("\n")
-
-      let modulesResult = findModules(repo, lines, 0)
-      modules = modulesResult.modules
-      docUrls = modulesResult.docUrls
+      if (repo) {
+        let modulesResult = findModules(repo, lines, 0)
+        modules = modulesResult.modules
+        docUrls = modulesResult.docUrls
+      }
 
       tags = findTags(lines)
 
@@ -133,7 +136,7 @@ export const parseMd = (
         loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
         modules: modules,
         doc_urls: docUrls,
-        repo_urls: [repo],
+        repo_urls,
         tags: tags,
       })
     }),
@@ -148,5 +151,6 @@ let getRepo = (md: string, trimmedSlug: string) => {
       Logger.debug(`no repo found in readme for ${trimmedSlug}`)
       return new Error(NO_REPO_FOUND)
     }),
+    E.orElse(() => E.of(undefined as string | undefined)),
   )
 }

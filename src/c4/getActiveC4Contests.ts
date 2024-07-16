@@ -12,8 +12,8 @@ export const getActiveC4Contests = async () => {
     E.Do,
     E.bind("active", () => parseMdActiveContest(md)),
     E.bind("upcoming", () => parseMdUpcomingContests(md)),
-    E.bind("all", ({ active, upcoming }) => E.right([...active, ...upcoming])),
-    E.map(({ all }) => truncateLongNames(all)),
+    E.chain(({ active, upcoming }) => E.right([...active, ...upcoming])),
+    E.map((all) => truncateLongNames(all)),
   )
 
   return contests

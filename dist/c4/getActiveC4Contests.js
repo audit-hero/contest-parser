@@ -5,7 +5,7 @@ import * as E from "fp-ts/lib/Either.js";
 import { getHtmlAsMd } from "../util.js";
 export const getActiveC4Contests = async () => {
     let md = await getHtmlAsMd("https://code4rena.com/audits#active-audits");
-    let contests = pipe(E.Do, E.bind("active", () => parseMdActiveContest(md)), E.bind("upcoming", () => parseMdUpcomingContests(md)), E.bind("all", ({ active, upcoming }) => E.right([...active, ...upcoming])), E.map(({ all }) => truncateLongNames(all)));
+    let contests = pipe(E.Do, E.bind("active", () => parseMdActiveContest(md)), E.bind("upcoming", () => parseMdUpcomingContests(md)), E.chain(({ active, upcoming }) => E.right([...active, ...upcoming])), E.map((all) => truncateLongNames(all)));
     return contests;
 };
 let parseMdActiveContest = (md) => pipe(E.Do, E.bind("start", () => pipe(O.fromNullable(md.match(/^#{1,3} .*(A|a)ctive/m)?.index), E.fromOption(() => "no active contests found"))), E.bind("end", ({ start }) => pipe(O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length), E.fromOption(() => "no end found"), E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)))), E.map(({ start, end }) => parseActive(md, { start, end })), E.mapLeft((it) => new Error(it)));

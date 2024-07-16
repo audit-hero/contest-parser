@@ -6,7 +6,7 @@ import { getActiveC4Contests } from "./getActiveC4Contests.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as E from "fp-ts/lib/Either.js";
 import * as TE from "fp-ts/lib/TaskEither.js";
-import { parseHeaderBullets } from "./parseHeaderBullets.js";
+import { parseActiveContestBullets } from "./parseHeaderBullets.js";
 import * as O from "fp-ts/lib/Option.js";
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
 export const parseActiveC4Contests = async (existingContests) => {
@@ -51,17 +51,22 @@ let trimPageToMd = (md) => {
     let trimmed = md.slice(startIndex, endIndex);
     return trimmed;
 };
-export const parseMd = (contest, repo, 
+export const parseMd = (contest, 
+// undefined for upcoming contests
+repo, 
 // starting from "audit details"
-contestMd) => pipe(E.Do, E.apS("bulletPoints", parseHeaderBullets(contestMd)), E.chain(({ bulletPoints }) => {
+contestMd) => pipe(E.Do, E.apS("bulletPoints", parseActiveContestBullets(contestMd)), E.chain(({ bulletPoints }) => {
     let { hmAwards, start: start_date, end: end_date } = bulletPoints;
+    let repo_urls = repo ? [repo] : [];
     let tags = [];
     let modules = [];
     let docUrls = [];
     let lines = contestMd.split("\n");
-    let modulesResult = findModules(repo, lines, 0);
-    modules = modulesResult.modules;
-    docUrls = modulesResult.docUrls;
+    if (repo) {
+        let modulesResult = findModules(repo, lines, 0);
+        modules = modulesResult.modules;
+        docUrls = modulesResult.docUrls;
+    }
     tags = findTags(lines);
     let status = "active";
     if (Math.floor(Date.now() / 1000) < start_date)
@@ -80,7 +85,7 @@ contestMd) => pipe(E.Do, E.apS("bulletPoints", parseHeaderBullets(contestMd)), E
         loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
         modules: modules,
         doc_urls: docUrls,
-        repo_urls: [repo],
+        repo_urls,
         tags: tags,
     });
 }));
@@ -89,6 +94,6 @@ let getRepo = (md, trimmedSlug) => {
     return pipe(O.fromNullable(md.match(/View Repo\]\((.*?)\)/)), O.chain((it) => O.fromNullable(it.at(1))), E.fromOption(() => {
         Logger.debug(`no repo found in readme for ${trimmedSlug}`);
         return new Error(NO_REPO_FOUND);
-    }));
+    }), E.orElse(() => E.of(undefined)));
 };
 //# sourceMappingURL=c4ContestParser.js.map

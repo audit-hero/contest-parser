@@ -3,7 +3,7 @@ import { getAnyDateUTCTimestamp } from "../util.js"
 import { getHmAwards } from "./parse-utils.js"
 import { E, O, pipe } from "ti-fptsu/lib"
 
-export let parseHeaderBullets = (md: string) => {
+export let parseActiveContestBullets = (md: string) => {
   let bullets = getHeaderBullets(md)
 
   return pipe(
@@ -53,7 +53,7 @@ let getHeaderBullets = (md: string) => {
   return split.slice(firstBullet, firstBullet + lastBullet)
 }
 
-let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"]
+export let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"]
 export let trimContestAmount = (amount: string) => {
   amount = amount.replace("$$", "$").replace(" in ", " ")
 
