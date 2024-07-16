@@ -1,19 +1,7 @@
 import { Logger } from "jst-logger";
 export let moduleExtensions = [".sol", ".go", ".rs", "cairo"];
-let ignoreLinkWords = [
-    "report",
-    "twitter",
-    "discord",
-    "security-review",
-];
-export let docHeadings = [
-    "about",
-    "overview",
-    "resources",
-    "q&a",
-    "additional context",
-    "links",
-];
+let ignoreLinkWords = ["report", "twitter", "discord", "security-review"];
+export let docHeadings = ["about", "overview", "resources", "q&a", "additional context", "links"];
 export let ignoredScopeFiles = [
     "test",
     "mock",
@@ -162,9 +150,21 @@ export const getAnyDateUTCTimestamp = (someStringDate) => {
         return someDate / 1000;
     }
     catch (e) {
-        Logger.error(`error in getAnyDateUTCTimestamp ${e}`);
-        return undefined;
+        let jsTimestamp = getJsDateTimestamp(someStringDate);
+        if (!jsTimestamp) {
+            Logger.error(`error cannot get timesetamp ${someStringDate} ${e}`);
+        }
+        return jsTimestamp;
     }
+};
+export const getJsDateTimestamp = (someStringDate) => {
+    let date = new Date(someStringDate);
+    let currentYear = new Date().getFullYear();
+    // if year more than 1 away
+    if (Math.abs(date.getFullYear() - currentYear) > 1) {
+        date = new Date(date.setFullYear(currentYear));
+    }
+    return date.getTime() / 1000;
 };
 export let getHtmlAsMd = async (url) => {
     let contests = await fetch(url)

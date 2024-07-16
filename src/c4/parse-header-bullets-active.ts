@@ -1,54 +1,50 @@
+import { Contest } from "ah-shared"
 import { NO_START_END } from "../errors.js"
 import { getAnyDateUTCTimestamp } from "../util.js"
 import { getHmAwards } from "./parse-utils.js"
 import { E, O, pipe } from "ti-fptsu/lib"
 
-export let parseBulletsActive = (md: string) => {
+export type Bullets = Pick<Contest, "prize" | "start_date" | "end_date" | "readme">
+
+export let parseBulletsActive = (md: string): E.Either<Error, Bullets> => {
   let bullets = getHeaderBullets(md)
 
   return pipe(
     getStartEndTime(bullets),
     E.map((it) => ({
-      hmAwards: getHmAwards(bullets),
+      prize: getHmAwards(bullets),
       ...it,
-    }))
+      readme: "",
+    })),
   )
 }
 
 let getStartEndTime = (
-  bullets: string[]
-): E.Either<Error, { start: number; end: number }> =>
+  bullets: string[],
+): E.Either<Error, { start_date: number; end_date: number }> =>
   pipe(
     O.Do,
-    O.apS("start", getTimeFromBullets(bullets, "Starts")),
-    O.apS("end", getTimeFromBullets(bullets, "Ends")),
-    O.map((it) => {
-      let { start, end } = it
-      return { start, end }
-    }),
-    E.fromOption(() => new Error(NO_START_END))
+    O.apS("start_date", getTimeFromBullets(bullets, "Starts")),
+    O.apS("end_date", getTimeFromBullets(bullets, "Ends")),
+    E.fromOption(() => new Error(NO_START_END)),
   )
 
-let getTimeFromBullets = (bullets: string[], prefix: string) =>
+export let getTimeFromBullets = (bullets: string[], prefix: string) =>
   pipe(
     O.fromNullable(
       bullets
         .reverse()
         .find((it) => it.includes(prefix))
         ?.split(prefix)[1]
-        .trim()
+        .trim(),
     ),
-    O.chain((it) => O.fromNullable(getAnyDateUTCTimestamp(it)))
+    O.chain((it) => O.fromNullable(getAnyDateUTCTimestamp(it))),
   )
 
-let getHeaderBullets = (md: string) => {
+export let getHeaderBullets = (md: string) => {
   let split = md.split("\n")
   let firstBullet = split.findIndex((it) => it.trim().startsWith("*"))
-  let lastBullet = split
-    .slice(firstBullet)
-    .findIndex((it) => 
-      !it.trim().startsWith("*")
-  )
+  let lastBullet = split.slice(firstBullet).findIndex((it) => !it.trim().startsWith("*"))
 
   return split.slice(firstBullet, firstBullet + lastBullet)
 }

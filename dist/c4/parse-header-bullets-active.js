@@ -5,25 +5,21 @@ import { E, O, pipe } from "ti-fptsu/lib";
 export let parseBulletsActive = (md) => {
     let bullets = getHeaderBullets(md);
     return pipe(getStartEndTime(bullets), E.map((it) => ({
-        hmAwards: getHmAwards(bullets),
+        prize: getHmAwards(bullets),
         ...it,
+        readme: "",
     })));
 };
-let getStartEndTime = (bullets) => pipe(O.Do, O.apS("start", getTimeFromBullets(bullets, "Starts")), O.apS("end", getTimeFromBullets(bullets, "Ends")), O.map((it) => {
-    let { start, end } = it;
-    return { start, end };
-}), E.fromOption(() => new Error(NO_START_END)));
-let getTimeFromBullets = (bullets, prefix) => pipe(O.fromNullable(bullets
+let getStartEndTime = (bullets) => pipe(O.Do, O.apS("start_date", getTimeFromBullets(bullets, "Starts")), O.apS("end_date", getTimeFromBullets(bullets, "Ends")), E.fromOption(() => new Error(NO_START_END)));
+export let getTimeFromBullets = (bullets, prefix) => pipe(O.fromNullable(bullets
     .reverse()
     .find((it) => it.includes(prefix))
     ?.split(prefix)[1]
     .trim()), O.chain((it) => O.fromNullable(getAnyDateUTCTimestamp(it))));
-let getHeaderBullets = (md) => {
+export let getHeaderBullets = (md) => {
     let split = md.split("\n");
     let firstBullet = split.findIndex((it) => it.trim().startsWith("*"));
-    let lastBullet = split
-        .slice(firstBullet)
-        .findIndex((it) => !it.trim().startsWith("*"));
+    let lastBullet = split.slice(firstBullet).findIndex((it) => !it.trim().startsWith("*"));
     return split.slice(firstBullet, firstBullet + lastBullet);
 };
 export let usdCoins = ["USDC", "USDT", "DAI", "TUSD", "BUSD", "USDP", "UST"];

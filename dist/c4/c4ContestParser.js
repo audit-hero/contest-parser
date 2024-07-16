@@ -9,6 +9,7 @@ import * as TE from "fp-ts/lib/TaskEither.js";
 import { parseBulletsActive } from "./parse-header-bullets-active.js";
 import * as O from "fp-ts/lib/Option.js";
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
+import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js";
 export const parseActiveC4Contests = async (existingContests) => {
     let active = await getActiveC4Contests();
     let res = await pipe(active, TE.fromEither, TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {
@@ -55,8 +56,8 @@ export const parseMd = (contest,
 // undefined for upcoming contests
 repo, 
 // starting from "audit details"
-contestMd) => pipe(E.Do, E.apS("bulletPoints", parseBulletsActive(contestMd)), E.chain(({ bulletPoints }) => {
-    let { hmAwards, start: start_date, end: end_date } = bulletPoints;
+contestMd) => pipe(E.Do, E.apS("bulletPoints", pipe(parseBulletsActive(contestMd), E.orElse(() => parseBulletsUpcoming(contestMd)))), E.chain(({ bulletPoints }) => {
+    let { prize, start_date, end_date, readme } = bulletPoints;
     let repo_urls = repo ? [repo] : [];
     let tags = [];
     let modules = [];
@@ -69,19 +70,21 @@ contestMd) => pipe(E.Do, E.apS("bulletPoints", parseBulletsActive(contestMd)), E
     }
     tags = findTags(lines);
     let status = "active";
-    if (Math.floor(Date.now() / 1000) < start_date)
+    if (Math.floor(Date.now() / 1000) < start_date) {
         status = "created";
+        contestMd = readme;
+    }
     return E.of({
         pk: trimContestName(contest.trimmedSlug, start_date),
         sk: "0",
         url: `https://code4rena.com/audits/${contest.slug}`,
         readme: contestMd ?? "",
-        start_date: start_date,
-        end_date: end_date,
+        start_date,
+        end_date,
         platform: "c4",
         active: 1,
         status: status,
-        prize: hmAwards,
+        prize,
         loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
         modules: modules,
         doc_urls: docUrls,

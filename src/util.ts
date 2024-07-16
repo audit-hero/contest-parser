@@ -2,21 +2,9 @@ import { Logger } from "jst-logger"
 
 export let moduleExtensions = [".sol", ".go", ".rs", "cairo"]
 
-let ignoreLinkWords = [
-  "report",
-  "twitter",
-  "discord",
-  "security-review",
-] as string[]
+let ignoreLinkWords = ["report", "twitter", "discord", "security-review"] as string[]
 
-export let docHeadings = [
-  "about",
-  "overview",
-  "resources",
-  "q&a",
-  "additional context",
-  "links",
-]
+export let docHeadings = ["about", "overview", "resources", "q&a", "additional context", "links"]
 
 export let ignoredScopeFiles = [
   "test",
@@ -33,10 +21,7 @@ let ignoreContestNames = ["servet test"]
 export let isIgnoredContestName = (name: string) =>
   ignoreContestNames.some((it) => name.toLocaleLowerCase().includes(it))
 
-export const getContestStatus = (dates: {
-  startDate: number
-  endDate: number
-}): Status => {
+export const getContestStatus = (dates: { startDate: number; endDate: number }): Status => {
   let now = Date.now() / 1000
   if (now < dates.startDate) return "created"
   else if (now > dates.endDate) return "finished"
@@ -48,16 +33,15 @@ export let trimContestName = (name: string, startDate: number) =>
     replaceNonTextCharacters(name),
     addYearAndMonthToContestName(startDate),
     toLowerCase,
-    truncateLongContestName
+    truncateLongContestName,
   )
 
-export let addYearAndMonthToContestName =
-  (startDate: number) => (name: string) => {
-    if (name.match(/^\d{4}-\d{2}-/)) return name
-    let startYear = new Date(startDate * 1000).getFullYear()
-    let startMonth = new Date(startDate * 1000).getMonth() + 1
-    return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`
-  }
+export let addYearAndMonthToContestName = (startDate: number) => (name: string) => {
+  if (name.match(/^\d{4}-\d{2}-/)) return name
+  let startYear = new Date(startDate * 1000).getFullYear()
+  let startMonth = new Date(startDate * 1000).getMonth() + 1
+  return `${startYear}-${startMonth.toString().padStart(2, "0")}-${name}`
+}
 
 export let replaceNonTextCharacters = (contestName: string) => {
   return contestName
@@ -72,9 +56,7 @@ export const getMdHeading = (line: string, headings: string[]) => {
   if (match?.length ?? 0 > 0) {
     let newHeading = match![0]
     let headingLevel = newHeading.match(/#/g)!.length
-    let existingHeading = headings.findIndex(
-      (it) => it.match(/#/g)!.length === headingLevel
-    )
+    let existingHeading = headings.findIndex((it) => it.match(/#/g)!.length === headingLevel)
     if (existingHeading > -1) {
       // replace the heading and all of headings below it
       headings.splice(existingHeading)
@@ -88,7 +70,7 @@ export const getMdHeading = (line: string, headings: string[]) => {
 export const findDocUrl = (line: string, headings: string[]) => {
   if (
     !docHeadings.some((docHeadings) =>
-      headings.some((heading) => heading.toLowerCase().includes(docHeadings))
+      headings.some((heading) => heading.toLowerCase().includes(docHeadings)),
     )
   )
     return []
@@ -132,7 +114,7 @@ export const getAllRepos = async (org: string): Promise<Repo[]> => {
   while (reposLength == 100) {
     let repos = await fetch(
       `https://api.github.com/orgs/${org}/repos?per_page=100&page=${page}`,
-      githubParams
+      githubParams,
     )
       .then(async (it) => {
         let text = await it.text()
@@ -152,8 +134,7 @@ export const getAllRepos = async (org: string): Promise<Repo[]> => {
   return reposBuilder
 }
 
-const getPushTimestamp = (timestamp: string) =>
-  Math.floor(new Date(timestamp).getTime() / 1000)
+const getPushTimestamp = (timestamp: string) => Math.floor(new Date(timestamp).getTime() / 1000)
 
 export const getRepoNameFromUrl = (url: string) => {
   let split = url.split("/")
@@ -205,8 +186,7 @@ export const getAnyDateUTCTimestamp = (someStringDate: string) => {
     // August 21, 2023
     if (anyDate.year === undefined) anyDate.year = new Date().getFullYear()
 
-    if (anyDate.month === undefined || anyDate.day === undefined)
-      throw new Error("invalid anydate")
+    if (anyDate.month === undefined || anyDate.day === undefined) throw new Error("invalid anydate")
 
     var someDate = Date.UTC(
       anyDate.year,
@@ -214,14 +194,30 @@ export const getAnyDateUTCTimestamp = (someStringDate: string) => {
       anyDate.day,
       anyDate.hour ?? 0,
       anyDate.minute ?? 0,
-      anyDate.second ?? 0
+      anyDate.second ?? 0,
     )
 
     return someDate / 1000
   } catch (e) {
-    Logger.error(`error in getAnyDateUTCTimestamp ${e}`)
-    return undefined
+    let jsTimestamp = getJsDateTimestamp(someStringDate)
+    if (!jsTimestamp) {
+      Logger.error(`error cannot get timesetamp ${someStringDate} ${e}`)
+    }
+
+    return jsTimestamp
   }
+}
+
+export const getJsDateTimestamp = (someStringDate: string) => {
+  let date = new Date(someStringDate)
+  let currentYear = new Date().getFullYear()
+
+  // if year more than 1 away
+  if (Math.abs(date.getFullYear() - currentYear) > 1) {
+    date = new Date(date.setFullYear(currentYear))
+  }
+
+  return date.getTime() / 1000
 }
 
 export let getHtmlAsMd = async (url: string) => {

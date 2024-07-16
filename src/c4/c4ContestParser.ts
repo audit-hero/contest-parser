@@ -12,6 +12,7 @@ import * as TE from "fp-ts/lib/TaskEither.js"
 import { parseBulletsActive } from "./parse-header-bullets-active.js"
 import * as O from "fp-ts/lib/Option.js"
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js"
+import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[],
@@ -102,9 +103,16 @@ export const parseMd = (
 ): E.Either<Error, ContestWithModules> =>
   pipe(
     E.Do,
-    E.apS("bulletPoints", parseBulletsActive(contestMd)),
+    E.apS(
+      "bulletPoints",
+      pipe(
+        parseBulletsActive(contestMd),
+        E.orElse(() => parseBulletsUpcoming(contestMd)),
+      ),
+    ),
     E.chain(({ bulletPoints }) => {
-      let { hmAwards, start: start_date, end: end_date } = bulletPoints
+      let { prize, start_date, end_date, readme } = bulletPoints
+      
       let repo_urls = repo ? [repo] : []
 
       let tags = [] as Tag[]
@@ -120,19 +128,22 @@ export const parseMd = (
       tags = findTags(lines)
 
       let status: Status = "active"
-      if (Math.floor(Date.now() / 1000) < start_date) status = "created"
-
+      if (Math.floor(Date.now() / 1000) < start_date) {
+        status = "created"
+        contestMd = readme
+      }
+      
       return E.of({
         pk: trimContestName(contest.trimmedSlug, start_date),
         sk: "0",
         url: `https://code4rena.com/audits/${contest.slug}`,
         readme: contestMd ?? "",
-        start_date: start_date,
-        end_date: end_date,
+        start_date,
+        end_date,
         platform: "c4",
         active: 1,
         status: status,
-        prize: hmAwards,
+        prize,
         loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),
         modules: modules,
         doc_urls: docUrls,
