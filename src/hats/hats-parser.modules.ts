@@ -1,6 +1,6 @@
 import { ContestModule } from "ah-shared"
 import { Project, ReposInformation } from "./types.js"
-import { ignoredScopeFiles } from "../util.js"
+import { githubUrlToRawUrl, ignoredScopeFiles } from "../util.js"
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js"
 import { parseTreeModulesV2 } from "../parse-modules.js"
 import {
@@ -79,10 +79,7 @@ const getModulesRepo = async (
     }
   }
 
-  let repoRawContentUrl = repoInfo.url.replace(
-    "github.com",
-    "raw.githubusercontent.com"
-  )
+  let repoRawContentUrl = githubUrlToRawUrl(repoInfo.url)
   let commit = repoInfo.commitHash
 
   let urls = filteredPaths.map((path) => {

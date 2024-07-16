@@ -1,22 +1,44 @@
 import { ContestModule, ContestWithModules, Status } from "ah-shared"
 import { NodeHtmlMarkdown } from "node-html-markdown"
-import { findDocUrl, findTags, trimContestName } from "../util.js"
+import {
+  findDocUrl,
+  findTags,
+  getReadmeFromGithub,
+  githubUrlToRawUrl,
+  trimContestName,
+} from "../util.js"
 import { parseTreeModulesV2 } from "../parse-modules.js"
 import { HawksApiContest } from "./getActive-api.js"
 
 export const parseContest = async (contest: HawksApiContest): Promise<ContestWithModules> => {
-  let md = await downloadContestAsMd(contest)
-  return parseMd(contest, md)
+  let [md, readme] = await downloadContestAsMd(contest)
+  return parseMd(contest, md, readme)
 }
 
-let downloadContestAsMd = async (contest: HawksApiContest): Promise<string> => {
+let downloadContestAsMd = async (
+  contest: HawksApiContest,
+): Promise<[string, string | undefined]> => {
   let url = `https://www.codehawks.com/contests/${contest.id}`
-  let html = await fetch(url).then((it) => it.text())
+  let [html, readme] = await Promise.all([fetch(url).then((it) => it.text()), getReadme(contest)])
   let md = NodeHtmlMarkdown.translate(html)
-  return md
+  return [md, readme]
 }
 
-export const parseMd = (apiContest: HawksApiContest, md: string): ContestWithModules => {
+let getReadme = async (contest: HawksApiContest): Promise<string | undefined> => {
+  let user = contest.githubUrl.split("/")[3]
+  let repo = contest.githubUrl.split("/")[4]
+  if (!repo || !user) return undefined
+
+  let readme = await getReadmeFromGithub(user, repo)
+
+  return readme?.readme
+}
+
+export const parseMd = (
+  apiContest: HawksApiContest,
+  md: string,
+  readme: string | undefined,
+): ContestWithModules => {
   // remove header links
   let lines = md.split("MENU")
   if (lines.length === 1) lines = lines[0].split("\n")
@@ -24,13 +46,15 @@ export const parseMd = (apiContest: HawksApiContest, md: string): ContestWithMod
 
   let { start_date, end_date } = getStartEndDate(apiContest)
   let active = end_date > Math.floor(Date.now() / 1000) ? 1 : 0
+  let pk = trimContestName(apiContest.urlSlug, start_date)
 
-  let modules = findModules(apiContest.name, lines, active)
+  let modules = [] as ContestModule[]
+  if (readme) modules = findModules(apiContest, pk, readme.split("\n"), active)
 
   if (start_date) apiContest = updateContestNameDate(apiContest, start_date)
 
   let contest: ContestWithModules = {
-    pk: trimContestName(apiContest.urlSlug, start_date),
+    pk,
     readme: `# ${lines.join("\n")}`,
     start_date,
     end_date,
@@ -75,26 +99,31 @@ let mdStatusToStatus = (contest: HawksApiContest): Status => {
 let getModulesStartIndex = (lines: string[]) => {
   let modulesStart = lines.findIndex(
     (it) =>
-      it.includes("# ") &&
+      it.match(/^#{1,3} /) &&
       it.toLowerCase().includes("scope") &&
       !it.toLowerCase().includes("out of scope"),
   )
 
   if (modulesStart === -1) {
     modulesStart = lines.findIndex(
-      (it) => it.includes("# ") && it.toLowerCase().includes(" contracts"),
+      (it) => it.match(/^#{1,3} /) && it.toLowerCase().includes(" contracts"),
     )
   }
 
   return modulesStart
 }
 
-const findModules = (contest: string, lines: string[], active: number): ContestModule[] => {
+const findModules = (
+  contest: HawksApiContest,
+  pk: string,
+  lines: string[],
+  active: number,
+): ContestModule[] => {
   let modulesStart = getModulesStartIndex(lines)
 
   let noTreeAfterThisLine = (lines: string[], index: number) => {
     for (let i = index; i < lines.length; ++i) {
-      if (lines[i].includes("```tree")) return false
+      if (lines[i].startsWith("```tree")) return false
     }
     return true
   }
@@ -102,8 +131,8 @@ const findModules = (contest: string, lines: string[], active: number): ContestM
   let modulesEnd = lines.findIndex((it, index) => {
     return (
       index > modulesStart &&
-      ((it.includes("# ") && it.toLowerCase().includes("out of scope")) ||
-        (it.includes("# ") && it.toLowerCase().includes("summary")) ||
+      ((it.match(/^#{1,3} /) && it.toLowerCase().includes("out of scope")) ||
+        (it.match(/^#{1,3} /) && it.toLowerCase().includes("summary")) ||
         it.match(/^#{1,4} /)) &&
       noTreeAfterThisLine(lines, index)
     )
@@ -122,7 +151,8 @@ const findModules = (contest: string, lines: string[], active: number): ContestM
   })
 
   if (repos.length === 0) {
-    addMainRepo(lines, repos)
+    if (contest.githubUrl) repos.push(contest.githubUrl + "/tree/main")
+    else addMainRepo(lines, repos)
   }
 
   const regex = /```[\s\S]*?```/g
@@ -145,7 +175,7 @@ const findModules = (contest: string, lines: string[], active: number): ContestM
     for (let path of moduleStrings) {
       let module: ContestModule = {
         name: path.split("/").pop()!,
-        contest,
+        contest: pk,
         active,
         path,
         url: `${repo}/${path}`,

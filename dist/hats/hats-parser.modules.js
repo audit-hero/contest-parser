@@ -1,4 +1,4 @@
-import { ignoredScopeFiles } from "../util.js";
+import { githubUrlToRawUrl, ignoredScopeFiles } from "../util.js";
 import { getInScopeFromOutOfScope, getOutOfScope } from "./getOutOfScope.js";
 import { parseTreeModulesV2 } from "../parse-modules.js";
 import { cryptoIgnoreGlobs, cryptoIncludeGlobs, getGitFilePaths, } from "../utils/getGitFilePaths.js";
@@ -45,7 +45,7 @@ const getModulesRepo = async (allRepos, repoInfo, contest, name) => {
             });
         }
     }
-    let repoRawContentUrl = repoInfo.url.replace("github.com", "raw.githubusercontent.com");
+    let repoRawContentUrl = githubUrlToRawUrl(repoInfo.url);
     let commit = repoInfo.commitHash;
     let urls = filteredPaths.map((path) => {
         let url = `${repoRawContentUrl}/${commit}/${path}`;

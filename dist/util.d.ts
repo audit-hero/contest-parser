@@ -12,6 +12,11 @@ export declare let replaceNonTextCharacters: (contestName: string) => string;
 export declare const getMdHeading: (line: string, headings: string[]) => string | undefined;
 export declare const findDocUrl: (line: string, headings: string[]) => string[];
 export declare const findTags: (lines: string[]) => string[];
+export declare let githubUrlToRawUrl: (url: string) => string;
+export declare const getReadmeFromGithub: (user: string, repo: string) => Promise<{
+    readme: string;
+    baseUrl: string;
+} | undefined>;
 export declare const getAllRepos: (org: string) => Promise<Repo[]>;
 export declare const getRepoNameFromUrl: (url: string) => string;
 import { Status } from "ah-shared";

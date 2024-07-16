@@ -107,6 +107,41 @@ export const findTags = (lines: string[]) => {
   return tags.filter((it, index) => tags.indexOf(it) === index)
 }
 
+export let githubUrlToRawUrl = (url: string) =>
+  url.replace("github.com", "raw.githubusercontent.com")
+
+export const getReadmeFromGithub = async (user: string, repo: string) => {
+  let baseUrl = `https://raw.githubusercontent.com/${user}/${repo}/main`
+
+  let readme = await fetch(`${baseUrl}/README.md`)
+    .catch((e) => {
+      return undefined
+    })
+    .then((it) => {
+      return it?.text()
+    })
+
+  if (readme) return {
+    readme,
+    baseUrl
+  }
+
+  baseUrl = `https://raw.githubusercontent.com/${user}/${repo}/master`
+
+  readme = await fetch(`${baseUrl}/README.md`)
+    .catch((e) => {
+      return undefined
+    })
+    .then((it) => {
+      return it?.text()
+    })
+
+  if (readme) return { readme, baseUrl }
+
+  Logger.info(`no readme found for ${user}/${repo}`)
+  return undefined
+}
+
 export const getAllRepos = async (org: string): Promise<Repo[]> => {
   var reposLength = 100
   var reposBuilder: any[] = []

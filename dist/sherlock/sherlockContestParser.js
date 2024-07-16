@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Logger } from "jst-logger";
 import { sentryError } from "ah-shared";
-import { findTags, trimContestName } from "../util.js";
+import { findTags, getReadmeFromGithub, trimContestName } from "../util.js";
 import { findModules } from "./modules.js";
 import chalk from "chalk";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
@@ -83,38 +83,9 @@ export const getActiveSherlockContests = async () => {
     }
     return builder.filter((it) => it.status !== "FINISHED");
 };
-const getReadmeFromGithub = async (contest) => {
-    let baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/main`;
-    let readme = await axios
-        .get(`${baseUrl}/README.md`)
-        .catch((e) => {
-        return undefined;
-    })
-        .then((it) => {
-        return it?.data;
-    });
-    if (readme)
-        return {
-            main: readme,
-            baseUrl: baseUrl,
-        };
-    baseUrl = `https://raw.githubusercontent.com/sherlock-audit/${contest}/master`;
-    readme = await axios
-        .get(`${baseUrl}/README.md`)
-        .catch((e) => {
-        return undefined;
-    })
-        .then((it) => {
-        return it?.data;
-    });
-    if (readme)
-        return { master: readme, baseUrl: baseUrl };
-    Logger.info(`no readme found for ${contest}`);
-    return undefined;
-};
 export const parseSherlockContest = async (contest) => {
     let name = getRepoName(contest);
-    let readmeObj = await getReadmeFromGithub(name);
+    let readmeObj = await getReadmeFromGithub("sherlock-audit", name);
     let nonParsedDetails = {
         pk: trimContestName(name, contest.starts_at),
         sk: "0",
@@ -145,11 +116,7 @@ export const parseSherlockContest = async (contest) => {
             };
         }
     }
-    let readme;
-    if (readmeObj.main)
-        readme = readmeObj.main;
-    else
-        readme = readmeObj.master;
+    let readme = readmeObj.readme;
     let modules = [];
     let repos = [];
     let tags = [];
