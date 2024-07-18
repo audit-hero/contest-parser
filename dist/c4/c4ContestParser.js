@@ -21,11 +21,6 @@ export const parseActiveC4Contests = async (existingContests) => {
 export const parseC4Contests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
-        let contestExists = existingContests.find((it) => it.pk === contests[i].trimmedSlug);
-        if (contestExists && contestExists.modules.length > 0) {
-            Logger.info(`${contests[i].slug} already exists, skipping`);
-            continue;
-        }
         let contest = parseC4Contest(contests[i])
             .then((it) => {
             if (!it.ok) {

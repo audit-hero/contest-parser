@@ -69,49 +69,62 @@ let mdStatusToStatus = (contest) => {
     }
     return "created";
 };
+let getModulesStartEndIndex = (lines) => {
+    let scopeParagraphIdx = getModulesStartIndex(lines);
+    let lineWithSourceFiles = lines
+        .slice(scopeParagraphIdx)
+        .findIndex((it) => it.match(/.*\.(sol|go|rs|cairo)/));
+    let codeBlockStart = -1;
+    for (let i = scopeParagraphIdx + lineWithSourceFiles; i > scopeParagraphIdx; --i) {
+        if (lines[i].includes("```")) {
+            codeBlockStart = i;
+            break;
+        }
+    }
+    if (codeBlockStart === -1)
+        return { start: -1, end: -1 };
+    let end = lines.slice(codeBlockStart).findIndex((it, index) => {
+        return ((it.match(/^#{1,3} /) && it.toLowerCase().includes("out of scope")) ||
+            (it.match(/^#{1,3} /) && it.toLowerCase().includes("summary")) ||
+            it.match(/^#{1,4} /));
+    }) + codeBlockStart;
+    if (end === -1)
+        end = lines.length;
+    if (scopeParagraphIdx === -1)
+        return { start: -1, end: -1 };
+    scopeParagraphIdx += 1;
+    return { scopeParagraphIdx, codeBlockStart, end };
+};
 let getModulesStartIndex = (lines) => {
-    let modulesStart = lines.findIndex((it) => it.match(/^#{1,3} /) &&
+    let start = lines.findIndex((it) => it.match(/^#{1,3} /) &&
         it.toLowerCase().includes("scope") &&
         !it.toLowerCase().includes("out of scope"));
-    if (modulesStart === -1) {
-        modulesStart = lines.findIndex((it) => it.match(/^#{1,3} /) && it.toLowerCase().includes(" contracts"));
+    if (start === -1) {
+        start = lines.findIndex((it) => it.match(/^#{1,3} /) && it.toLowerCase().includes(" contracts"));
     }
-    return modulesStart;
+    return start;
 };
 const findModules = (contest, pk, lines, active) => {
-    let modulesStart = getModulesStartIndex(lines);
-    let noTreeAfterThisLine = (lines, index) => {
-        for (let i = index; i < lines.length; ++i) {
-            if (lines[i].startsWith("```tree"))
-                return false;
-        }
-        return true;
-    };
-    let modulesEnd = lines.findIndex((it, index) => {
-        return (index > modulesStart &&
-            ((it.match(/^#{1,3} /) && it.toLowerCase().includes("out of scope")) ||
-                (it.match(/^#{1,3} /) && it.toLowerCase().includes("summary")) ||
-                it.match(/^#{1,4} /)) &&
-            noTreeAfterThisLine(lines, index));
-    });
-    if (modulesEnd === -1)
-        modulesEnd = lines.length;
-    if (modulesStart === -1)
+    let { scopeParagraphIdx, codeBlockStart, end } = getModulesStartEndIndex(lines);
+    if (scopeParagraphIdx === -1 || end === -1 || codeBlockStart === -1)
         return [];
-    modulesStart += 1;
     let modules = [];
-    let scope = lines.slice(modulesStart, modulesEnd).join("\n");
-    let repos = (scope.match(/https:\/\/github.com\/[^/]+\/[^/>]+/g) ?? []).map((it) => {
+    let repos = lines
+        .slice(scopeParagraphIdx, end)
+        .join("\n")
+        .match(/https:\/\/github.com\/[^/]+\/[^/>]+/m)
+        ?.map((it) => {
         if (it.includes("tree"))
             return it;
         return it + "/tree/main";
-    });
+    }) ?? [];
     if (repos.length === 0) {
         if (contest.githubUrl)
             repos.push(contest.githubUrl + "/tree/main");
         else
             addMainRepo(lines, repos);
     }
+    let scope = lines.slice(codeBlockStart, end).join("\n");
     const regex = /```[\s\S]*?```/g;
     const blocks = scope.match(regex);
     let blockModules = blocks?.map((block) => parseTreeModulesV2(block.split("\n"))) ?? [];

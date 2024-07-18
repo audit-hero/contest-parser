@@ -1,5 +1,4 @@
 import { docHeadings, findDocUrl, findTags, getContestStatus, trimContestName, } from "../util.js";
-import { Logger } from "jst-logger";
 import { sentryError, } from "ah-shared";
 import { getModules } from "./hats-parser.modules.js";
 import { getActiveContests } from "./getActiveContests.js";
@@ -27,11 +26,6 @@ export const parseContests = async (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let name = hatsNameToContestName(contests[i]["project-metadata"]);
-        let contestExists = existingContests.find((it) => it.pk === name);
-        if (contestExists && contestExists.modules.length > 0) {
-            Logger.info(`contest ${name} already exists, skipping`);
-            continue;
-        }
         let contest = await parseContest(contests[i], name)
             .then((it) => {
             if (!it.ok) {

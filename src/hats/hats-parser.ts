@@ -48,12 +48,6 @@ export const parseContests = async (
 
   for (let i = 0; i < contests.length; ++i) {
     let name = hatsNameToContestName(contests[i]["project-metadata"])
-    let contestExists = existingContests.find((it) => it.pk === name)
-
-    if (contestExists && contestExists.modules.length > 0) {
-      Logger.info(`contest ${name} already exists, skipping`)
-      continue
-    }
 
     let contest = await parseContest(contests[i], name)
       .then((it) => {

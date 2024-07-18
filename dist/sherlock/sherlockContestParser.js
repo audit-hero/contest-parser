@@ -14,23 +14,11 @@ export const parseSherlockContests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let job = downloadDetails(contests[i]).then(async (details) => {
-            let name = getRepoName(details);
-            let contestExists = existingContests.find((it) => it.pk === name);
-            if (contestExists && contestExists.modules?.length > 0) {
-                Logger.debug(chalk.yellow(`contest ${name} already exists, skipping`));
+            if (contests[i].ends_at < Date.now() / 1000) {
+                Logger.debug(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`));
                 return undefined;
             }
-            if (contestExists && contestExists.modules?.length > 0) {
-                Logger.debug(chalk.yellow(`contest ${contests[i].title} already exists, skipping`));
-                return undefined;
-            }
-            else {
-                if (contests[i].ends_at < Date.now() / 1000) {
-                    Logger.debug(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`));
-                    return undefined;
-                }
-                Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`));
-            }
+            Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`));
             let contest = parseSherlockContest(details)
                 .then((it) => {
                 if (!it.ok) {
