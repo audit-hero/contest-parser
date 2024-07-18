@@ -47,8 +47,7 @@ export const parseTreeModulesOld = (scope: string[]) => {
         currentPath = `${currentPath}/${firstWord[0]}`
         lastPathDepth = firstWordIndex
       } else if (firstWordIndex === lastPathDepth) {
-        currentPath =
-          currentPath.split("/").slice(0, -1).join("/") + `/${firstWord[0]}`
+        currentPath = currentPath.split("/").slice(0, -1).join("/") + `/${firstWord[0]}`
       } else {
         // find the first depth that is less than the current depth
         let dir = ""
@@ -112,21 +111,13 @@ export let parseTreeModulesV2 = (lines: string[]) => {
     const line_ = lines[i]
     if (line_.trim() === "" || line_.trim().startsWith("```")) continue
 
-    // if there are comments after the dir/file name, remove them
-    let line = line_.split("//")[0].split(" - ")[0].split("#")[0]
-
+    // if there are comments (starting with non word chard) after some word characters, then remove them
+    let line = line_.match(/.*\w+/)![0]
     const depth = line.lastIndexOf(" ")
-
-    const name = line
-      .substr(depth + 1)
-      .replace(/[└├─│]/g, "")
-      .trim()
+    const name = line.slice(depth + 1).trim()
 
     if (nameIsFile(name)) {
-      if (
-        currentPath.length > 0 &&
-        depth <= currentPath[currentPath.length - 1].depth
-      ) {
+      if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
         // lower the path depth. remove until the current depth and replace
         for (let i = currentPath.length - 1; i >= 0; i--) {
           if (currentPath[i].depth >= depth) {
@@ -138,10 +129,7 @@ export let parseTreeModulesV2 = (lines: string[]) => {
       const filePath = [...currentPath.map((it) => it.part), name].join("/")
       paths.push(filePath)
     } else if (nameIsDir(name)) {
-      if (
-        currentPath.length > 0 &&
-        depth <= currentPath[currentPath.length - 1].depth
-      ) {
+      if (currentPath.length > 0 && depth <= currentPath[currentPath.length - 1].depth) {
         // lower the path depth. remove until the current depth and replace
         for (let i = currentPath.length - 1; i >= 0; i--) {
           if (currentPath[i].depth >= depth) {

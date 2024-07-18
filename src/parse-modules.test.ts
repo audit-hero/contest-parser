@@ -2,7 +2,8 @@ import { parseTreeModulesV2 } from "./parse-modules.js"
 import { it, expect } from "vitest"
 
 it("parses modules 1", () => {
-  let input = `contracts/
+  let input = `
+contracts/
 └── core/
     ├── ccip/
     │   ├── base/
