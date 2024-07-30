@@ -7,7 +7,7 @@ export const parseContest = async (
   contest: ImmunefiContest
 ): Promise<ContestWithModules> => {
   // can get more info from contest sub page later
-  // let md = await downloadContestAsMd(contest)
+  // let md = await downloadContestAsMd(contest) 
   return parseMd(contest)
 }
 

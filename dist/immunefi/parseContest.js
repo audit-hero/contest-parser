@@ -3,7 +3,7 @@ import { isActive } from "./types.js";
 import { scrape } from "../web-load/playwright-loader.js";
 export const parseContest = async (contest) => {
     // can get more info from contest sub page later
-    // let md = await downloadContestAsMd(contest)
+    // let md = await downloadContestAsMd(contest) 
     return parseMd(contest);
 };
 let downloadContestAsMd = async (contest) => {
