@@ -103,6 +103,7 @@ type Path = {
   depth: number
   part: string
 }
+
 export let parseTreeModulesV2 = (lines: string[]) => {
   let paths = []
   let currentPath = [] as Path[]
@@ -112,7 +113,7 @@ export let parseTreeModulesV2 = (lines: string[]) => {
     if (line_.trim() === "" || line_.trim().startsWith("```")) continue
 
     // if there are comments (starting with non word chard) after some word characters, then remove them
-    let line = line_.match(/.*\w+/)![0]
+    let line = line_.match(/.*\w+/)![0].replace("\t", "        ")
     const depth = line.lastIndexOf(" ")
     const name = line.slice(depth + 1).trim()
 

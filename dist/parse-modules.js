@@ -78,7 +78,7 @@ export let parseTreeModulesV2 = (lines) => {
         if (line_.trim() === "" || line_.trim().startsWith("```"))
             continue;
         // if there are comments (starting with non word chard) after some word characters, then remove them
-        let line = line_.match(/.*\w+/)[0];
+        let line = line_.match(/.*\w+/)[0].replace("\t", "        ");
         const depth = line.lastIndexOf(" ");
         const name = line.slice(depth + 1).trim();
         if (nameIsFile(name)) {
