@@ -72,7 +72,7 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
             if (path == "")
                 return undefined; // can be a table header, eg Contracts(13)
             if (url == "") {
-                url = `https://github.com/code-423n4/${repo}/tree/main/${path}`;
+                url = `https://github.com/code-423n4/${getRepoName(repo)}/tree/main/${path}`;
             }
             let name = path.split("/").pop();
             let loc = 0;
@@ -101,6 +101,10 @@ const findModuleFromTable = (line, repo, referenceLinks) => {
         console.log(`failed to parse line ${line}`);
     }
     return module;
+};
+let getRepoName = (repoUrl) => {
+    let split = repoUrl.split("/");
+    return split[split.length - 1];
 };
 const getPathAndUrl = (lineSplit, referenceLinks) => {
     let url = "", path = "";
