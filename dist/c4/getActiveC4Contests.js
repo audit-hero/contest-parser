@@ -1,15 +1,20 @@
-import { truncateLongNames } from "./parse-utils.js";
 import * as O from "fp-ts/lib/Option.js";
 import { pipe } from "fp-ts/lib/function.js";
 import * as E from "fp-ts/lib/Either.js";
 import { getHtmlAsMd } from "../util.js";
+import { Logger } from "jst-logger";
+import chalk from "chalk";
+import { truncateLongNames } from "./c4ModulesParser.js";
 export const getActiveC4Contests = async () => {
     let md = await getHtmlAsMd("https://code4rena.com/audits#active-audits");
     let contests = pipe(E.Do, E.bind("active", () => parseMdActiveContest(md)), E.bind("upcoming", () => parseMdUpcomingContests(md)), E.chain(({ active, upcoming }) => E.right([...active, ...upcoming])), E.map((all) => truncateLongNames(all)));
     return contests;
 };
-let parseMdActiveContest = (md) => pipe(E.Do, E.bind("start", () => pipe(O.fromNullable(md.match(/^#{1,3} .*(A|a)ctive/m)?.index), E.fromOption(() => "no active contests found"))), E.bind("end", ({ start }) => pipe(O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length), E.fromOption(() => "no end found"), E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)))), E.map(({ start, end }) => parseActive(md, { start, end })), E.mapLeft((it) => new Error(it)));
-let parseMdUpcomingContests = (md) => pipe(E.Do, E.bind("start", () => pipe(O.fromNullable(md.match(/^#{1,3} .*(U|u)pcoming/m)?.index), E.fromOption(() => "no active contests found"))), E.bind("end", ({ start }) => pipe(O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length), E.fromOption(() => "no end found"), E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)))), E.map(({ start, end }) => parseActive(md, { start, end })), E.mapLeft((it) => new Error(it)));
+let parseMdActiveContest = (md) => pipe(E.Do, E.bind("start", () => pipe(O.fromNullable(md.match(/^#{1,3} .*[Aa]ctive/m)?.index), E.fromOption(() => "no active contests found"))), E.bind("end", ({ start }) => pipe(O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length), E.fromOption(() => "no end found"), E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)))), E.map(({ start, end }) => parseActive(md, { start, end })), E.mapLeft((it) => new Error(it)));
+let parseMdUpcomingContests = (md) => pipe(E.Do, E.bind("start", () => pipe(O.fromNullable(md.match(/^#{1,3} .*[Uu]pcoming/m)?.index), E.fromOption(() => "no upcoming contests found"))), E.bind("end", ({ start }) => pipe(O.fromNullable(md.slice(start).match(/^#{1,3}/m)?.[0].length), E.fromOption(() => "no end found"), E.map((hashCount) => start + md.slice(start).indexOf(`\n${"#".repeat(hashCount)} `, 1)))), E.map(({ start, end }) => parseActive(md, { start, end })), E.orElse(() => {
+    Logger.info(chalk.red("no upcoming contests found"));
+    return E.right([]);
+}));
 // prettier-ignore
 let parseActive = (md, { start, end }) => pipe((() => {
     // remove the main heading

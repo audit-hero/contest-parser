@@ -4,7 +4,7 @@ import { C4Contest } from "../types.js"
 import { sentryError } from "ah-shared"
 import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
 import { Result } from "ah-shared"
-import { convertToResult, findModules } from "./parse-utils.js"
+import { convertToResult } from "./parse-utils.js"
 import { getActiveC4Contests } from "./getActiveC4Contests.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
@@ -13,6 +13,7 @@ import { parseBulletsActive } from "./parse-header-bullets-active.js"
 import * as O from "fp-ts/lib/Option.js"
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js"
 import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js"
+import { findModules } from "./c4ModulesParser.js"
 
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[],

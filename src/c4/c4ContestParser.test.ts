@@ -1,9 +1,10 @@
 import { afterEach, beforeEach } from "node:test"
 import { C4Contest } from "../types.js"
-import { parseC4Contest, parseMd } from "./c4ContestParser.js"
+import { parseC4Contest } from "./c4ContestParser.js"
 import { it, describe, expect, vi } from "vitest"
 import fs from "fs"
-import { getTimestamp, findModules, getHmAwards } from "./parse-utils.js"
+import { getHmAwards } from "./parse-utils.js"
+import { getTimestamp, findModules } from "./c4ModulesParser.js"
 
 describe("", () => {
   afterEach(() => {})
@@ -22,8 +23,7 @@ describe("", () => {
       let actual = (await vi.importActual("../util.js")) as any
       return {
         ...actual,
-        getHtmlAsMd: async () =>
-          fs.readFileSync(`./src/c4/test/md/2024-06-size.md`).toString(),
+        getHtmlAsMd: async () => fs.readFileSync(`./src/c4/test/md/2024-06-size.md`).toString(),
       }
     })
 
@@ -41,9 +41,7 @@ describe("", () => {
   })
 
   it("parses slash-ending urls", async () => {
-    var md = fs
-      .readFileSync(`./src/c4/test/c4-slash-ending-url.md`)
-      .toString() as string
+    var md = fs.readFileSync(`./src/c4/test/c4-slash-ending-url.md`).toString() as string
     let parsed = findModules("repo", md.split("\n"), 0)
     expect(parsed.modules[18].url?.slice(-3)).toBe("sol")
     expect(parsed.modules[18].name).toBe("OracleConvert.sol")

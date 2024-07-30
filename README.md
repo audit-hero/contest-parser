@@ -1,3 +1,9 @@
+## Crypto audit contest parser/aggregator
+
+Parses audit information from popular platforms into a single JSON format.
+
+Supported platforms: C4, Sherlock, Hats, CodeHawks, ImmuneFi, Cantina
+
 ## Add to your existing esm project
 
 - `yarn add 'contest-parser@audit-hero/contest-parser'`

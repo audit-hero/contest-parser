@@ -1,9 +1,11 @@
-import { truncateLongNames } from "./parse-utils.js"
 import { C4Contest } from "../types.js"
 import * as O from "fp-ts/lib/Option.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
 import { getHtmlAsMd } from "../util.js"
+import { Logger } from "jst-logger"
+import chalk from "chalk"
+import { truncateLongNames } from "./c4ModulesParser.js"
 
 export const getActiveC4Contests = async () => {
   let md = await getHtmlAsMd("https://code4rena.com/audits#active-audits")
@@ -24,7 +26,7 @@ let parseMdActiveContest = (md: string): E.Either<Error, C4Contest[]> =>
     E.Do,
     E.bind("start", () =>
       pipe(
-        O.fromNullable(md.match(/^#{1,3} .*(A|a)ctive/m)?.index),
+        O.fromNullable(md.match(/^#{1,3} .*[Aa]ctive/m)?.index),
         E.fromOption(() => "no active contests found"),
       ),
     ),
@@ -44,8 +46,8 @@ let parseMdUpcomingContests = (md: string): E.Either<Error, C4Contest[]> =>
     E.Do,
     E.bind("start", () =>
       pipe(
-        O.fromNullable(md.match(/^#{1,3} .*(U|u)pcoming/m)?.index),
-        E.fromOption(() => "no active contests found"),
+        O.fromNullable(md.match(/^#{1,3} .*[Uu]pcoming/m)?.index),
+        E.fromOption(() => "no upcoming contests found"),
       ),
     ),
     E.bind("end", ({ start }) =>
@@ -56,7 +58,10 @@ let parseMdUpcomingContests = (md: string): E.Either<Error, C4Contest[]> =>
       ),
     ),
     E.map(({ start, end }) => parseActive(md, { start, end })),
-    E.mapLeft((it) => new Error(it)),
+    E.orElse(() => {
+      Logger.info(chalk.red("no upcoming contests found"))
+      return E.right([] as C4Contest[])
+    }),
   )
 
 // prettier-ignore

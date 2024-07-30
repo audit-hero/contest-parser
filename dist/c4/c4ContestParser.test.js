@@ -2,7 +2,8 @@ import { afterEach, beforeEach } from "node:test";
 import { parseC4Contest } from "./c4ContestParser.js";
 import { it, describe, expect, vi } from "vitest";
 import fs from "fs";
-import { getTimestamp, findModules, getHmAwards } from "./parse-utils.js";
+import { getHmAwards } from "./parse-utils.js";
+import { getTimestamp, findModules } from "./c4ModulesParser.js";
 describe("", () => {
     afterEach(() => { });
     beforeEach(() => {
@@ -33,9 +34,7 @@ describe("", () => {
         expect(parsed.modules).toHaveLength(104);
     });
     it("parses slash-ending urls", async () => {
-        var md = fs
-            .readFileSync(`./src/c4/test/c4-slash-ending-url.md`)
-            .toString();
+        var md = fs.readFileSync(`./src/c4/test/c4-slash-ending-url.md`).toString();
         let parsed = findModules("repo", md.split("\n"), 0);
         expect(parsed.modules[18].url?.slice(-3)).toBe("sol");
         expect(parsed.modules[18].name).toBe("OracleConvert.sol");
