@@ -6,5 +6,5 @@ export const getAllContests = async (): Promise<CantinaContest[]> =>
 
 export const getActiveContests = async () => {
   let allContests = await getAllContests()
-  return allContests.filter((it) => it.status === "live")
+  return allContests.filter((it) => it.status === "live" || it.status === "upcoming")
 }

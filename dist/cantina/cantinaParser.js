@@ -4,6 +4,7 @@ import { Logger } from "jst-logger";
 // this returns all from the cantina web site
 export const parseActiveCantinaContests = async (existingContests) => {
     let active = await getActiveContests();
+    Logger.trace(() => `cantina: active contests: ${active.map((it) => it.name).join(", ")}`);
     active = active.filter((it) => {
         let existing = existingContests.find((existing) => existing.pk === it.name);
         return !existing || existing.modules?.length === 0;

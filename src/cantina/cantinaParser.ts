@@ -8,6 +8,7 @@ export const parseActiveCantinaContests = async (
   existingContests: ContestWithModules[]
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveContests()
+  Logger.trace(() => `cantina: active contests: ${active.map((it) => it.name).join(", ")}`)
 
   active = active.filter((it) => {
     let existing = existingContests.find((existing) => existing.pk === it.name)
