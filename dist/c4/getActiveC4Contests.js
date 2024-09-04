@@ -37,7 +37,9 @@ let splitContests = (md, hashCount) => md.split(`${"#".repeat(hashCount)}`);
 let parseSingleContest = (md) => {
     // [View audit](/audits/2024-06-ebtc-zap-router#top)
     let linkIndex = md.match(/^\[.*\]\(\/audits\//g)?.index;
-    let slug = md.slice(linkIndex).split("\n")[0].split("audits/")[1].split("#")[0];
+    let slug = md.slice(linkIndex).split("\n")[0].match(/(?<=audits\/)(\w|-)+/)?.at(0);
+    if (!slug)
+        throw new Error("cannot parse slug");
     return {
         slug: slug,
         trimmedSlug: slug,

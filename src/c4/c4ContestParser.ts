@@ -18,11 +18,9 @@ import { findModules } from "./c4ModulesParser.js"
 export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
-  let active = await getActiveC4Contests()
-
   let res = await pipe(
-    active,
-    TE.fromEither,
+    () => getActiveC4Contests(),
+    // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
     TE.chain((it) =>
       TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError),
     ),
@@ -82,7 +80,7 @@ let parseC4ContestEither = (contest: C4Contest) =>
 
 let trimPageToMd = (md: string) => {
   let end = "* An open organization\n* ["
-  let startIndex = md.match(/^#.*audit details.*/m)?.index ?? 0
+  let startIndex = md.match(/^#.*[Aa]udit [Dd]etails.*/m)?.index ?? 0
   let endIndex = md.indexOf(end)
   let trimmed = md.slice(startIndex, endIndex)
   return trimmed
@@ -106,7 +104,7 @@ export const parseMd = (
     ),
     E.chain(({ bulletPoints }) => {
       let { prize, start_date, end_date, readme } = bulletPoints
-      
+
       let repo_urls = repo ? [repo] : []
 
       let tags = [] as Tag[]
@@ -126,7 +124,7 @@ export const parseMd = (
         status = "created"
         contestMd = readme
       }
-      
+
       return E.of({
         pk: trimContestName(contest.trimmedSlug, start_date),
         sk: "0",

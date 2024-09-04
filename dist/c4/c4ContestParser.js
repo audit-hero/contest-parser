@@ -12,8 +12,9 @@ import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
 import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js";
 import { findModules } from "./c4ModulesParser.js";
 export const parseActiveC4Contests = async (existingContests) => {
-    let active = await getActiveC4Contests();
-    let res = await pipe(active, TE.fromEither, TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {
+    let res = await pipe(() => getActiveC4Contests(), 
+    // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
+    TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {
         sentryError("error parsing c4 contests", it);
         return it;
     }), TE.toUnion)();
@@ -43,7 +44,7 @@ export const parseC4Contest = async (contest) => await pipe(() => Logger.info(`s
 let parseC4ContestEither = (contest) => pipe(TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError), TE.chain((fullPageMd) => pipe(E.Do, E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))), E.bind("repo", () => getRepo(fullPageMd, contest.trimmedSlug)), E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)), TE.fromEither)));
 let trimPageToMd = (md) => {
     let end = "* An open organization\n* [";
-    let startIndex = md.match(/^#.*audit details.*/m)?.index ?? 0;
+    let startIndex = md.match(/^#.*[Aa]udit [Dd]etails.*/m)?.index ?? 0;
     let endIndex = md.indexOf(end);
     let trimmed = md.slice(startIndex, endIndex);
     return trimmed;
