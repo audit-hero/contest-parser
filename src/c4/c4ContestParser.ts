@@ -80,7 +80,7 @@ let parseC4ContestEither = (contest: C4Contest) =>
 
 let trimPageToMd = (md: string) => {
   let end = "* An open organization\n* ["
-  let startIndex = md.match(/^#.*[Aa]udit [Dd]etails.*/m)?.index ?? 0
+  let startIndex = md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ?? md.match(/^#{1,3} [Ll]ogin/m)?.index ?? 0
   let endIndex = md.indexOf(end)
   let trimmed = md.slice(startIndex, endIndex)
   return trimmed

@@ -44,7 +44,7 @@ export const parseC4Contest = async (contest) => await pipe(() => Logger.info(`s
 let parseC4ContestEither = (contest) => pipe(TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError), TE.chain((fullPageMd) => pipe(E.Do, E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))), E.bind("repo", () => getRepo(fullPageMd, contest.trimmedSlug)), E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)), TE.fromEither)));
 let trimPageToMd = (md) => {
     let end = "* An open organization\n* [";
-    let startIndex = md.match(/^#.*[Aa]udit [Dd]etails.*/m)?.index ?? 0;
+    let startIndex = md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ?? md.match(/^#{1,3} [Ll]ogin/m)?.index ?? 0;
     let endIndex = md.indexOf(end);
     let trimmed = md.slice(startIndex, endIndex);
     return trimmed;
