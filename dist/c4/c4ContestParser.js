@@ -11,7 +11,7 @@ import * as O from "fp-ts/lib/Option.js";
 import { NO_START_END, NO_REPO_FOUND } from "../errors.js";
 import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js";
 import { findModules } from "./c4ModulesParser.js";
-export const parseActiveC4Contests = async (existingContests) => {
+export const parseActiveOrJudgingC4Contests = async (existingContests) => {
     let res = await pipe(() => getActiveOrJudgingC4Contests(), 
     // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
     TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {

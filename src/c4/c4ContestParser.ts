@@ -15,7 +15,7 @@ import { NO_START_END, NO_REPO_FOUND } from "../errors.js"
 import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js"
 import { findModules } from "./c4ModulesParser.js"
 
-export const parseActiveC4Contests = async (
+export const parseActiveOrJudgingC4Contests = async (
   existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
   let res = await pipe(

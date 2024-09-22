@@ -1,7 +1,7 @@
 import { LogLevel, Logger } from "jst-logger";
-import { parseActiveC4Contests } from "./c4ContestParser.js";
+import { parseActiveOrJudgingC4Contests } from "./c4ContestParser.js";
 import fs from "fs";
 Logger.setLevel(LogLevel.TRACE);
-let res = await parseActiveC4Contests([]);
+let res = await parseActiveOrJudgingC4Contests([]);
 fs.writeFileSync("c4Contests.json", JSON.stringify(res, null, 2));
 //# sourceMappingURL=c4ContestParser.run.js.map
