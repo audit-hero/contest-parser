@@ -96,7 +96,7 @@ const findModuleSloc = (
           url: url,
           loc: loc,
           contest: contestName,
-          active: 1,
+          active: contest.ends_at > Date.now() / 1000 ? 1 : 0,
         },
       }
     } else {

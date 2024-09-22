@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest"
-import { getActiveC4Contests } from "./getActiveC4Contests.js"
+import { getActiveOrJudgingC4Contests } from "./getActiveC4Contests.js"
 import fs from "fs"
 import { pipe } from "fp-ts/lib/function.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
@@ -11,7 +11,7 @@ it("should get active c4 contests", async () => {
   }))
 
   await pipe(
-    () => getActiveC4Contests(),
+    () => getActiveOrJudgingC4Contests(),
     TE.mapBoth(
       (err) => expect(err).toBe(null),
       (it) => expect(it.length).toBe(7)

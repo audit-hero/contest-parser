@@ -5,7 +5,7 @@ import { sentryError } from "ah-shared"
 import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
 import { Result } from "ah-shared"
 import { convertToResult } from "./parse-utils.js"
-import { getActiveC4Contests } from "./getActiveC4Contests.js"
+import { getActiveOrJudgingC4Contests } from "./getActiveC4Contests.js"
 import { pipe } from "fp-ts/lib/function.js"
 import * as E from "fp-ts/lib/Either.js"
 import * as TE from "fp-ts/lib/TaskEither.js"
@@ -19,7 +19,7 @@ export const parseActiveC4Contests = async (
   existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
   let res = await pipe(
-    () => getActiveC4Contests(),
+    () => getActiveOrJudgingC4Contests(),
     // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
     TE.chain((it) =>
       TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError),
@@ -80,7 +80,10 @@ let parseC4ContestEither = (contest: C4Contest) =>
 
 let trimPageToMd = (md: string) => {
   let end = "* An open organization\n* ["
-  let startIndex = md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ?? md.match(/^#{1,3} [Ll]ogin/m)?.index ?? 0
+  let startIndex =
+    md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ??
+    md.match(/^#{1,3} [Ll]ogin/m)?.index ??
+    0
   let endIndex = md.indexOf(end)
   let trimmed = md.slice(startIndex, endIndex)
   return trimmed
@@ -125,6 +128,9 @@ export const parseMd = (
         contestMd = readme
       }
 
+      let active = end_date > Math.floor(Date.now() / 1000) ? 1 : 0
+      modules = modules.map((it) => ({ ...it, active }))
+
       return E.of({
         pk: trimContestName(contest.trimmedSlug, start_date),
         sk: "0",
@@ -133,7 +139,7 @@ export const parseMd = (
         start_date,
         end_date,
         platform: "c4",
-        active: 1,
+        active,
         status: status,
         prize,
         loc: modules.map((it) => it.loc ?? 0).reduce((sum, it) => sum + it, 0),

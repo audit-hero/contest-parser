@@ -7,7 +7,7 @@ import { Logger } from "jst-logger"
 import chalk from "chalk"
 import { truncateLongNames } from "./c4ModulesParser.js"
 
-export const getActiveC4Contests = async () => {
+export const getActiveOrJudgingC4Contests = async () => {
   let md = await getHtmlAsMd("https://code4rena.com/audits#active-audits")
 
   let contests = pipe(

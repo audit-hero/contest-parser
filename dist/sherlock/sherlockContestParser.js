@@ -6,7 +6,7 @@ import { findModules } from "./modules.js";
 import chalk from "chalk";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
 export const parseActiveSherlockContests = async (existingContests) => {
-    let active = await getActiveSherlockContests();
+    let active = await getActiveOrJudgingSherlockContests();
     let res = await Promise.all(parseSherlockContests(active, existingContests));
     return res.filter((it) => it !== undefined);
 };
@@ -14,10 +14,6 @@ export const parseSherlockContests = (contests, existingContests) => {
     let jobs = [];
     for (let i = 0; i < contests.length; ++i) {
         let job = downloadDetails(contests[i]).then(async (details) => {
-            if (contests[i].ends_at < Date.now() / 1000) {
-                Logger.debug(chalk.yellow(`contest ${contests[i].title} has already ended, skipping`));
-                return undefined;
-            }
             Logger.info(chalk.green(`contest ${contests[i].title} doesn't exist, parsing`));
             let contest = parseSherlockContest(details)
                 .then((it) => {
@@ -52,7 +48,7 @@ let downloadDetails = async (contest) => {
     });
     return contestDetails;
 };
-export const getActiveSherlockContests = async () => {
+export const getActiveOrJudgingSherlockContests = async () => {
     // get 2 pages
     let builder = [];
     for (let i = 0; i < 2; ++i) {
@@ -81,7 +77,7 @@ export const parseSherlockContest = async (contest) => {
         start_date: contest.starts_at,
         end_date: contest.ends_at,
         platform: "sherlock",
-        active: 1, // end_date > now
+        active: contest.ends_at > Math.floor(Date.now() / 1000) ? 1 : 0,
         status: sherlockStatusToStatus(contest.status),
         prize: `${contest.prize_pool}$`,
     };
