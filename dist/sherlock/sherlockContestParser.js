@@ -5,7 +5,7 @@ import { findTags, getReadmeFromGithub, trimContestName } from "../util.js";
 import { findModules } from "./modules.js";
 import chalk from "chalk";
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests";
-export const parseActiveSherlockContests = async (existingContests) => {
+export const parseActiveOrJudgingSherlockContests = async (existingContests) => {
     let active = await getActiveOrJudgingSherlockContests();
     let res = await Promise.all(parseSherlockContests(active, existingContests));
     return res.filter((it) => it !== undefined);

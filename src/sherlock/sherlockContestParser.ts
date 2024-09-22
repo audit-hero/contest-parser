@@ -9,7 +9,7 @@ import chalk from "chalk"
 
 let sherlockContestsUrl = "https://mainnet-contest.sherlock.xyz/contests"
 
-export const parseActiveSherlockContests = async (
+export const parseActiveOrJudgingSherlockContests = async (
   existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveOrJudgingSherlockContests()
