@@ -20,7 +20,7 @@ export const parseActiveOrJudgingC4Contests = async (
 ): Promise<ContestWithModules[]> => {
   let res = await pipe(
     () => getActiveOrJudgingC4Contests(),
-    // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
+    // TE.map(it => it.filter(it => it.slug.includes("kakarot"))),
     TE.chain((it) =>
       TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError),
     ),
@@ -81,11 +81,12 @@ let parseC4ContestEither = (contest: C4Contest) =>
 let trimPageToMd = (md: string) => {
   let end = "* An open organization\n* ["
   let startIndex =
-    md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ??
+    md.match(/^#.*[Aa]udit [Dd]etails(?!.*(not available|coming soon))/m)?.index ??
     md.match(/^#{1,3} [Ll]ogin/m)?.index ??
     0
   let endIndex = md.indexOf(end)
   let trimmed = md.slice(startIndex, endIndex)
+  Logger.trace(() => `trimmed contest details to:\n${trimmed}`)
   return trimmed
 }
 

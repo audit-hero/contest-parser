@@ -13,7 +13,7 @@ import { parseBulletsUpcoming } from "./parse-header-bullets-upcoming.js";
 import { findModules } from "./c4ModulesParser.js";
 export const parseActiveOrJudgingC4Contests = async (existingContests) => {
     let res = await pipe(() => getActiveOrJudgingC4Contests(), 
-    // TE.map(it => it.filter(it => it.slug.includes("wildcat"))),
+    // TE.map(it => it.filter(it => it.slug.includes("kakarot"))),
     TE.chain((it) => TE.tryCatch(() => Promise.all(parseC4Contests(it, existingContests)), E.toError)), TE.map((it) => it.filter((it) => it !== undefined)), TE.mapLeft((it) => {
         sentryError("error parsing c4 contests", it);
         return it;
@@ -44,11 +44,12 @@ export const parseC4Contest = async (contest) => await pipe(() => Logger.info(`s
 let parseC4ContestEither = (contest) => pipe(TE.tryCatch(() => getHtmlAsMd(`https://code4rena.com/audits/${contest.slug}`), E.toError), TE.chain((fullPageMd) => pipe(E.Do, E.bind("githubMd", () => E.right(trimPageToMd(fullPageMd))), E.bind("repo", () => getRepo(fullPageMd, contest.trimmedSlug)), E.chain(({ githubMd, repo }) => parseMd(contest, repo, githubMd)), TE.fromEither)));
 let trimPageToMd = (md) => {
     let end = "* An open organization\n* [";
-    let startIndex = md.match(/^#.*[Aa]udit [Dd]etails(?!.*not available)/m)?.index ??
+    let startIndex = md.match(/^#.*[Aa]udit [Dd]etails(?!.*(not available|coming soon))/m)?.index ??
         md.match(/^#{1,3} [Ll]ogin/m)?.index ??
         0;
     let endIndex = md.indexOf(end);
     let trimmed = md.slice(startIndex, endIndex);
+    Logger.trace(() => `trimmed contest details to:\n${trimmed}`);
     return trimmed;
 };
 export const parseMd = (contest, 

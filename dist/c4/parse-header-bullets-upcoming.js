@@ -1,14 +1,12 @@
 import { NO_START_END } from "../errors.js";
 import { getHeaderBullets, getTimeFromBullets } from "./parse-header-bullets-active.js";
 import { E, O, pipe } from "ti-fptsu/lib";
-export let parseBulletsUpcoming = (md) => {
-    return pipe(E.Do, E.bind("contest", () => getContestParagraph(md)), E.bind("startEnd", ({ contest }) => getStartEndTime(contest)), E.bind("prize", ({ contest }) => getAwards(contest)), E.bind("readme", ({ contest }) => getReadme(contest)), E.map(({ startEnd, prize, readme }) => ({
-        start_date: startEnd.start_date,
-        end_date: startEnd.end_date,
-        prize,
-        readme,
-    })));
-};
+export let parseBulletsUpcoming = (md) => pipe(E.Do, E.bind("contest", () => getContestParagraph(md)), E.bind("startEnd", ({ contest }) => getStartEndTime(contest)), E.bind("prize", ({ contest }) => getAwards(contest)), E.bind("readme", ({ contest }) => getReadme(contest)), E.map(({ startEnd, prize, readme }) => ({
+    start_date: startEnd.start_date,
+    end_date: startEnd.end_date,
+    prize,
+    readme,
+})));
 let getContestParagraph = (md) => 
 // last paragraph. fail if doesn't exists
 pipe(O.fromNullable(md.split(/^# /m).pop()), O.map((it) => `# ${it}`), E.fromOption(() => new Error("No contest paragraph found")));

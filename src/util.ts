@@ -121,10 +121,11 @@ export const getReadmeFromGithub = async (user: string, repo: string) => {
       return it?.text()
     })
 
-  if (readme) return {
-    readme,
-    baseUrl
-  }
+  if (readme)
+    return {
+      readme,
+      baseUrl,
+    }
 
   baseUrl = `https://raw.githubusercontent.com/${user}/${repo}/master`
 

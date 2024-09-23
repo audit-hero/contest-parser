@@ -95,7 +95,7 @@ export const getReadmeFromGithub = async (user, repo) => {
     if (readme)
         return {
             readme,
-            baseUrl
+            baseUrl,
         };
     baseUrl = `https://raw.githubusercontent.com/${user}/${repo}/master`;
     readme = await fetch(`${baseUrl}/README.md`)

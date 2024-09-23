@@ -2,8 +2,8 @@ import { NO_START_END } from "../errors.js"
 import { Bullets, getHeaderBullets, getTimeFromBullets } from "./parse-header-bullets-active.js"
 import { E, O, pipe } from "ti-fptsu/lib"
 
-export let parseBulletsUpcoming = (md: string): E.Either<Error, Bullets> => {
-  return pipe(
+export let parseBulletsUpcoming = (md: string): E.Either<Error, Bullets> =>
+  pipe(
     E.Do,
     E.bind("contest", () => getContestParagraph(md)),
     E.bind("startEnd", ({ contest }) => getStartEndTime(contest)),
@@ -16,7 +16,6 @@ export let parseBulletsUpcoming = (md: string): E.Either<Error, Bullets> => {
       readme,
     })),
   )
-}
 
 let getContestParagraph = (md: string) =>
   // last paragraph. fail if doesn't exists
