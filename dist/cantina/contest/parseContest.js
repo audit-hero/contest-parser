@@ -71,10 +71,7 @@ let getModulesStartIndex = (lines) => {
 const findModules = (contest, lines, startDate, active) => {
     let { modulesStart, hashCount } = getModulesStartIndex(lines);
     let modulesEnd = lines.findIndex((it, index) => {
-        return (it.match(/^#+/)?.[0].length === hashCount &&
-            (it.toLowerCase().includes("out of scope") ||
-                it.toLowerCase().includes("summary") ||
-                index > modulesStart + 5));
+        return it.match(/#{1,6}.*(out of scope)/i) || it.match(/#{1,3} summary/i);
     });
     if (modulesEnd === -1)
         modulesEnd = lines.length;
@@ -85,14 +82,8 @@ const findModules = (contest, lines, startDate, active) => {
     let modules = [];
     for (let i = modulesStart; i < modulesEnd; ++i) {
         let line = lines[i];
-        if (line.includes("github.com") ||
-            line.includes("raw.githubusercontent.com")) {
-            currentRepo = line
-                .split("](")
-                .pop()
-                .trim()
-                .slice(0, -1)
-                .replace("/commit/", "/tree/");
+        if (line.includes("github.com") || line.includes("raw.githubusercontent.com")) {
+            currentRepo = line.split("](").pop().trim().slice(0, -1).replace("/commit/", "/tree/");
         }
         // doesn't have an extension
         if (!line.includes("|") || !line.match(/\.[0-9a-z]+/i))

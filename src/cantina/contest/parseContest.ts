@@ -3,9 +3,7 @@ import { NodeHtmlMarkdown } from "node-html-markdown"
 import { findDocUrl, findTags, trimContestName } from "../../util.js"
 import { CantinaContest, CantinaStatus } from "../types.js"
 
-export const parseContest = async (
-  contest: CantinaContest
-): Promise<ContestWithModules> => {
+export const parseContest = async (contest: CantinaContest): Promise<ContestWithModules> => {
   let md = await downloadContestAsMd(contest)
   return parseMd(contest, md)
 }
@@ -17,10 +15,7 @@ let downloadContestAsMd = async (contest: CantinaContest): Promise<string> => {
   return md
 }
 
-export const parseMd = (
-  contest: CantinaContest,
-  md: string
-): ContestWithModules => {
+export const parseMd = (contest: CantinaContest, md: string): ContestWithModules => {
   let name = contest.name
   let lines = md.split("\n")
 
@@ -73,12 +68,12 @@ let getModulesStartIndex = (lines: string[]) => {
     (it) =>
       it.includes("# ") &&
       it.toLowerCase().includes("scope") &&
-      !it.toLowerCase().includes("out of scope")
+      !it.toLowerCase().includes("out of scope"),
   )
 
   if (modulesStart === -1) {
     modulesStart = lines.findIndex(
-      (it) => it.includes("# ") && it.toLowerCase().includes(" contracts")
+      (it) => it.includes("# ") && it.toLowerCase().includes(" contracts"),
     )
   }
 
@@ -93,17 +88,12 @@ const findModules = (
   contest: string,
   lines: string[],
   startDate: number,
-  active: number
+  active: number,
 ): ContestModule[] => {
   let { modulesStart, hashCount } = getModulesStartIndex(lines)
 
   let modulesEnd = lines.findIndex((it, index) => {
-    return (
-      it.match(/^#+/)?.[0].length === hashCount &&
-      (it.toLowerCase().includes("out of scope") ||
-        it.toLowerCase().includes("summary") ||
-        index > modulesStart + 5)
-    )
+    return it.match(/#{1,6}.*(out of scope)/i) || it.match(/#{1,3} summary/i)
   })
   if (modulesEnd === -1) modulesEnd = lines.length
   if (modulesStart === -1) return []
@@ -113,16 +103,8 @@ const findModules = (
   let modules = [] as ContestModule[]
   for (let i = modulesStart; i < modulesEnd; ++i) {
     let line = lines[i]
-    if (
-      line.includes("github.com") ||
-      line.includes("raw.githubusercontent.com")
-    ) {
-      currentRepo = line
-        .split("](")
-        .pop()!
-        .trim()
-        .slice(0, -1)
-        .replace("/commit/", "/tree/")
+    if (line.includes("github.com") || line.includes("raw.githubusercontent.com")) {
+      currentRepo = line.split("](").pop()!.trim().slice(0, -1).replace("/commit/", "/tree/")
     }
 
     // doesn't have an extension
