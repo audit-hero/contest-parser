@@ -1,14 +1,12 @@
-import { NodeHtmlMarkdown } from "node-html-markdown";
 import { findDocUrl, findTags, trimContestName } from "../../util.js";
+import { loadNextProps } from "../../web-load/load-next-props.js";
 export const parseContest = async (contest) => {
     let md = await downloadContestAsMd(contest);
     return parseMd(contest, md);
 };
 let downloadContestAsMd = async (contest) => {
-    let url = `https://cantina.xyz/competitions/${contest.id}`;
-    let html = await fetch(url).then((it) => it.text());
-    let md = NodeHtmlMarkdown.translate(html);
-    return md;
+    let props = await loadNextProps(`https://cantina.xyz/competitions/${contest.id}`);
+    return props.competition.instructions;
 };
 export const parseMd = (contest, md) => {
     let name = contest.name;
@@ -62,7 +60,7 @@ let getModulesStartIndex = (lines) => {
     if (modulesStart === -1) {
         modulesStart = lines.findIndex((it) => it.includes("# ") && it.toLowerCase().includes(" contracts"));
     }
-    let hashCount = lines[modulesStart].match(/^#+/)?.[0].length ?? 0;
+    let hashCount = modulesStart === -1 ? 0 : lines[modulesStart].match(/^#+/)?.[0].length ?? 0;
     return {
         modulesStart,
         hashCount,
