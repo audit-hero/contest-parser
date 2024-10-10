@@ -16,7 +16,7 @@ export const parseMd = (contest, md) => {
     let modules = findModules(name, lines, startDate, active);
     let result = {
         pk: trimContestName(name, startDate),
-        readme: trimPageToMd(lines.join("\n"), contest),
+        readme: md,
         start_date: startDate,
         end_date: new Date(contest.timeframe.end).getTime() / 1000,
         platform: "cantina",
@@ -31,14 +31,6 @@ export const parseMd = (contest, md) => {
         repo_urls: [contest.gitRepoUrl],
     };
     return result;
-};
-let trimPageToMd = (page, contest) => {
-    let start = contest.name;
-    let end = "You need to be logged in as a researcher in order to join.";
-    let split = page.split("\n");
-    let startIndex = split.findIndex((it) => it.includes(start));
-    let endIndex = split.findIndex((it) => it.includes(end));
-    return split.slice(startIndex, endIndex).join("\n");
 };
 let mdStatusToStatus = (status) => {
     if (status === "live")

@@ -23,7 +23,7 @@ export const parseMd = (contest: CantinaContest, md: string): ContestWithModules
 
   let result: ContestWithModules = {
     pk: trimContestName(name, startDate),
-    readme: trimPageToMd(lines.join("\n"), contest),
+    readme: md,
     start_date: startDate,
     end_date: new Date(contest.timeframe.end).getTime() / 1000,
     platform: "cantina",
@@ -39,16 +39,6 @@ export const parseMd = (contest: CantinaContest, md: string): ContestWithModules
   }
 
   return result
-}
-
-let trimPageToMd = (page: string, contest: CantinaContest) => {
-  let start = contest.name
-  let end = "You need to be logged in as a researcher in order to join."
-
-  let split = page.split("\n")
-  let startIndex = split.findIndex((it) => it.includes(start))
-  let endIndex = split.findIndex((it) => it.includes(end))
-  return split.slice(startIndex, endIndex).join("\n")
 }
 
 let mdStatusToStatus = (status: CantinaStatus): Status => {
