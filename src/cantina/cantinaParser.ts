@@ -12,7 +12,6 @@ export const parseActiveCantinaContests = async (
 ): Promise<ContestWithModules[]> =>
   await pipe(
     TE.fromTask(() => getActiveContests()),
-    TE.map((it) => it.filter((it) => it.name.includes("bloom"))),
     log((active) => `cantina: active contests: ${active.map((it) => it.name).join(", ")}`),
     TE.map((active) =>
       active.filter((it) => {

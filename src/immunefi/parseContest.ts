@@ -3,16 +3,14 @@ import { findDocUrl, findTags, trimContestName } from "../util.js"
 import { ImmunefiContest, isActive } from "./types.js"
 import { scrape } from "../web-load/playwright-loader.js"
 
-export const parseContest = async (
-  contest: ImmunefiContest
-): Promise<ContestWithModules> => {
+export const parseContest = async (contest: ImmunefiContest): Promise<ContestWithModules> => {
   // can get more info from contest sub page later
-  // let md = await downloadContestAsMd(contest) 
+  // let md = await downloadContestAsMd(contest)
   return parseMd(contest)
 }
 
 let downloadContestAsMd = async (contest: ImmunefiContest): Promise<string> => {
-  let url = `https://immunefi.com/boost/${contest.id}`
+  let url = `https://immunefi.com/audit-competition/${contest.id}`
   let md = (await scrape(url, [])).content
   if (md.match(/\n#\s/)) md = md.split(/\n#\s/)[1]
 
@@ -32,7 +30,7 @@ export const parseMd = (mdContest: ImmunefiContest): ContestWithModules => {
     end_date: end_date,
     platform: "immunefi",
     sk: "0",
-    url: `https://immunefi.com/boost/${mdContest.id}`,
+    url: `https://immunefi.com/audit-competition/${mdContest.id}`,
     active: active,
     status: mdStatusToStatus({ start_date, end_date }),
     modules: modules,
@@ -62,23 +60,19 @@ let getModulesStartIndex = (lines: string[]) => {
     (it) =>
       it.includes("# ") &&
       it.toLowerCase().includes("scope") &&
-      !it.toLowerCase().includes("out of scope")
+      !it.toLowerCase().includes("out of scope"),
   )
 
   if (modulesStart === -1) {
     modulesStart = lines.findIndex(
-      (it) => it.includes("# ") && it.toLowerCase().includes(" contracts")
+      (it) => it.includes("# ") && it.toLowerCase().includes(" contracts"),
     )
   }
 
   return modulesStart
 }
 
-const findModules = (
-  contest: string,
-  lines: string[],
-  active: number
-): ContestModule[] => {
+const findModules = (contest: string, lines: string[], active: number): ContestModule[] => {
   let modulesStart = getModulesStartIndex(lines)
 
   let modulesEnd = lines.findIndex((it, index) => {

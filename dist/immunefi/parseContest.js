@@ -3,11 +3,11 @@ import { isActive } from "./types.js";
 import { scrape } from "../web-load/playwright-loader.js";
 export const parseContest = async (contest) => {
     // can get more info from contest sub page later
-    // let md = await downloadContestAsMd(contest) 
+    // let md = await downloadContestAsMd(contest)
     return parseMd(contest);
 };
 let downloadContestAsMd = async (contest) => {
-    let url = `https://immunefi.com/boost/${contest.id}`;
+    let url = `https://immunefi.com/audit-competition/${contest.id}`;
     let md = (await scrape(url, [])).content;
     if (md.match(/\n#\s/))
         md = md.split(/\n#\s/)[1];
@@ -24,7 +24,7 @@ export const parseMd = (mdContest) => {
         end_date: end_date,
         platform: "immunefi",
         sk: "0",
-        url: `https://immunefi.com/boost/${mdContest.id}`,
+        url: `https://immunefi.com/audit-competition/${mdContest.id}`,
         active: active,
         status: mdStatusToStatus({ start_date, end_date }),
         modules: modules,
