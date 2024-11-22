@@ -48,7 +48,7 @@ export let loadNuxtProps = async (url: string): Promise<any> => {
     let DOMAfterSimulation = await page.evaluate(() => document.body.innerHTML)
 
     // save screenshot
-    await page.screenshot({ path: `./screenshots/dom-after-simulation-${Date.now()}.png` })
+    await page.screenshot({ path: `./ign-screenshots/dom-after-simulation-${Date.now()}.png` })
     console.log(`DOM after simulation: ${DOMAfterSimulation}`)
     console.log("=================")
 

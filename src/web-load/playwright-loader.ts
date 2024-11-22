@@ -47,8 +47,6 @@ export let newPage = async () => {
   })
 
   const page = await context.newPage()
-
-  // let page = await config.browser.newPage()
   return page
 }
 

@@ -14,7 +14,19 @@ let lastLogTime = 0;
 let activeCount = 0;
 // remember to close the page when done. but not browser
 export let newPage = async () => {
-    let page = await config.browser.newPage();
+    const context = await config.browser.newContext({
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        viewport: {
+            width: 1920,
+            height: 1080,
+        },
+        extraHTTPHeaders: {
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+        },
+    });
+    const page = await context.newPage();
     return page;
 };
 export let scrape = async (url, loadingPhrases = ["Loading.."]) => {
