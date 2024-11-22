@@ -8,7 +8,7 @@ export const parseContest = async (contest: HackenproofContest): Promise<Contest
 }
 
 export const convertContest = (contest: HackenproofContest): ContestWithModules => {
-  let name = contest.name
+  let name = contest.slug
 
   let startDate = new Date(contest.startDate).getTime() / 1000
   let endDate = new Date(contest.endDate).getTime() / 1000

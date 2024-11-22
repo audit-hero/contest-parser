@@ -3,7 +3,7 @@ export const parseContest = async (contest) => {
     return convertContest(contest);
 };
 export const convertContest = (contest) => {
-    let name = contest.name;
+    let name = contest.slug;
     let startDate = new Date(contest.startDate).getTime() / 1000;
     let endDate = new Date(contest.endDate).getTime() / 1000;
     let active = contest.status === "LIVE" ? 1 : 0;
