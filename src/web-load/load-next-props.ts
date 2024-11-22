@@ -28,19 +28,22 @@ export let loadNuxtProps = async (url: string): Promise<any> => {
 
   console.log("waiting for networkidle")
   await page.goto(url, { waitUntil: "networkidle", timeout: 10_000 })
-
   console.log("starting simulate")
 
-  // Check if Cloudflare protection is present
   try {
-    // Add a random delay of 1 to 5 seconds to simulate human behavior
     await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)))
 
     // Scroll the page to load additional content
     await page.evaluate(() => window.scrollBy(0, window.innerHeight * Math.random()))
+    setTimeout(async () => {
+      await page.evaluate(() => window.scrollBy(0, window.innerHeight * Math.random()))
+    }, 200)
+    console.log("moving and clicking")
+    await page.mouse.move(530, 295)
+    await page.mouse.click(530, 295)
 
     // Add another random delay of 1 to 5 seconds
-    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)))
+    await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 4000 + 10_000)))
 
     let DOMAfterSimulation = await page.evaluate(() => document.body.innerHTML)
 

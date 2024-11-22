@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import { BrowserContext, Page, chromium } from "playwright-core"
+import { Browser, BrowserContext, Page, chromium } from "playwright-core"
 import { NodeHtmlMarkdown } from "node-html-markdown"
 import { contentTooShort, isNotFoundPage, loading } from "./verifyPage.js"
 import { Logger } from "jst-logger"
@@ -10,7 +10,7 @@ let config: Config
 
 export type Config = {
   wait: number
-  browser: BrowserContext
+  browser: Browser
 }
 
 export let setPlaywrightConfig = (config_: Partial<Config>) => {
@@ -32,13 +32,29 @@ let activeCount = 0
 
 // remember to close the page when done. but not browser
 export let newPage = async () => {
-  let page = await config.browser.newPage()
+  const context = await config.browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    viewport: {
+      width: 1920,
+      height: 1080,
+    },
+    extraHTTPHeaders: {
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.5",
+      "Accept-Encoding": "gzip, deflate, br",
+    },
+  })
+
+  const page = await context.newPage()
+
+  // let page = await config.browser.newPage()
   return page
 }
 
 export let scrape = async (
   url: string,
-  loadingPhrases: string[] = ["Loading.."]
+  loadingPhrases: string[] = ["Loading.."],
 ): Promise<ScrapeResult> => {
   // return from the server, but run evaluate again until have some content
   console.log(chalk.green(`Scraping ${url}...`))
@@ -59,16 +75,10 @@ export let scrape = async (
   activeCount++
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 })
 
-  let { content, title, startTime } = await waitForPageToLoad(
-    page,
-    loadingPhrases,
-    config.wait
-  )
+  let { content, title, startTime } = await waitForPageToLoad(page, loadingPhrases, config.wait)
 
   if (contentTooShort(content) || isNotFoundPage(content, title)) {
-    Logger.error(
-      chalk.red(`Failed to scrape ${url} after ${Date.now() - startTime}ms`)
-    )
+    Logger.error(chalk.red(`Failed to scrape ${url} after ${Date.now() - startTime}ms`))
     return { content: "", title: "", url: url }
   }
 
@@ -80,11 +90,7 @@ export let scrape = async (
   return { content, title, url }
 }
 
-export async function waitForPageToLoad(
-  page: Page,
-  loadingPhrases: string[],
-  wait?: number
-) {
+export async function waitForPageToLoad(page: Page, loadingPhrases: string[], wait?: number) {
   let startTime = Date.now()
   let content = "",
     title = "",
@@ -114,11 +120,7 @@ export async function waitForPageToLoad(
       if (contentTooShort(content))
         console.log(chalk.yellow(`Content too short: ${chalk.white(content)}`))
       if (isNotFoundPage(content, title))
-        console.log(
-          chalk.yellow(
-            `Page not found: ${chalk.white(content)} ${chalk.white(title)})}`
-          )
-        )
+        console.log(chalk.yellow(`Page not found: ${chalk.white(content)} ${chalk.white(title)})}`))
       lastLogTime = Date.now()
     }
   }
