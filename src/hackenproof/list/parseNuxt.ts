@@ -1,5 +1,3 @@
-import { trimContestName } from "../../util.js"
-
 const requiredKeys = [
   "slug",
   "startDate",
