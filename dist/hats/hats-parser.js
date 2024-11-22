@@ -1,5 +1,5 @@
-import { docHeadings, findDocUrl, findTags, getContestStatus, trimContestName, } from "../util.js";
-import { sentryError, } from "ah-shared";
+import { docHeadings, findDocUrl, findTags, getContestStatus, trimContestName } from "../util.js";
+import { sentryError } from "ah-shared/sentry";
 import { getModules } from "./hats-parser.modules.js";
 import { getActiveContests } from "./getActiveContests.js";
 export const parseActiveHatsContests = async (existingContests) => {
@@ -92,16 +92,8 @@ const getReadme = (contest) => {
     let descriptionTitle = description ? `## Description\n\n${description}` : ``;
     let docsLinkTitle = docsLink ? `## Docs\n\n${docsLink}` : ``;
     let outOfScopeTitle = outOfScope ? `## Out of Scope\n\n${outOfScope}` : ``;
-    let instructionsTitle = instructions
-        ? `## Instructions\n\n${instructions}`
-        : ``;
-    let all = [
-        oneLinerTitle,
-        descriptionTitle,
-        docsLinkTitle,
-        outOfScopeTitle,
-        instructionsTitle,
-    ];
+    let instructionsTitle = instructions ? `## Instructions\n\n${instructions}` : ``;
+    let all = [oneLinerTitle, descriptionTitle, docsLinkTitle, outOfScopeTitle, instructionsTitle];
     return all.filter((it) => it !== "").join("\n\n");
 };
 export const getDatesError = (startDate, endDate, name) => {

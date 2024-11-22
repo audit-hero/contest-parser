@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Logger } from "jst-logger";
-import { sentryError } from "ah-shared";
+import { sentryError } from "ah-shared/sentry";
 import { findTags, getReadmeFromGithub, trimContestName } from "../util.js";
 import { findModules } from "./modules.js";
 import chalk from "chalk";

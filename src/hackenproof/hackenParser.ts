@@ -13,16 +13,19 @@ export const parseActiveHackenContests = async (
   await pipe(
     TE.fromTask(() => getActiveContests()),
     log((active) => `hacken: active contests: ${active.map((it) => it.name).join(", ")}`),
-    // TE.map((active) =>
-    //   active.filter((it) => {
-    //     let existing = existingContests.find((existing) => existing.pk === it.name)
-    //     return !existing || existing.modules?.length === 0
-    //   }),
-    // ),
-    // TE.chain((it) =>
-    //   sequence(TE.ApplicativePar)(it.map((it) => TE.fromTask(() => parseContest(it)))),
-    // ),
-    TE.chain(() => TE.of([]) as TE.TaskEither<Error, ContestWithModules[]>),
+    TE.map((active) =>
+      active.filter((it) => {
+        let existing = existingContests.find((existing) => existing.pk === it.name)
+        return !existing || existing.modules?.length === 0
+      }),
+    ),
+    TE.chain((contests) =>
+      pipe(
+        contests.map((contest) => TE.fromTask(() => parseContest(contest))),
+        sequence(TE.ApplicativePar),
+      ),
+    ),
+    // TE.chain(() => TE.of([]) as TE.TaskEither<Error, ContestWithModules[]>),
     TE.getOrElse((e) => {
       Logger.error(`error parsing hacken contests: ${e}`)
       return () => Promise.resolve([] as ContestWithModules[])

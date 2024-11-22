@@ -1,6 +1,6 @@
 import { Logger } from "jst-logger";
 import { findTags, getHtmlAsMd, trimContestName } from "../util.js";
-import { sentryError } from "ah-shared";
+import { sentryError } from "ah-shared/sentry";
 import { convertToResult } from "./parse-utils.js";
 import { getActiveOrJudgingC4Contests } from "./getActiveC4Contests.js";
 import { pipe } from "fp-ts/lib/function.js";

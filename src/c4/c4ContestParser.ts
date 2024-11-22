@@ -1,7 +1,7 @@
 import { Logger } from "jst-logger"
 import { findTags, getHtmlAsMd, trimContestName } from "../util.js"
 import { C4Contest } from "../types.js"
-import { sentryError } from "ah-shared"
+import { sentryError } from "ah-shared/sentry"
 import { ContestWithModules, Tag, ContestModule, Status } from "ah-shared"
 import { Result } from "ah-shared"
 import { convertToResult } from "./parse-utils.js"

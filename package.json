@@ -21,7 +21,7 @@
     "vitest": "^1.2.2"
   },
   "dependencies": {
-    "ah-shared": "audit-hero/ah-shared#e05898e01d6cb1f005ae521cfd1924fdd716a2fe",
+    "ah-shared": "audit-hero/ah-shared#960b99b049bb187d8536bc9ce692b43064597012",
     "any-date-parser": "^1.5.4",
     "axios": "^1.6.7",
     "chalk": "^5.3.0",

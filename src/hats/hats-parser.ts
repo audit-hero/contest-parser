@@ -1,23 +1,13 @@
-import {
-  docHeadings,
-  findDocUrl,
-  findTags,
-  getContestStatus,
-  trimContestName,
-} from "../util.js"
+import { docHeadings, findDocUrl, findTags, getContestStatus, trimContestName } from "../util.js"
 import { Logger } from "jst-logger"
 import { Project } from "./types.js"
-import {
-  Result,
-  sentryError,
-  ContestWithModules,
-  ContestModule,
-} from "ah-shared"
+import { Result, ContestWithModules, ContestModule } from "ah-shared"
+import { sentryError } from "ah-shared/sentry"
 import { getModules } from "./hats-parser.modules.js"
 import { getActiveContests } from "./getActiveContests.js"
 
 export const parseActiveHatsContests = async (
-  existingContests: ContestWithModules[]
+  existingContests: ContestWithModules[],
 ): Promise<ContestWithModules[]> => {
   let active = await getActiveContests()
   let contests = await parseContests(active, existingContests)
@@ -42,7 +32,7 @@ let hatsNameToContestName = (project: Project["project-metadata"]) => {
 
 export const parseContests = async (
   contests: Project[],
-  existingContests: ContestWithModules[]
+  existingContests: ContestWithModules[],
 ) => {
   let jobs = [] as (ContestWithModules | undefined)[]
 
@@ -52,11 +42,7 @@ export const parseContests = async (
     let contest = await parseContest(contests[i], name)
       .then((it) => {
         if (!it.ok) {
-          sentryError(
-            it.error,
-            `failed to parse sherlock contest ${name}`,
-            "daily"
-          )
+          sentryError(it.error, `failed to parse sherlock contest ${name}`, "daily")
           return undefined
         }
         return it.value
@@ -74,7 +60,7 @@ export const parseContests = async (
 
 const parseContest = async (
   contest: Project,
-  name: string
+  name: string,
 ): Promise<Result<ContestWithModules>> => {
   let { startDate, endDate } = getStartEndDate(contest)
   let dateError = getDatesError(startDate, endDate, name)
@@ -89,17 +75,14 @@ const parseContest = async (
   let docUrls = [] as string[]
   let modules = [] as ContestModule[]
   if (!inFuture) {
-    if (contest.scope.docsLink)
-      docUrls = [...findDocUrl(contest.scope.docsLink, docHeadings)]
+    if (contest.scope.docsLink) docUrls = [...findDocUrl(contest.scope.docsLink, docHeadings)]
     modules = await getModules(contest, name)
   }
 
   let tags = findTags(contest["project-metadata"].oneLiner.split("\n"))
 
   let baseUrl = "https://app.hats.finance/audit-competitions"
-  let url = `${baseUrl}/${contest["project-metadata"].name.toLowerCase()}-${
-    contest.id
-  }`
+  let url = `${baseUrl}/${contest["project-metadata"].name.toLowerCase()}-${contest.id}`
   if (url.includes(" ")) url = url = baseUrl
 
   let result: ContestWithModules = {
@@ -133,26 +116,14 @@ const getReadme = (contest: Project) => {
   let descriptionTitle = description ? `## Description\n\n${description}` : ``
   let docsLinkTitle = docsLink ? `## Docs\n\n${docsLink}` : ``
   let outOfScopeTitle = outOfScope ? `## Out of Scope\n\n${outOfScope}` : ``
-  let instructionsTitle = instructions
-    ? `## Instructions\n\n${instructions}`
-    : ``
+  let instructionsTitle = instructions ? `## Instructions\n\n${instructions}` : ``
 
-  let all = [
-    oneLinerTitle,
-    descriptionTitle,
-    docsLinkTitle,
-    outOfScopeTitle,
-    instructionsTitle,
-  ]
+  let all = [oneLinerTitle, descriptionTitle, docsLinkTitle, outOfScopeTitle, instructionsTitle]
 
   return all.filter((it) => it !== "").join("\n\n")
 }
 
-export const getDatesError = (
-  startDate: number,
-  endDate: number,
-  name: string
-) => {
+export const getDatesError = (startDate: number, endDate: number, name: string) => {
   if (endDate < Date.now() / 1000) {
     return {
       error: `contest ${name} has already ended`,

@@ -1,6 +1,7 @@
 import axios from "axios"
 import { Logger } from "jst-logger"
-import { sentryError, Result } from "ah-shared"
+import { Result } from "ah-shared"
+import { sentryError } from "ah-shared/sentry"
 import { ContestWithModules, ContestModule, Tag, Status } from "ah-shared"
 import { findTags, getReadmeFromGithub, trimContestName } from "../util.js"
 import { SherlockContest } from "../types.js"
@@ -101,7 +102,7 @@ export const parseSherlockContest = async (
     start_date: contest.starts_at,
     end_date: contest.ends_at,
     platform: "sherlock",
-    active: contest.ends_at > Math.floor(Date.now() / 1000) ? 1 : 0, 
+    active: contest.ends_at > Math.floor(Date.now() / 1000) ? 1 : 0,
     status: sherlockStatusToStatus(contest.status),
     prize: `${contest.prize_pool}$`,
   }
